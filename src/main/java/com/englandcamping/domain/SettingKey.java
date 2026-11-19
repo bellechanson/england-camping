@@ -42,6 +42,9 @@ public enum SettingKey {
 	EXTRA_PERSON_INFO("추가 인원 안내", "16세 이하 어린이는 추가 요금이 없습니다."),
 	LONG_STAY_INFO("장박 안내", "장박은 반드시 전화로 먼저 상담 후 결정됩니다. 월 260,000원 기준이며, 결제 방법(카드/현금)에 따라 금액이 조금 달라질 수 있습니다."),
 
+	// ===== 띠 공지 (메인 맨 위 얇은 안내, 관리자가 켜고 끔) =====
+	BANNER_ENABLED("띠 공지 켜기", "false"), BANNER_TEXT("띠 공지 내용", ""),
+
 	// ===== 예약 링크 (비어 있으면 화면에서 "준비 중"으로 표시할 예정) =====
 	RESERVE_CAMFIT_URL("캠핏 예약 주소", "https://camfit.co.kr/camp/67d119ab902902001d592ba1"),
 	RESERVE_THANKYOU_URL("땡큐캠핑 예약 주소", "https://m.thankqcamping.com/resv/view.hbb?cseq=14423"),

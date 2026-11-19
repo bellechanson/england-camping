@@ -5,23 +5,27 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.englandcamping.domain.AdminUser;
 import com.englandcamping.domain.CampSite;
 import com.englandcamping.domain.SettingKey;
 import com.englandcamping.domain.SiteSetting;
 import com.englandcamping.domain.SiteType;
+import com.englandcamping.repository.AdminUserRepository;
 import com.englandcamping.repository.CampSiteRepository;
 import com.englandcamping.repository.SiteSettingRepository;
 import com.englandcamping.repository.SiteTypeRepository;
 
 /**
  * 앱이 켜질 때 한 번 실행. - site_setting: DB에 없는 항목만 기본값으로 추가 (이미 고친 값은 건드리지 않음) -
- * site_type / camp_site: 테이블이 완전히 비어 있을 때만 처음 데이터 추가 → 몇 번을 재시작해도 데이터가 중복되지
- * 않는다.
+ * site_type / camp_site: 테이블이 완전히 비어 있을 때만 처음 데이터 추가 - admin_user: 관리자가 한 명도 없을
+ * 때만, 환경 변수 비밀번호로 만듦 → 몇 번을 재시작해도 데이터가 중복되지 않는다.
  */
 @Component
 public class DataInitializer implements ApplicationRunner {
@@ -31,12 +35,22 @@ public class DataInitializer implements ApplicationRunner {
 	private final SiteSettingRepository siteSettingRepository;
 	private final SiteTypeRepository siteTypeRepository;
 	private final CampSiteRepository campSiteRepository;
+	private final AdminUserRepository adminUserRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final String initialAdminUsername;
+	private final String initialAdminPassword;
 
 	public DataInitializer(SiteSettingRepository siteSettingRepository, SiteTypeRepository siteTypeRepository,
-			CampSiteRepository campSiteRepository) {
+			CampSiteRepository campSiteRepository, AdminUserRepository adminUserRepository,
+			PasswordEncoder passwordEncoder, @Value("${admin.initial-username:admin}") String initialAdminUsername,
+			@Value("${admin.initial-password:}") String initialAdminPassword) {
 		this.siteSettingRepository = siteSettingRepository;
 		this.siteTypeRepository = siteTypeRepository;
 		this.campSiteRepository = campSiteRepository;
+		this.adminUserRepository = adminUserRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.initialAdminUsername = initialAdminUsername;
+		this.initialAdminPassword = initialAdminPassword;
 	}
 
 	@Override
@@ -53,7 +67,10 @@ public class DataInitializer implements ApplicationRunner {
 			addedSites = initSites(basic);
 		}
 
-		log.info("[DataInitializer] 글/링크 {}개, 사이트 종류 {}개, 싸이트 {}개 추가", addedSettings, addedTypes, addedSites);
+		String adminStatus = initAdmin();
+
+		log.info("[DataInitializer] 글/링크 {}개, 사이트 종류 {}개, 싸이트 {}개 추가 / 관리자 계정: {}", addedSettings, addedTypes,
+				addedSites, adminStatus);
 	}
 
 	/** 글/링크: enum에 있는데 DB에 없는 것만 추가 */
@@ -100,5 +117,22 @@ public class DataInitializer implements ApplicationRunner {
 
 		campSiteRepository.saveAll(sites);
 		return sites.size();
+	}
+
+	/**
+	 * 관리자 계정: 한 명도 없을 때만 만든다. 비밀번호 환경 변수가 비어 있으면 만들지 않고 경고만 남김 (빈 비밀번호 계정 방지) ※
+	 * 비밀번호 값은 절대 로그에 찍지 않는다
+	 */
+	private String initAdmin() {
+		if (adminUserRepository.count() > 0) {
+			return "이미 있음";
+		}
+		if (initialAdminPassword == null || initialAdminPassword.isBlank()) {
+			log.warn("[DataInitializer] 관리자 계정이 없습니다. 환경 변수 ENGLAND_CAMPING_ADMIN_PASSWORD 를 설정하고 다시 실행하세요.");
+			return "없음 (비밀번호 환경 변수 필요)";
+		}
+		String username = initialAdminUsername.strip();
+		adminUserRepository.save(new AdminUser(username, passwordEncoder.encode(initialAdminPassword)));
+		return "새로 만듦 (아이디: " + username + ")";
 	}
 }

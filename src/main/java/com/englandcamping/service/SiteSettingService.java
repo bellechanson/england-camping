@@ -55,4 +55,14 @@ public class SiteSettingService {
 		}
 		return value.lines().map(String::strip).filter(line -> !line.isEmpty()).toList();
 	}
+
+	/**
+	 * 값 바꾸기 (DB에 없으면 새로 만듦) — 띠 공지, 5단계 관리자 화면에서 사용 클래스 전체는 readOnly라서 여기만 쓰기 가능한
+	 * 트랜잭션으로
+	 */
+	@Transactional
+	public void update(SettingKey key, String value) {
+		siteSettingRepository.findById(key.name()).ifPresentOrElse(setting -> setting.changeValue(value),
+				() -> siteSettingRepository.save(new SiteSetting(key.name(), value)));
+	}
 }
