@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 템플릿 원본 (참고용, 커밋 안 함)
+template/

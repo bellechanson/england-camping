@@ -1,6 +1,7 @@
 package com.englandcamping.service;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import com.englandcamping.domain.SiteSetting;
 import com.englandcamping.repository.SiteSettingRepository;
 
 /**
- * 홈페이지 글/링크 읽기. 화면(Thymeleaf)에서는 ${settings['PHONE']} 처럼 꺼내 쓸 예정.
+ * 홈페이지 글/링크 읽기. 화면(Thymeleaf)에서는 ${settings['PHONE']} 처럼 꺼내 쓴다.
  */
 @Service
 @Transactional(readOnly = true)
@@ -42,5 +43,16 @@ public class SiteSettingService {
 	public String get(SettingKey key) {
 		return siteSettingRepository.findById(key.name()).map(SiteSetting::getSettingValue)
 				.orElse(key.getDefaultValue());
+	}
+
+	/**
+	 * 여러 줄짜리 글을 "줄 목록"으로. (빈 줄은 빼고, 앞뒤 공백 정리) - 소개 본문 → 문단 목록 - 이용 규칙 → 규칙 목록
+	 */
+	public List<String> getLines(SettingKey key) {
+		String value = get(key);
+		if (value == null || value.isBlank()) {
+			return List.of();
+		}
+		return value.lines().map(String::strip).filter(line -> !line.isEmpty()).toList();
 	}
 }

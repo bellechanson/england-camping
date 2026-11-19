@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+<!-- 공통 head: 페이지 제목만 넘김 -->
+
+<head th:replace="~{fragments/layout :: head(${settings['CAMP_NAME'] + ' | 가평 북면 계곡 캠핑장'})}"></head>
+
+<body>
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<!-- ===== 1. 첫 화면 =====
+     사진이 생기면(4단계) 여기에 <img class="hero-bg"> 를 넣는다. 지금은 갈색 그라데이션 -->
+	<section class="stay">
+		<div class="stay-inner">
+			<p class="stay-eyebrow mb-5">
+				<span>가평 북면</span>
+				<span>계곡 옆 캠핑장</span>
+				<span th:text="${siteCount} + '개 싸이트'">22개 싸이트</span>
+			</p>
+			<h1 class="stay-title mb-5" th:text="${settings['INTRO_TITLE']}">메인 제목</h1>
+			<p class="fs-lg mb-0" style="max-width:34rem;opacity:.88" th:text="${settings['HERO_SUBTITLE']}">부제목</p>
+		</div>
+		<!-- 오른쪽 세로 띠 (넓은 화면에서만 보임) -->
+		<div class="stay-rail" aria-hidden="true"><span th:text="${settings['ADDRESS_ROAD']}">주소</span></div>
+	</section>
+
+	<!-- ===== 2. 예약 바 =====
+     템플릿의 날짜 선택 대신: 이용 시간 + 요금 + 예약처 버튼
+     id="bookBar" 는 main.js가 "스크롤하면 위에 붙는 바"를 만들 때 쓰므로 그대로 둔다 -->
+	<div class="book-bar-wrap" id="book">
+		<div class="book-bar" id="bookBar">
+			<div class="book-grid">
+				<div class="book-field">
+					<p class="form-label">체크인</p>
+					<p class="book-value" th:text="${settings['CHECK_IN']}">13:00</p>
+				</div>
+				<div class="book-field">
+					<p class="form-label">체크아웃</p>
+					<p class="book-value" th:text="${settings['CHECK_OUT']}">12:00</p>
+				</div>
+				<div class="book-field">
+					<p class="form-label">1박 요금</p>
+					<p class="book-value"
+						th:text="${mainType != null and mainType.normalPrice != null} ? ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원~' : '전화 문의'">
+						50,000원~</p>
+				</div>
+				<div class="book-field">
+					<p class="form-label">매너타임</p>
+					<p class="book-value" th:text="${settings['MANNER_TIME']}">22:30 ~ 07:00</p>
+				</div>
+				<div class="book-field">
+					<p class="form-label">예약하기</p>
+					<div class="reserve-buttons">
+						<!-- 예약처 주소가 있는 것만 버튼으로 (새 창) -->
+						<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary" th:href="${link.url}"
+							th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
+						<!-- 예약처 주소가 하나도 없으면 전화 버튼 -->
+						<a th:if="${#lists.isEmpty(reserveLinks)}" class="btn-outline theme-secondary"
+							th:href="'tel:' + ${settings['PHONE']}">전화 예약</a>
+					</div>
+				</div>
+			</div>
+			<p class="fs-xs fg-3 mb-0 mt-4">예약은 네이버 · 캠핏 · 땡큐캠핑에서 받습니다. 장박은 전화로 먼저 상담해 주세요.</p>
+		</div>
+	</div>
+
+	<!-- 스크롤을 내리면 위에 붙는 작은 예약 바 (main.js가 보였다/숨겼다 함) -->
+	<div class="book-dock" id="bookDock">
+		<div class="container-fluid px-0 d-flex flex-wrap align-items-center justify-content-between gap-4">
+			<span class="fs-sm fw-semibold" th:text="${settings['CAMP_NAME']} + ' · 가평 북면'">잉글랜드 캠핑장</span>
+			<span class="fs-sm fg-2 d-none md:d-inline"
+				th:text="'체크인 ' + ${settings['CHECK_IN']} + ' · 체크아웃 ' + ${settings['CHECK_OUT']}">체크인 · 체크아웃</span>
+			<a class="btn-solid theme-primary btn-sm" href="#book" data-scroll-top>예약하기</a>
+		</div>
+	</div>
+
+	<main id="main">
+
+		<!-- ===== 3. 소개 (캠지기 이야기) ===== -->
+		<section class="section" id="about">
+			<div class="container">
+				<div class="row g-7 align-items-center">
+					<div class="lg:col-6">
+						<p class="eyebrow fs-sm fg-primary mb-4">캠핑장 소개</p>
+						<h2 class="section-title fs-4xl mb-5">캠지기 부부가<br>직접 설계하고 지었습니다</h2>
+						<!-- 소개 본문 중 앞의 두 문단만 (전체는 소개 페이지에서) -->
+						<p class="fg-2 mb-5" th:each="paragraph, stat : ${introParagraphs}" th:if="${stat.index < 2}"
+							th:text="${paragraph}">소개 문단</p>
+						<a class="btn-outline theme-secondary" th:href="@{/about}">소개 더 보기</a>
+
+						<!-- 숫자로 보는 캠핑장 -->
+						<div class="row g-5 mt-7">
+							<div class="col-6 md:col-3">
+								<p class="fs-2xl fw-semibold mb-0 fg-primary" th:text="${siteCount}">22</p>
+								<p class="fs-xs fg-3 mb-0">싸이트</p>
+							</div>
+							<div class="col-6 md:col-3" th:if="${mainType != null}">
+								<p class="fs-2xl fw-semibold mb-0 fg-primary" th:text="${mainType.sizeText}">8m x 10m
+								</p>
+								<p class="fs-xs fg-3 mb-0">싸이트 크기</p>
+							</div>
+							<div class="col-6 md:col-3" th:if="${mainType != null}">
+								<p class="fs-2xl fw-semibold mb-0 fg-primary"
+									th:text="'최대 ' + ${mainType.maxGuests} + '인'">최대 5인</p>
+								<p class="fs-xs fg-3 mb-0">싸이트당 인원</p>
+							</div>
+							<div class="col-6 md:col-3">
+								<p class="fs-2xl fw-semibold mb-0 fg-primary">무료</p>
+								<p class="fs-xs fg-3 mb-0">주차</p>
+							</div>
+						</div>
+					</div>
+					<!-- 사진 자리 3칸 (4단계에서 실제 사진으로) -->
+					<div class="lg:col-6">
+						<div class="row g-4">
+							<div class="col-7">
+								<div class="ph ph-3x4 rounded-4"><span class="ph-label">캠핑장 사진</span></div>
+							</div>
+							<div class="col-5">
+								<div class="ph ph-1x1 rounded-4 mb-4"><span class="ph-label">사진</span></div>
+								<div class="ph ph-1x1 rounded-4"><span class="ph-label">사진</span></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 4. 사이트 · 요금 ===== -->
+		<section class="section bg-2" id="sites">
+			<div class="container">
+				<div class="d-flex flex-wrap justify-content-between align-items-end gap-4 mb-7">
+					<div>
+						<p class="eyebrow fs-sm fg-primary mb-3">사이트 · 요금</p>
+						<h2 class="section-title fs-4xl mb-0">넓게 배치한 싸이트</h2>
+					</div>
+					<p class="fg-2 fs-sm mb-0">요금은 1박 기준입니다</p>
+				</div>
+
+				<div class="row g-7" th:if="${mainType != null}">
+					<!-- 왼쪽: 사이트 종류 카드 -->
+					<div class="lg:col-5">
+						<a class="room-card" th:href="@{/sites}">
+							<div class="room-media">
+								<div class="ph"><span class="ph-label">싸이트 사진</span></div>
+								<span class="room-price"
+									th:text="${mainType.normalPrice != null} ? ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원~' : '전화 문의'">50,000원~</span>
+							</div>
+							<h3 class="room-name mb-1" th:text="'[' + ${mainType.floorType} + '] ' + ${mainType.name}">
+								[파쇄석] 캠핑사이트</h3>
+							<p class="fg-3 fs-sm mb-0"
+								th:text="${mainType.sizeText} + ' · 기준 ' + ${mainType.baseGuests} + '인 (최대 ' + ${mainType.maxGuests} + '인) · 최소 ' + ${mainType.minNights} + '박'">
+								8m x 10m · 기준 2인</p>
+						</a>
+					</div>
+					<!-- 오른쪽: 싸이트 22개 목록 (이용 불가는 흐리게) -->
+					<div class="lg:col-7">
+						<p class="fw-semibold mb-4">싸이트 목록</p>
+						<div class="site-chips">
+							<span th:each="site : ${sites}" class="site-chip"
+								th:classappend="${site.available} ? '' : 'is-closed'"
+								th:title="${site.available} ? '이용 가능' : '현재 이용 불가'" th:text="${site.name}">01번
+								싸이트</span>
+						</div>
+						<p class="fs-xs fg-3 mt-4 mb-6">흐리게 표시된 싸이트는 현재 이용할 수 없습니다.</p>
+						<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 · 요금 자세히 보기</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 5. 부대시설 ===== -->
+		<section class="section" id="facility">
+			<div class="container">
+				<div class="row g-7">
+					<div class="lg:col-4">
+						<p class="eyebrow fs-sm fg-primary mb-3">부대시설</p>
+						<h2 class="section-title fs-4xl mb-4">불편함 없이 쉬다 가시도록</h2>
+						<p class="fg-2 mb-0">관리동과 부대시설은 캠지기가 직접 설계하고 직영 시공했습니다.</p>
+					</div>
+					<div class="lg:col-8">
+						<div class="row g-0 lg:gx-6">
+							<div class="md:col-6">
+								<div class="amenity">
+									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+										stroke-width="1.5" aria-hidden="true">
+										<path d="M2 13h12M4 13V6l4-3.5L12 6v7" stroke-linejoin="round" />
+										<path d="M6.75 13v-3h2.5v3" />
+									</svg>
+									<div>
+										<p class="fw-semibold mb-1">남녀 화장실</p>
+										<p class="fg-3 fs-sm mb-0">깨끗하고 청결하게 관리합니다</p>
+									</div>
+								</div>
+								<div class="amenity">
+									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+										stroke-width="1.5" aria-hidden="true">
+										<path
+											d="M1.5 11.5c1.6 0 1.6 1 3.25 1s1.65-1 3.25-1 1.65 1 3.25 1 1.65-1 3.25-1M1.5 8c1.6 0 1.6 1 3.25 1S6.4 8 8 8s1.65 1 3.25 1S12.9 8 14.5 8"
+											stroke-linecap="round" />
+									</svg>
+									<div>
+										<p class="fw-semibold mb-1">프라이빗 샤워실 · 탈의실</p>
+										<p class="fg-3 fs-sm mb-0">일반 캠핑장에서 경험하기 힘든 개별 공간</p>
+									</div>
+								</div>
+								<div class="amenity">
+									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+										stroke-width="1.5" aria-hidden="true">
+										<path d="M3.5 14V5.5a4.5 4.5 0 0 1 9 0V14M6 14V8m4 6V8" stroke-linecap="round"
+											stroke-linejoin="round" />
+									</svg>
+									<div>
+										<p class="fw-semibold mb-1">개수대 · 매점</p>
+										<p class="fg-3 fs-sm mb-0">늦은 밤에는 안전을 위해 이용 시간이 제한됩니다</p>
+									</div>
+								</div>
+							</div>
+							<div class="md:col-6">
+								<div class="amenity">
+									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+										stroke-width="1.5" aria-hidden="true">
+										<rect x="2" y="3.5" width="12" height="9" rx="1.5" />
+										<path d="M2 6.5h12" />
+									</svg>
+									<div>
+										<p class="fw-semibold mb-1">무료 주차</p>
+										<p class="fg-3 fs-sm mb-0">싸이트 앞 또는 별도 주차 공간</p>
+									</div>
+								</div>
+								<div class="amenity">
+									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+										stroke-width="1.5" aria-hidden="true">
+										<path d="M8 14s5.5-3.2 5.5-7a5.5 5.5 0 0 0-11 0c0 3.8 5.5 7 5.5 7"
+											stroke-linejoin="round" />
+										<circle cx="8" cy="7" r="2" />
+									</svg>
+									<div>
+										<p class="fw-semibold mb-1">캠핑장 앞 계곡</p>
+										<p class="fg-3 fs-sm mb-0">여름이면 아이들과 물놀이</p>
+									</div>
+								</div>
+								<div class="amenity">
+									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+										stroke-width="1.5" aria-hidden="true">
+										<circle cx="8" cy="8" r="6.25" />
+										<path d="M8 4.5v3.8l2.5 1.5" stroke-linecap="round" />
+									</svg>
+									<div>
+										<p class="fw-semibold mb-1">큰 나무 그늘</p>
+										<p class="fg-3 fs-sm mb-0">가을이면 산속 캠핑장답게 단풍이 듭니다</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 시설 이용 제한 안내 (관리자 화면에서 수정 가능한 글) -->
+						<p class="fs-sm fg-3 mt-5 mb-0" th:text="${settings['FACILITY_CLOSED_INFO']}">시설 이용 제한 안내</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 6. 갤러리 (사진은 4단계부터) ===== -->
+		<section class="section bg-2" id="gallery">
+			<div class="container mb-6">
+				<div class="d-flex flex-wrap justify-content-between align-items-end gap-4">
+					<div>
+						<p class="eyebrow fs-sm fg-primary mb-3">갤러리</p>
+						<h2 class="section-title fs-4xl mb-0">사계절의 캠핑장</h2>
+					</div>
+					<a class="btn-outline theme-secondary" th:href="@{/gallery}">갤러리 전체 보기</a>
+				</div>
+			</div>
+			<div class="container-fluid px-5 lg:px-6">
+				<div class="mosaic">
+					<div>
+						<div class="ph"><span class="ph-label">사진 준비 중</span></div>
+					</div>
+					<div>
+						<div class="ph"><span class="ph-label">사진</span></div>
+					</div>
+					<div>
+						<div class="ph"><span class="ph-label">사진</span></div>
+					</div>
+					<div>
+						<div class="ph"><span class="ph-label">사진</span></div>
+					</div>
+					<div>
+						<div class="ph"><span class="ph-label">사진</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 7. 요금 안내 카드 3개 ===== -->
+		<section class="section" id="price">
+			<div class="container">
+				<p class="eyebrow fs-sm fg-primary mb-3">요금 안내</p>
+				<h2 class="section-title fs-4xl mb-7">한눈에 보는 요금</h2>
+				<div class="row g-5" th:if="${mainType != null}">
+					<div class="md:col-4">
+						<div class="offer">
+							<p class="offer-flag mb-4">평소</p>
+							<h3 class="fs-xl fw-semibold mb-3"
+								th:text="${mainType.normalPrice != null} ? '1박 ' + ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원' : '전화 문의'">
+								1박 50,000원</h3>
+							<p class="fg-2 fs-sm mb-5"
+								th:text="'기준 ' + ${mainType.baseGuests} + '인, 최대 ' + ${mainType.maxGuests} + '인까지 이용할 수 있습니다.'">
+								기준 2인, 최대 5인</p>
+							<p class="fs-sm fg-3 mb-0">
+								<span th:if="${mainType.extraPersonFee != null}"
+									th:text="'추가 1인 ' + ${#numbers.formatInteger(mainType.extraPersonFee, 1, 'COMMA')} + '원. '">추가
+									1인 10,000원.</span>
+								<span th:text="${settings['EXTRA_PERSON_INFO']}">16세 이하 무료</span>
+							</p>
+						</div>
+					</div>
+					<div class="md:col-4">
+						<div class="offer">
+							<p class="offer-flag mb-4">성수기 (연휴)</p>
+							<h3 class="fs-xl fw-semibold mb-3"
+								th:text="${mainType.peakPrice != null} ? '1박 ' + ${#numbers.formatInteger(mainType.peakPrice, 1, 'COMMA')} + '원' : '전화 문의'">
+								1박 60,000원</h3>
+							<p class="fg-2 fs-sm mb-5" th:text="${settings['PEAK_SEASON_INFO']}">성수기 안내</p>
+							<p class="fs-sm fg-3 mb-0">인원 기준과 추가 요금은 평소와 같습니다.</p>
+						</div>
+					</div>
+					<div class="md:col-4">
+						<div class="offer">
+							<p class="offer-flag mb-4">장박</p>
+							<h3 class="fs-xl fw-semibold mb-3">전화 상담 후 결정</h3>
+							<p class="fg-2 fs-sm mb-5" th:text="${settings['LONG_STAY_INFO']}">장박 안내</p>
+							<p class="fs-sm fg-3 mb-0"><a th:href="'tel:' + ${settings['PHONE']}"
+									th:text="${settings['PHONE']}">전화번호</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 8. 오시는 길 + 자주 묻는 질문 ===== -->
+		<section class="section bg-2" id="location">
+			<div class="container">
+				<div class="row g-7">
+					<div class="lg:col-5">
+						<p class="eyebrow fs-sm fg-primary mb-3">오시는 길</p>
+						<h2 class="section-title fs-4xl mb-5">찾아오시는 길</h2>
+						<p class="fg-2 mb-5" th:text="${settings['ADDRESS_ROAD']}">도로명 주소</p>
+						<div class="spec-row"><span class="fg-3 fs-sm">지번</span><span class="fs-sm"
+								th:text="${settings['ADDRESS_JIBUN']}">지번 주소</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">우편번호</span><span class="fs-sm"
+								th:text="${settings['ZIP_CODE']}">12403</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">전화</span><a class="fs-sm"
+								th:href="'tel:' + ${settings['PHONE']}" th:text="${settings['PHONE']}">전화번호</a></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">주차</span><span class="fs-sm text-end"
+								th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
+						<a class="btn-outline theme-secondary mt-6" th:href="@{/location}">지도로 보기</a>
+					</div>
+					<div class="lg:col-7">
+						<p class="eyebrow fs-sm fg-primary mb-3">이용 안내</p>
+						<h2 class="section-title fs-4xl mb-5">자주 묻는 질문</h2>
+						<!-- 내용은 전부 관리자 화면에서 고칠 수 있는 글(DB)에서 가져옴 -->
+						<div class="accordion">
+							<details class="accordion-item" name="faq" open>
+								<summary class="accordion-header">입실 · 퇴실 시간은 언제인가요?
+									<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+										fill="none" stroke="currentColor" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="m2 5 6 6 6-6" />
+									</svg>
+								</summary>
+								<div class="accordion-body fg-2"
+									th:text="'체크인 ' + ${settings['CHECK_IN']} + ', 체크아웃 ' + ${settings['CHECK_OUT']} + '입니다.'">
+									체크인 · 체크아웃</div>
+							</details>
+							<details class="accordion-item" name="faq">
+								<summary class="accordion-header">매너타임이 있나요?
+									<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+										fill="none" stroke="currentColor" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="m2 5 6 6 6-6" />
+									</svg>
+								</summary>
+								<div class="accordion-body fg-2"
+									th:text="'매너타임은 ' + ${settings['MANNER_TIME']} + '입니다.'">매너타임</div>
+							</details>
+							<details class="accordion-item" name="faq">
+								<summary class="accordion-header">개수대 · 샤워장 · 매점은 언제든 쓸 수 있나요?
+									<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+										fill="none" stroke="currentColor" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="m2 5 6 6 6-6" />
+									</svg>
+								</summary>
+								<div class="accordion-body fg-2" th:text="${settings['FACILITY_CLOSED_INFO']}">시설 이용 제한
+								</div>
+							</details>
+							<details class="accordion-item" name="faq" th:if="${mainType != null}">
+								<summary class="accordion-header">인원이 늘면 추가 요금이 있나요?
+									<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+										fill="none" stroke="currentColor" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="m2 5 6 6 6-6" />
+									</svg>
+								</summary>
+								<div class="accordion-body fg-2">
+									<span th:if="${mainType.extraPersonFee != null}"
+										th:text="'기준 ' + ${mainType.baseGuests} + '인을 넘으면 1인당 ' + ${#numbers.formatInteger(mainType.extraPersonFee, 1, 'COMMA')} + '원이 추가됩니다. '">추가
+										요금</span>
+									<span th:text="${settings['EXTRA_PERSON_INFO']}">16세 이하 무료</span>
+								</div>
+							</details>
+							<details class="accordion-item" name="faq">
+								<summary class="accordion-header">장박도 가능한가요?
+									<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+										fill="none" stroke="currentColor" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="m2 5 6 6 6-6" />
+									</svg>
+								</summary>
+								<div class="accordion-body fg-2" th:text="${settings['LONG_STAY_INFO']}">장박 안내</div>
+							</details>
+							<details class="accordion-item" name="faq">
+								<summary class="accordion-header">꼭 지켜야 할 규칙이 있나요?
+									<svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+										fill="none" stroke="currentColor" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="m2 5 6 6 6-6" />
+									</svg>
+								</summary>
+								<div class="accordion-body fg-2">
+									<ul class="mb-0">
+										<li th:each="rule : ${ruleLines}" th:text="${rule}">규칙</li>
+									</ul>
+								</div>
+							</details>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

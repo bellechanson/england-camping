@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!--
+  모든 페이지 공통 조각 모음
+  - head(pageTitle) : <head> 전체 (CSS, 글꼴, 페이지 제목)
+  - header          : 위쪽 메뉴
+  - footer          : 아래쪽 꼬리말
+  - scripts         : 맨 아래 자바스크립트
+-->
+
+<!-- ===== 1. head ===== -->
+
+<head th:fragment="head(pageTitle)">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${pageTitle}">잉글랜드 캠핑장</title>
+	<meta name="description" th:content="${settings['HERO_SUBTITLE']}">
+
+	<!-- 한글 제목 글꼴 (Google Fonts). 막혀 있으면 기본 글꼴로 보임 -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
+
+	<!-- Bootstrap 6 (템플릿에 들어 있던 파일 그대로) -->
+	<link rel="stylesheet" th:href="@{/assets/vendor/bootstrap6/css/bootstrap.min.css}">
+	<script type="importmap">{"imports": {"bootstrap": "/assets/vendor/bootstrap6/js/bootstrap.bundle.min.js"}}</script>
+
+	<!-- 템플릿 CSS → 우리 CSS 순서 (뒤에 오는 우리 것이 이김) -->
+	<link rel="stylesheet" th:href="@{/assets/css/base.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/england.css}">
+</head>
+
+<!-- ===== 2. 머리글 (메뉴) ===== -->
+<header th:fragment="header" class="site-header">
+	<nav class="navbar lg:navbar-expand" aria-label="주 메뉴">
+		<div class="container-fluid px-5 lg:px-6">
+			<a class="wordmark" th:href="@{/}" th:text="${settings['CAMP_NAME']}">잉글랜드 캠핑장</a>
+
+			<!-- PC에서는 가로 메뉴, 좁은 화면에서는 오른쪽에서 나오는 서랍 메뉴 -->
+			<dialog class="drawer drawer-end" tabindex="-1" id="navDrawer" aria-labelledby="navDrawerLabel">
+				<div class="drawer-header">
+					<h5 class="drawer-title" id="navDrawerLabel">메뉴</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="drawer" aria-label="닫기"></button>
+				</div>
+				<div class="drawer-body mb-3 lg:mb-0">
+					<ul class="nav navbar-nav ms-auto lg:gap-4">
+						<li class="nav-item"><a class="nav-link" th:href="@{/about}">소개</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/sites}">사이트·요금</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/guide}">이용안내</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/location}">오시는 길</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/notice}">공지사항</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/gallery}">갤러리</a></li>
+					</ul>
+				</div>
+			</dialog>
+
+			<div class="d-flex align-items-center gap-3 ms-auto">
+				<!-- 어느 페이지에서든 메인의 예약 바로 이동 -->
+				<a class="btn-solid theme-primary btn-sm" href="/#book">예약하기</a>
+				<!-- 다크모드 버튼은 쓰지 않기로 해서 뺌 -->
+				<button class="btn-icon navbar-toggler" type="button" data-bs-toggle="drawer"
+					data-bs-target="#navDrawer" aria-controls="navDrawer" aria-label="메뉴 열기">
+					<span class="navbar-toggler-icon" aria-hidden="true"></span>
+				</button>
+			</div>
+		</div>
+	</nav>
+</header>
+
+<!-- ===== 3. 꼬리말 ===== -->
+<footer th:fragment="footer" class="site-footer section pb-6">
+	<div class="container">
+		<div class="row g-6">
+			<div class="md:col-4">
+				<p class="wordmark fg-1 d-inline-block mb-4" th:text="${settings['CAMP_NAME']}">잉글랜드 캠핑장</p>
+				<p class="fg-3 fs-sm mb-0">
+					<span th:text="${settings['ADDRESS_ROAD']}">주소</span><br>
+					<span th:text="'(우) ' + ${settings['ZIP_CODE']}">우편번호</span>
+				</p>
+			</div>
+			<div class="md:col-2">
+				<p class="fw-semibold fs-sm mb-4">안내</p>
+				<ul class="list-unstyled fs-sm fg-3 mb-0">
+					<li class="mb-3"><a th:href="@{/about}">소개</a></li>
+					<li class="mb-3"><a th:href="@{/sites}">사이트·요금</a></li>
+					<li class="mb-3"><a th:href="@{/guide}">이용안내</a></li>
+				</ul>
+			</div>
+			<div class="md:col-2">
+				<p class="fw-semibold fs-sm mb-4">소식</p>
+				<ul class="list-unstyled fs-sm fg-3 mb-0">
+					<li class="mb-3"><a th:href="@{/notice}">공지사항</a></li>
+					<li class="mb-3"><a th:href="@{/gallery}">갤러리</a></li>
+					<li class="mb-3"><a th:href="@{/location}">오시는 길</a></li>
+				</ul>
+			</div>
+			<div class="md:col-4">
+				<p class="fw-semibold fs-sm mb-4">문의</p>
+				<p class="fs-sm fg-3 mb-1"><a th:href="'tel:' + ${settings['PHONE']}"
+						th:text="${settings['PHONE']}">전화번호</a></p>
+				<p class="fs-xs fg-3 mb-0"
+					th:text="'체크인 ' + ${settings['CHECK_IN']} + ' · 체크아웃 ' + ${settings['CHECK_OUT']}">체크인 · 체크아웃</p>
+			</div>
+		</div>
+		<hr class="my-6">
+		<p class="fs-xs fg-3 mb-0">&copy; <span data-year></span> <span th:text="${settings['CAMP_NAME']}">잉글랜드
+				캠핑장</span></p>
+	</div>
+</footer>
+
+<!-- ===== 4. 스크립트 (템플릿 main.js 그대로) ===== -->
+<th:block th:fragment="scripts">
+	<script type="module" th:src="@{/assets/js/main.js}"></script>
+</th:block>
+
+</html>
