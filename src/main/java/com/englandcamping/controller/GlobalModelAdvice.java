@@ -7,8 +7,10 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.englandcamping.domain.Photo;
 import com.englandcamping.domain.SettingKey;
 import com.englandcamping.dto.ReserveLink;
+import com.englandcamping.service.PhotoService;
 import com.englandcamping.service.SiteSettingService;
 
 /**
@@ -19,9 +21,11 @@ import com.englandcamping.service.SiteSettingService;
 public class GlobalModelAdvice {
 
 	private final SiteSettingService siteSettingService;
+	private final PhotoService photoService;
 
-	public GlobalModelAdvice(SiteSettingService siteSettingService) {
+	public GlobalModelAdvice(SiteSettingService siteSettingService, PhotoService photoService) {
 		this.siteSettingService = siteSettingService;
+		this.photoService = photoService;
 	}
 
 	/** 글/링크 전체 → 화면에서 ${settings['CAMP_NAME']} */
@@ -60,6 +64,15 @@ public class GlobalModelAdvice {
 		boolean enabled = "true".equals(siteSettingService.get(SettingKey.BANNER_ENABLED));
 		String text = siteSettingService.get(SettingKey.BANNER_TEXT);
 		return (enabled && text != null && !text.isBlank()) ? text.strip() : null;
+	}
+
+	/**
+	 * 사진 자리 → 화면에서 ${slotPhotos['HERO']} (지정 안 된 자리는 null → 그라데이션) 메인, 소개, 사이트·요금,
+	 * 관리자 사진 관리에서 사용
+	 */
+	@ModelAttribute("slotPhotos")
+	public Map<String, Photo> slotPhotos() {
+		return photoService.findSlotPhotos();
 	}
 
 	private void addIfPresent(List<ReserveLink> links, String name, SettingKey key) {

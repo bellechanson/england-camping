@@ -24,15 +24,27 @@
 							<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 · 요금 보기</a>
 						</div>
 					</div>
-					<!-- 사진 자리 (4단계에서 실제 사진으로) -->
+					<!-- 사진 자리 (관리자 > 사진 관리 > 자리에 넣기, 메인 소개 칸과 같은 사진) -->
 					<div class="lg:col-5">
-						<div class="ph ph-3x4 rounded-4 mb-4"><span class="ph-label">캠핑장 사진</span></div>
+						<div class="ph ph-3x4 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
+							<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
+								loading="lazy">
+							<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
+						</div>
 						<div class="row g-4">
 							<div class="col-6">
-								<div class="ph ph-1x1 rounded-3"><span class="ph-label">사진</span></div>
+								<div class="ph ph-1x1 rounded-3" th:with="p=${slotPhotos['ABOUT_SUB1']}">
+									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
+										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+									<span class="ph-label" th:if="${p == null}">사진</span>
+								</div>
 							</div>
 							<div class="col-6">
-								<div class="ph ph-1x1 rounded-3"><span class="ph-label">사진</span></div>
+								<div class="ph ph-1x1 rounded-3" th:with="p=${slotPhotos['ABOUT_SUB2']}">
+									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
+										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+									<span class="ph-label" th:if="${p == null}">사진</span>
+								</div>
 							</div>
 						</div>
 					</div>

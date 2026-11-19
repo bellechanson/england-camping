@@ -309,3 +309,91 @@ body {
 body:has(.site-banner) .sub-head {
 	padding-top: 10rem;
 }
+
+
+/* ===== 사진 ===== */
+/* 메인 갤러리 칸: 사진이 있으면 a 태그로 (템플릿은 button 기준) */
+.mosaic>a {
+	display: block;
+	border-radius: var(--bs-radius-3);
+	overflow: hidden;
+}
+
+.mosaic>a:first-child {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+/* 갤러리 분류 탭 */
+.gallery-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.gallery-tabs a {
+	padding-block: 0.4rem;
+	padding-inline: 1rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: 999px;
+	text-decoration: none;
+	font-size: 0.9rem;
+}
+
+.gallery-tabs a.is-current {
+	background: var(--bs-primary-base);
+	border-color: transparent;
+	color: #fff;
+}
+
+/* 갤러리 사진 칸 (화면 폭에 맞춰 칸 수 자동) */
+.gallery-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+	gap: 0.75rem;
+}
+
+.gallery-item {
+	border: 0;
+	padding: 0;
+	background: none;
+	border-radius: var(--bs-radius-3);
+	overflow: hidden;
+	cursor: zoom-in;
+}
+
+.gallery-item img {
+	transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img {
+	transform: scale(1.04);
+}
+
+/* 크게 보기: 잘리지 않게 전체가 보이도록 */
+.viewer-img {
+	display: block;
+	width: 100%;
+	max-height: 75vh;
+	object-fit: contain;
+}
+
+/* 관리자: 사진 자리 5칸 */
+.slot-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+	gap: 1rem;
+}
+
+/* 관리자: 사진 목록 카드 */
+.photo-admin-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+	gap: 1rem;
+}
+
+.photo-card {
+	padding: 0.9rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-radius-4);
+}

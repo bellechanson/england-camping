@@ -13,6 +13,9 @@
 	<!-- ===== 1. 첫 화면 =====
      사진이 생기면(4단계) 여기에 <img class="hero-bg"> 를 넣는다. 지금은 갈색 그라데이션 -->
 	<section class="stay">
+		<!-- 메인 큰 사진 (관리자 > 사진 관리에서 지정, 없으면 갈색 그라데이션) -->
+		<img class="hero-bg" th:if="${slotPhotos['HERO'] != null}" th:src="@{${slotPhotos['HERO'].url}}" alt=""
+			loading="eager">
 		<div class="stay-inner">
 			<p class="stay-eyebrow mb-5">
 				<span>가평 북면</span>
@@ -133,15 +136,27 @@
 							</div>
 						</div>
 					</div>
-					<!-- 사진 자리 3칸 (4단계에서 실제 사진으로) -->
+					<!-- 사진 자리 3칸 (관리자 > 사진 관리 > 자리에 넣기) -->
 					<div class="lg:col-6">
 						<div class="row g-4">
 							<div class="col-7">
-								<div class="ph ph-3x4 rounded-4"><span class="ph-label">캠핑장 사진</span></div>
+								<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
+									<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
+										loading="lazy">
+									<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
+								</div>
 							</div>
 							<div class="col-5">
-								<div class="ph ph-1x1 rounded-4 mb-4"><span class="ph-label">사진</span></div>
-								<div class="ph ph-1x1 rounded-4"><span class="ph-label">사진</span></div>
+								<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
+									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
+										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+									<span class="ph-label" th:if="${p == null}">사진</span>
+								</div>
+								<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
+									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
+										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+									<span class="ph-label" th:if="${p == null}">사진</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -165,7 +180,11 @@
 					<div class="lg:col-5">
 						<a class="room-card" th:href="@{/sites}">
 							<div class="room-media">
-								<div class="ph"><span class="ph-label">싸이트 사진</span></div>
+								<div class="ph" th:with="p=${slotPhotos['SITE']}">
+									<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '싸이트 사진'}"
+										loading="lazy">
+									<span class="ph-label" th:if="${p == null}">싸이트 사진</span>
+								</div>
 								<span class="room-price"
 									th:text="${mainType.normalPrice != null} ? ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원~' : '전화 문의'">50,000원~</span>
 							</div>
@@ -295,7 +314,17 @@
 				</div>
 			</div>
 			<div class="container-fluid px-5 lg:px-6">
-				<div class="mosaic">
+				<!-- 사진이 있으면 갤러리 앞 5장 (첫 장은 큰 칸이라 큰 사진, 누르면 갤러리 페이지로) -->
+				<div class="mosaic" th:if="${!#lists.isEmpty(galleryPreview)}">
+					<a th:each="p, stat : ${galleryPreview}" th:href="@{/gallery}">
+						<div class="ph">
+							<img th:src="@{${stat.first ? p.url : p.thumbUrl}}" th:alt="${p.caption ?: '캠핑장 사진'}"
+								loading="lazy">
+						</div>
+					</a>
+				</div>
+				<!-- 사진이 하나도 없으면 지금처럼 사진 자리 -->
+				<div class="mosaic" th:if="${#lists.isEmpty(galleryPreview)}">
 					<div>
 						<div class="ph"><span class="ph-label">사진 준비 중</span></div>
 					</div>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('사진 관리')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<div th:replace="~{fragments/admin :: flash}"></div>
+
+			<!-- ===== 1. 사진 올리기 ===== -->
+			<section class="admin-card mb-6">
+				<h2 class="fs-lg fw-semibold mb-2">사진 올리기</h2>
+				<p class="fs-sm fg-3 mb-4">여러 장을 한 번에 고를 수 있습니다. JPG, PNG / 한 장 20MB까지. 올리면 홈페이지용 크기로 자동으로 줄이고, 위치 정보는
+					지웁니다.</p>
+				<!-- 파일을 보내려면 enctype="multipart/form-data" 필수 -->
+				<form th:action="@{/admin/photos}" method="post" enctype="multipart/form-data" class="vstack gap-4"
+					onsubmit="var b=this.querySelector('[type=submit]'); b.disabled=true; b.textContent='올리는 중…';">
+					<div class="form-field">
+						<label class="form-label" for="uploadCategory">분류</label>
+						<select class="form-control" id="uploadCategory" name="category">
+							<option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}">사이트</option>
+						</select>
+					</div>
+					<div class="form-field">
+						<label class="form-label" for="uploadFiles">사진 파일</label>
+						<input type="file" class="form-control" id="uploadFiles" name="files" multiple
+							accept="image/jpeg,image/png">
+					</div>
+					<div><button type="submit" class="btn-solid theme-primary">올리기</button></div>
+				</form>
+			</section>
+
+			<!-- ===== 2. 사진 자리 (지금 들어가 있는 사진) ===== -->
+			<section class="admin-card mb-6">
+				<h2 class="fs-lg fw-semibold mb-2">사진 자리</h2>
+				<p class="fs-sm fg-3 mb-4">아래 사진 목록에서 각 사진의 "자리에 넣기"로 지정합니다. 비어 있는 자리는 홈페이지에서 은은한 색 칸으로 보입니다.</p>
+				<div class="slot-grid">
+					<div class="slot-item" th:each="s : ${slots}" th:with="p=${slotPhotos[s.name()]}">
+						<div class="ph ph-4x3 rounded-3 mb-3">
+							<img th:if="${p != null}" th:src="@{${p.thumbUrl}}" th:alt="${s.label}">
+							<span class="ph-label" th:if="${p == null}">비어 있음</span>
+						</div>
+						<p class="fw-semibold fs-sm mb-1" th:text="${s.label}">메인 큰 사진</p>
+						<p class="fs-xs fg-3 mb-3" th:text="${s.description}">어디에 나오는지</p>
+						<!-- 비우기: photoId 없이 보내면 자리 비움 -->
+						<form th:if="${p != null}" th:action="@{/admin/photos/slots}" method="post">
+							<input type="hidden" name="slot" th:value="${s.name()}">
+							<button type="submit" class="btn-text btn-sm">자리 비우기</button>
+						</form>
+					</div>
+				</div>
+			</section>
+
+			<!-- ===== 3. 사진 목록 (갤러리 순서) ===== -->
+			<section class="admin-card">
+				<h2 class="fs-lg fw-semibold mb-2" th:text="'사진 목록 (' + ${#lists.size(photos)} + '장)'">사진 목록</h2>
+				<p class="fs-sm fg-3 mb-5">이 순서대로 갤러리에 보입니다. 메인 갤러리 칸에는 앞의 5장이 나옵니다.</p>
+
+				<p class="fg-3 mb-0" th:if="${#lists.isEmpty(photos)}">아직 올린 사진이 없습니다.</p>
+
+				<div class="photo-admin-grid">
+					<div class="photo-card" th:each="p, stat : ${photos}">
+						<div class="ph ph-4x3 rounded-3 mb-3">
+							<img th:src="@{${p.thumbUrl}}" th:alt="${p.caption ?: '사진'}" loading="lazy">
+						</div>
+
+						<!-- 순서: 맨 앞이면 ↑ 숨김, 맨 뒤면 ↓ 숨김 -->
+						<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+							<span class="fs-xs fg-3" th:text="${stat.count} + '번째'">1번째</span>
+							<div class="d-flex gap-2">
+								<form th:unless="${stat.first}" th:action="@{/admin/photos/{id}/move(id=${p.id})}"
+									method="post">
+									<input type="hidden" name="dir" value="up">
+									<button type="submit" class="btn-outline theme-secondary btn-sm"
+										aria-label="앞으로">↑</button>
+								</form>
+								<form th:unless="${stat.last}" th:action="@{/admin/photos/{id}/move(id=${p.id})}"
+									method="post">
+									<input type="hidden" name="dir" value="down">
+									<button type="submit" class="btn-outline theme-secondary btn-sm"
+										aria-label="뒤로">↓</button>
+								</form>
+							</div>
+						</div>
+
+						<!-- 분류 + 설명 -->
+						<form th:action="@{/admin/photos/{id}(id=${p.id})}" method="post" class="vstack gap-3 mb-3">
+							<select class="form-control" name="category" aria-label="분류">
+								<option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}"
+									th:selected="${c == p.category}">사이트</option>
+							</select>
+							<input type="text" class="form-control" name="caption" maxlength="100"
+								placeholder="설명 (크게 볼 때 보임, 없어도 됨)" th:value="${p.caption}">
+							<div><button type="submit" class="btn-outline theme-secondary btn-sm">정보 저장</button></div>
+						</form>
+
+						<!-- 자리에 넣기 -->
+						<form th:action="@{/admin/photos/slots}" method="post" class="d-flex gap-2 mb-3">
+							<input type="hidden" name="photoId" th:value="${p.id}">
+							<select class="form-control" name="slot" aria-label="넣을 자리">
+								<option th:each="s : ${slots}" th:value="${s.name()}" th:text="${s.label}">메인 큰 사진
+								</option>
+							</select>
+							<button type="submit" class="btn-outline theme-secondary btn-sm text-nowrap">자리에 넣기</button>
+						</form>
+
+						<!-- 삭제 (확인 창) -->
+						<button type="button" class="btn-text btn-sm" data-bs-toggle="dialog"
+							th:attr="data-bs-target=${'#photo-delete-' + p.id}">삭제</button>
+					</div>
+				</div>
+			</section>
+
+			<!-- ===== 삭제 확인 창 (사진마다 하나씩) ===== -->
+			<dialog class="dialog" th:each="p : ${photos}" th:id="${'photo-delete-' + p.id}">
+				<div class="dialog-header">
+					<h5 class="dialog-title">사진 삭제</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="닫기"></button>
+				</div>
+				<div class="dialog-body">
+					<div class="ph ph-4x3 rounded-3 mb-4"><img th:src="@{${p.thumbUrl}}" alt=""></div>
+					<p class="mb-0">이 사진을 삭제할까요? 사진 자리에 들어가 있으면 그 자리도 비워집니다. 삭제하면 되돌릴 수 없습니다.</p>
+				</div>
+				<div class="dialog-footer">
+					<button type="button" class="btn-text" data-bs-dismiss="dialog">취소</button>
+					<form th:action="@{/admin/photos/{id}/delete(id=${p.id})}" method="post">
+						<button type="submit" class="btn-solid theme-primary">삭제</button>
+					</form>
+				</div>
+			</dialog>
+
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

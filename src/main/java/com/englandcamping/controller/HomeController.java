@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.englandcamping.domain.CampSite;
 import com.englandcamping.domain.SiteType;
 import com.englandcamping.service.NoticeService;
+import com.englandcamping.service.PhotoService;
 import com.englandcamping.service.SiteGuideService;
 
 /** 메인 페이지 */
@@ -17,10 +18,12 @@ public class HomeController {
 
 	private final SiteGuideService siteGuideService;
 	private final NoticeService noticeService;
+	private final PhotoService photoService;
 
-	public HomeController(SiteGuideService siteGuideService, NoticeService noticeService) {
+	public HomeController(SiteGuideService siteGuideService, NoticeService noticeService, PhotoService photoService) {
 		this.siteGuideService = siteGuideService;
 		this.noticeService = noticeService;
+		this.photoService = photoService;
 	}
 
 	@GetMapping("/")
@@ -36,6 +39,9 @@ public class HomeController {
 
 		// 최근 공지 3개 (고정 공지 먼저). 없으면 메인에서 공지 칸을 숨김
 		model.addAttribute("recentNotices", noticeService.findRecent());
+
+		// 갤러리 칸: 갤러리 순서 앞에서 5장 (없으면 사진 자리 그대로)
+		model.addAttribute("galleryPreview", photoService.findPreview());
 
 		return "index"; // templates/index.html
 	}

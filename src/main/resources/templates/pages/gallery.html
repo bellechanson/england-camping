@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${'갤러리 | ' + settings['CAMP_NAME']})}"></head>
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<div th:replace="~{fragments/layout :: subhead('갤러리', '사계절의 캠핑장', '사진을 누르면 크게 볼 수 있습니다.')}"></div>
+
+	<main id="main">
+		<section class="section">
+			<div class="container">
+
+				<!-- 분류 탭: 전체 + 분류 4개 (지금 보고 있는 탭은 진하게) -->
+				<nav class="gallery-tabs mb-6" aria-label="사진 분류">
+					<a th:href="@{/gallery}" th:classappend="${currentCategory == null} ? 'is-current'">전체</a>
+					<a th:each="c : ${categories}" th:href="@{/gallery(category=${c.name()})}"
+						th:classappend="${currentCategory == c} ? 'is-current'" th:text="${c.label}">사이트</a>
+				</nav>
+
+				<p class="fg-3 mb-0" th:if="${#lists.isEmpty(photos)}">아직 사진이 없습니다.</p>
+
+				<!-- 미리보기(작은 사진)로 목록, 누르면 큰 사진 창 -->
+				<div class="gallery-grid">
+					<button type="button" class="gallery-item" th:each="p : ${photos}" data-bs-toggle="dialog"
+						data-bs-target="#photoViewer" th:attr="data-full=@{${p.url}}, data-cap=${p.caption}">
+						<div class="ph ph-1x1">
+							<img th:src="@{${p.thumbUrl}}" th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+						</div>
+					</button>
+				</div>
+
+			</div>
+		</section>
+	</main>
+
+	<!-- 크게 보기 창 (템플릿의 #lightbox 와 이름을 다르게 해서 main.js가 건드리지 않게) -->
+	<dialog class="dialog dialog-lg" id="photoViewer" aria-labelledby="viewerCap">
+		<div class="dialog-header">
+			<h5 class="dialog-title" id="viewerCap">갤러리</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="닫기"></button>
+		</div>
+		<div class="dialog-body">
+			<img class="viewer-img" id="viewerImg" src="" alt="">
+		</div>
+	</dialog>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+
+	<script>
+		// 누른 사진의 큰 사진 주소(data-full)와 설명(data-cap)을 크게 보기 창에 넣음
+		document.querySelectorAll('.gallery-item[data-full]').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var img = document.getElementById('viewerImg');
+				img.src = btn.dataset.full;
+				img.alt = btn.dataset.cap || '캠핑장 사진';
+				document.getElementById('viewerCap').textContent = btn.dataset.cap || '갤러리';
+			});
+		});
+	</script>
+</body>
+
+</html>

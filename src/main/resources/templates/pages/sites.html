@@ -18,10 +18,15 @@
 		<section class="section">
 			<div class="container">
 				<div class="row g-7 mb-7" th:each="type : ${types}">
+					<!-- 왼쪽: 사이트 대표 사진 (관리자 > 사진 관리 > 자리에 넣기) -->
 					<div class="lg:col-6">
-						<div class="ph ph-4x3 rounded-4"><span class="ph-label" th:text="${type.name} + ' 사진'">사진</span>
+						<div class="ph ph-4x3 rounded-4" th:with="p=${slotPhotos['SITE']}">
+							<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: type.name + ' 사진'}"
+								loading="lazy">
+							<span class="ph-label" th:if="${p == null}" th:text="${type.name} + ' 사진'">사진</span>
 						</div>
 					</div>
+					<!-- 오른쪽: 요금표 -->
 					<div class="lg:col-6">
 						<p class="eyebrow fs-sm fg-primary mb-3" th:text="${type.floorType}">파쇄석</p>
 						<h2 class="section-title fs-3xl mb-5" th:text="${type.name}">캠핑사이트</h2>
