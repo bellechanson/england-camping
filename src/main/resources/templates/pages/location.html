@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${'오시는 길 | ' + settings['CAMP_NAME']})}"></head>
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<div th:replace="~{fragments/layout :: subhead('오시는 길', '찾아오시는 길', ${settings['ADDRESS_ROAD']})}"></div>
+
+	<main id="main">
+		<section class="section">
+			<div class="container">
+				<div class="row g-7">
+
+					<!-- 왼쪽: 지도 (키가 있으면 카카오맵, 없으면 "지도 준비 중") -->
+					<div class="lg:col-8">
+						<div id="kakaoMap" class="map-box rounded-4" th:if="${!#strings.isEmpty(kakaoMapJsKey)}"></div>
+						<div class="ph ph-4x3 rounded-4" th:if="${#strings.isEmpty(kakaoMapJsKey)}"><span
+								class="ph-label">지도 준비 중</span></div>
+					</div>
+
+					<!-- 오른쪽: 주소, 연락처, 길찾기 버튼 -->
+					<div class="lg:col-4">
+						<h2 class="section-title fs-2xl mb-5">주소</h2>
+						<div class="spec-row"><span class="fg-3 fs-sm">도로명</span><span class="fs-sm text-end"
+								th:text="${settings['ADDRESS_ROAD']}">도로명 주소</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">지번</span><span class="fs-sm text-end"
+								th:text="${settings['ADDRESS_JIBUN']}">지번 주소</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">우편번호</span><span class="fs-sm"
+								th:text="${settings['ZIP_CODE']}">12403</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">전화</span><a class="fs-sm"
+								th:href="'tel:' + ${settings['PHONE']}" th:text="${settings['PHONE']}">전화번호</a></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">주차</span><span class="fs-sm text-end"
+								th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
+
+						<div class="d-grid gap-3 mt-6">
+							<!-- 카카오맵 길찾기: 도착지를 캠핑장 좌표로 -->
+							<a class="btn-solid theme-primary" target="_blank" rel="noopener"
+								th:href="|https://map.kakao.com/link/to/${settings['CAMP_NAME']},${settings['MAP_LAT']},${settings['MAP_LNG']}|">카카오맵
+								길찾기</a>
+							<a class="btn-outline theme-secondary" target="_blank" rel="noopener"
+								th:href="${settings['MAP_NAVER_URL']}">네이버 지도에서 보기</a>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+
+	<!-- ===== 카카오맵 (키가 있을 때만 불러옴) ===== -->
+	<th:block th:if="${!#strings.isEmpty(kakaoMapJsKey)}">
+		<!-- autoload=false: 아래 kakao.maps.load() 안에서 지도를 그림 -->
+		<script
+			th:src="'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoMapJsKey} + '&autoload=false'"></script>
+		<script th:inline="javascript">
+			// 캠핑장 좌표와 이름 (관리자 화면에서 바꿀 수 있는 값)
+			const lat = Number(/*[[${settings['MAP_LAT']}]]*/ '37.9129865');
+			const lng = Number(/*[[${settings['MAP_LNG']}]]*/ '127.5748272');
+			const campName = /*[[${settings['CAMP_NAME']}]]*/ '잉글랜드 캠핑장';
+
+			kakao.maps.load(() => {
+				const position = new kakao.maps.LatLng(lat, lng);
+
+				// 지도 (level: 숫자가 작을수록 확대)
+				const map = new kakao.maps.Map(document.getElementById('kakaoMap'), {
+					center: position,
+					level: 4
+				});
+
+				// 캠핑장 위치 마커 + 이름표
+				const marker = new kakao.maps.Marker({position: position, map: map});
+				const label = document.createElement('div');
+				label.style.cssText = 'padding:6px 10px;font-size:13px;white-space:nowrap;';
+				label.textContent = campName;   // 글자로만 넣음 (HTML로 해석되지 않게)
+				new kakao.maps.InfoWindow({content: label}).open(map, marker);
+
+				// 오른쪽 확대/축소 버튼
+				map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
+			});
+		</script>
+	</th:block>
+</body>
+
+</html>

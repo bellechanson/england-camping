@@ -68,6 +68,22 @@
 	</nav>
 </header>
 
+<!-- ===== 2-1. 하위 페이지 제목 띠 =====
+     subhead(작은 제목, 큰 제목, 설명) — 설명이 없으면 null -->
+<div th:fragment="subhead(eyebrow, title, lead)" class="sub-head">
+	<div class="container">
+		<nav aria-label="현재 위치" class="mb-5">
+			<ol class="breadcrumb mb-0">
+				<li class="breadcrumb-item"><a class="breadcrumb-link" th:href="@{/}">홈</a></li>
+				<li class="breadcrumb-item active" aria-current="page" th:text="${eyebrow}">페이지</li>
+			</ol>
+		</nav>
+		<p class="eyebrow fs-sm fg-primary mb-3" th:text="${eyebrow}">작은 제목</p>
+		<h1 class="section-title fs-5xl mb-4" th:text="${title}">큰 제목</h1>
+		<p class="fs-lg fg-2 mb-0" style="max-width:40rem" th:if="${lead != null}" th:text="${lead}">설명</p>
+	</div>
+</div>
+
 <!-- ===== 3. 꼬리말 ===== -->
 <footer th:fragment="footer" class="site-footer section pb-6">
 	<div class="container">

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${'소개 | ' + settings['CAMP_NAME']})}"></head>
+<!-- sub-head-page: 머리글 글자를 진한 색으로 (밝은 배경용) -->
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<div th:replace="~{fragments/layout :: subhead('캠핑장 소개', '캠지기 부부가 직접 만든 캠핑장', ${settings['INTRO_TITLE']})}"></div>
+
+	<main id="main">
+		<section class="section">
+			<div class="container">
+				<div class="row g-7">
+					<!-- 소개 본문 전체 (관리자 화면에서 수정) -->
+					<div class="lg:col-7">
+						<p class="fg-2 fs-lg mb-5" th:each="paragraph : ${introParagraphs}" th:text="${paragraph}">소개 문단
+						</p>
+						<div class="d-flex flex-wrap gap-3 mt-6">
+							<a class="btn-solid theme-primary" href="/#book">예약하기</a>
+							<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 · 요금 보기</a>
+						</div>
+					</div>
+					<!-- 사진 자리 (4단계에서 실제 사진으로) -->
+					<div class="lg:col-5">
+						<div class="ph ph-3x4 rounded-4 mb-4"><span class="ph-label">캠핑장 사진</span></div>
+						<div class="row g-4">
+							<div class="col-6">
+								<div class="ph ph-1x1 rounded-3"><span class="ph-label">사진</span></div>
+							</div>
+							<div class="col-6">
+								<div class="ph ph-1x1 rounded-3"><span class="ph-label">사진</span></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

@@ -102,3 +102,19 @@ body {
 .site-footer {
 	border-top: 1px solid var(--bs-border-color);
 }
+
+
+/* ===== 하위 페이지 ===== */
+/* 하위 페이지는 머리글 뒤가 밝은 색이라 캠핑장 이름도 진한 글자로
+   (템플릿 style.css에 메뉴 글자만 있고 이름은 빠져 있어서 하얗게 안 보임) */
+.sub-head-page .site-header .wordmark {
+	color: var(--bs-fg-body);
+}
+
+/* 카카오맵 상자 */
+.map-box {
+	width: 100%;
+	height: 26rem;
+	border: 1px solid var(--bs-border-color);
+	overflow: hidden;
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${'사이트 · 요금 | ' + settings['CAMP_NAME']})}"></head>
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<div
+		th:replace="~{fragments/layout :: subhead('사이트 · 요금', '싸이트와 요금 안내', ${'요금은 1박 기준입니다. ' + settings['PEAK_SEASON_INFO']})}">
+	</div>
+
+	<main id="main">
+
+		<!-- ===== 사이트 종류별 요금 (종류가 늘어나면 자동으로 여러 개) ===== -->
+		<section class="section">
+			<div class="container">
+				<div class="row g-7 mb-7" th:each="type : ${types}">
+					<div class="lg:col-6">
+						<div class="ph ph-4x3 rounded-4"><span class="ph-label" th:text="${type.name} + ' 사진'">사진</span>
+						</div>
+					</div>
+					<div class="lg:col-6">
+						<p class="eyebrow fs-sm fg-primary mb-3" th:text="${type.floorType}">파쇄석</p>
+						<h2 class="section-title fs-3xl mb-5" th:text="${type.name}">캠핑사이트</h2>
+
+						<div class="spec-row"><span class="fg-3 fs-sm">크기</span><span class="fs-sm"
+								th:text="${type.sizeText}">8m x 10m</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">인원</span>
+							<span class="fs-sm"
+								th:text="'기준 ' + ${type.baseGuests} + '인 · 최대 ' + ${type.maxGuests} + '인'">기준 2인 · 최대
+								5인</span>
+						</div>
+						<div class="spec-row"><span class="fg-3 fs-sm">최소 숙박</span><span class="fs-sm"
+								th:text="${type.minNights} + '박'">1박</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">평소 1박</span>
+							<span class="fs-sm fw-semibold"
+								th:text="${type.normalPrice != null} ? ${#numbers.formatInteger(type.normalPrice, 1, 'COMMA')} + '원' : '전화 문의'">50,000원</span>
+						</div>
+						<div class="spec-row"><span class="fg-3 fs-sm">성수기(연휴) 1박</span>
+							<span class="fs-sm fw-semibold"
+								th:text="${type.peakPrice != null} ? ${#numbers.formatInteger(type.peakPrice, 1, 'COMMA')} + '원' : '전화 문의'">60,000원</span>
+						</div>
+						<div class="spec-row"><span class="fg-3 fs-sm">추가 1인</span>
+							<span class="fs-sm"
+								th:text="${type.extraPersonFee != null} ? ${#numbers.formatInteger(type.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">10,000원</span>
+						</div>
+
+						<p class="fs-sm fg-3 mt-5 mb-0" th:text="${settings['EXTRA_PERSON_INFO']}">16세 이하 무료</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 싸이트 목록 ===== -->
+		<section class="section bg-2">
+			<div class="container">
+				<p class="eyebrow fs-sm fg-primary mb-3">싸이트 목록</p>
+				<h2 class="section-title fs-3xl mb-6" th:text="'전체 ' + ${#lists.size(sites)} + '개 싸이트'">전체 22개 싸이트</h2>
+				<div class="site-chips">
+					<span th:each="site : ${sites}" class="site-chip"
+						th:classappend="${site.available} ? '' : 'is-closed'"
+						th:title="${site.available} ? '이용 가능' : '현재 이용 불가'" th:text="${site.name}">01번 싸이트</span>
+				</div>
+				<p class="fs-xs fg-3 mt-4 mb-0">흐리게 표시된 싸이트는 현재 이용할 수 없습니다.</p>
+			</div>
+		</section>
+
+		<!-- ===== 장박 + 예약 ===== -->
+		<section class="section">
+			<div class="container">
+				<div class="row g-5">
+					<div class="md:col-6">
+						<div class="offer">
+							<p class="offer-flag mb-4">장박</p>
+							<h3 class="fs-xl fw-semibold mb-3">전화 상담 후 결정</h3>
+							<p class="fg-2 fs-sm mb-5" th:text="${settings['LONG_STAY_INFO']}">장박 안내</p>
+							<p class="fs-sm mb-0"><a th:href="'tel:' + ${settings['PHONE']}"
+									th:text="${settings['PHONE']}">전화번호</a></p>
+						</div>
+					</div>
+					<div class="md:col-6">
+						<div class="offer">
+							<p class="offer-flag mb-4">예약</p>
+							<h3 class="fs-xl fw-semibold mb-3">예약은 아래에서 받습니다</h3>
+							<div class="reserve-buttons mb-5">
+								<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary"
+									th:href="${link.url}" th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
+							</div>
+							<p class="fs-sm fg-3 mb-0">빈 싸이트와 날짜는 각 예약 사이트에서 확인해 주세요.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

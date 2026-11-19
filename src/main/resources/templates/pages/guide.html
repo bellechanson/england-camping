@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${'이용안내 | ' + settings['CAMP_NAME']})}"></head>
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<div th:replace="~{fragments/layout :: subhead('이용안내', '편안한 캠핑을 위한 안내', '모두가 편하게 쉬다 가실 수 있도록 아래 내용을 꼭 확인해 주세요.')}">
+	</div>
+
+	<main id="main">
+
+		<!-- ===== 이용 시간 + 이용 규칙 ===== -->
+		<section class="section">
+			<div class="container">
+				<div class="row g-7">
+					<div class="lg:col-5">
+						<h2 class="section-title fs-3xl mb-5">이용 시간</h2>
+						<div class="spec-row"><span class="fg-3 fs-sm">체크인</span><span class="fs-sm fw-semibold"
+								th:text="${settings['CHECK_IN']}">13:00</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">체크아웃</span><span class="fs-sm fw-semibold"
+								th:text="${settings['CHECK_OUT']}">12:00</span></div>
+						<div class="spec-row"><span class="fg-3 fs-sm">매너타임</span><span class="fs-sm fw-semibold"
+								th:text="${settings['MANNER_TIME']}">22:30 ~ 07:00</span></div>
+						<p class="fs-sm fg-3 mt-5 mb-0" th:text="${settings['FACILITY_CLOSED_INFO']}">시설 이용 제한 안내</p>
+					</div>
+					<div class="lg:col-7">
+						<h2 class="section-title fs-3xl mb-5">이용 규칙</h2>
+						<!-- 관리자 화면에서 한 줄에 하나씩 적은 규칙 -->
+						<ol class="fg-2 mb-0">
+							<li class="mb-3" th:each="rule : ${ruleLines}" th:text="${rule}">규칙</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===== 추가 인원 / 장박 / 주차 ===== -->
+		<section class="section bg-2">
+			<div class="container">
+				<div class="row g-5">
+					<div class="md:col-4">
+						<div class="offer">
+							<p class="offer-flag mb-4">추가 인원</p>
+							<h3 class="fs-xl fw-semibold mb-3"
+								th:text="${mainType != null and mainType.extraPersonFee != null} ? '1인 ' + ${#numbers.formatInteger(mainType.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">
+								1인 10,000원</h3>
+							<p class="fg-2 fs-sm mb-0">
+								<span th:if="${mainType != null}"
+									th:text="'기준 ' + ${mainType.baseGuests} + '인을 넘으면 추가됩니다. '">기준 2인 초과 시</span>
+								<span th:text="${settings['EXTRA_PERSON_INFO']}">16세 이하 무료</span>
+							</p>
+						</div>
+					</div>
+					<div class="md:col-4">
+						<div class="offer">
+							<p class="offer-flag mb-4">장박</p>
+							<h3 class="fs-xl fw-semibold mb-3">전화 상담 후 결정</h3>
+							<p class="fg-2 fs-sm mb-0" th:text="${settings['LONG_STAY_INFO']}">장박 안내</p>
+						</div>
+					</div>
+					<div class="md:col-4">
+						<div class="offer">
+							<p class="offer-flag mb-4">주차</p>
+							<h3 class="fs-xl fw-semibold mb-3">무료 주차</h3>
+							<p class="fg-2 fs-sm mb-0" th:text="${settings['PARKING_INFO']}">주차 안내</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

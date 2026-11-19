@@ -32,4 +32,10 @@ public class SiteGuideService {
 	public List<CampSite> findAllSites() {
 		return campSiteRepository.findAllByOrderBySortOrderAscIdAsc();
 	}
+
+	/** 대표 사이트 종류 (지금은 하나뿐이라 첫 번째). 없으면 null */
+	public SiteType findMainType() {
+		List<SiteType> types = findAllTypes();
+		return types.isEmpty() ? null : types.get(0);
+	}
 }
