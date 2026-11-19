@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${'공지사항 | ' + settings['CAMP_NAME']})}"></head>
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<div th:replace="~{fragments/layout :: subhead('공지사항', '캠핑장 소식', '공사, 휴장, 이용 안내 등 캠핑장 소식을 알려 드립니다.')}"></div>
+
+	<main id="main">
+		<section class="section">
+			<div class="container section-narrow">
+
+				<p class="fg-3 mb-0" th:if="${page.empty}">아직 등록된 공지가 없습니다.</p>
+
+				<!-- 고정 공지 먼저, 그다음 최신순 -->
+				<ul class="notice-list" th:unless="${page.empty}">
+					<li th:each="n : ${page.content}">
+						<a class="notice-item" th:href="@{/notice/{id}(id=${n.id})}">
+							<span class="notice-title">
+								<span class="pin-badge" th:if="${n.pinned}">고정</span><span class="notice-title-text"
+									th:text="${n.title}">제목</span>
+							</span>
+							<span class="notice-date fs-sm fg-3"
+								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19</span>
+						</a>
+					</li>
+				</ul>
+
+				<!-- 페이지 번호 (2페이지 이상일 때만) -->
+				<nav class="pager mt-6" aria-label="페이지" th:if="${page.totalPages > 1}">
+					<th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+						<span class="is-current" th:if="${i == page.number}" th:text="${i + 1}">1</span>
+						<a th:unless="${i == page.number}" th:href="@{/notice(page=${i})}" th:text="${i + 1}">2</a>
+					</th:block>
+				</nav>
+
+			</div>
+		</section>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

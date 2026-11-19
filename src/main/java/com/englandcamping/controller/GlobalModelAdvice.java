@@ -52,6 +52,16 @@ public class GlobalModelAdvice {
 		return siteSettingService.getLines(SettingKey.RULES);
 	}
 
+	/**
+	 * 띠 공지: 켜져 있고 내용이 있을 때만 그 글자, 아니면 null → 머리글에서 null이면 띠를 아예 안 그림 (모든 손님 페이지 공통)
+	 */
+	@ModelAttribute("banner")
+	public String banner() {
+		boolean enabled = "true".equals(siteSettingService.get(SettingKey.BANNER_ENABLED));
+		String text = siteSettingService.get(SettingKey.BANNER_TEXT);
+		return (enabled && text != null && !text.isBlank()) ? text.strip() : null;
+	}
+
 	private void addIfPresent(List<ReserveLink> links, String name, SettingKey key) {
 		String url = siteSettingService.get(key);
 		if (url != null && !url.isBlank()) {

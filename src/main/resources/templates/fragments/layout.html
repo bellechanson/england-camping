@@ -33,6 +33,11 @@
 
 <!-- ===== 2. 머리글 (메뉴) ===== -->
 <header th:fragment="header" class="site-header">
+	<!-- 띠 공지: 관리자가 켜 두면 모든 손님 페이지 맨 위에 보임 -->
+	<div class="site-banner" role="status" th:if="${banner != null}">
+		<span th:text="${banner}">띠 공지 내용</span>
+		<a th:href="@{/notice}">공지 보기</a>
+	</div>
 	<nav class="navbar lg:navbar-expand" aria-label="주 메뉴">
 		<div class="container-fluid px-5 lg:px-6">
 			<a class="wordmark" th:href="@{/}" th:text="${settings['CAMP_NAME']}">잉글랜드 캠핑장</a>

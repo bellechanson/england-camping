@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head(${notice.title + ' | ' + settings['CAMP_NAME']})}"></head>
+
+<body class="sub-head-page">
+
+	<a class="visually-hidden-focusable btn-solid theme-primary m-3" href="#main">본문 바로가기</a>
+	<header th:replace="~{fragments/layout :: header}"></header>
+
+	<!-- 제목 띠: 큰 제목 = 공지 제목, 설명 = 작성일 -->
+	<div
+		th:replace="~{fragments/layout :: subhead('공지사항', ${notice.title}, ${'작성일 ' + #temporals.format(notice.createdAt, 'yyyy.MM.dd')})}">
+	</div>
+
+	<main id="main">
+		<section class="section">
+			<div class="container section-narrow">
+
+				<!-- 본문: 관리자가 입력한 줄바꿈 그대로 (CSS white-space: pre-line) -->
+				<article class="notice-content fs-lg fg-2" th:text="${notice.content}">공지 내용</article>
+
+				<!-- 이전 글 / 다음 글 -->
+				<nav class="notice-nav mt-7" aria-label="이전 글, 다음 글">
+					<div class="spec-row">
+						<span class="fg-3 fs-sm">다음 글</span>
+						<a class="fs-sm" th:if="${nextNotice != null}" th:href="@{/notice/{id}(id=${nextNotice.id})}"
+							th:text="${nextNotice.title}">다음 글</a>
+						<span class="fs-sm fg-3" th:if="${nextNotice == null}">다음 글이 없습니다</span>
+					</div>
+					<div class="spec-row">
+						<span class="fg-3 fs-sm">이전 글</span>
+						<a class="fs-sm" th:if="${prevNotice != null}" th:href="@{/notice/{id}(id=${prevNotice.id})}"
+							th:text="${prevNotice.title}">이전 글</a>
+						<span class="fs-sm fg-3" th:if="${prevNotice == null}">이전 글이 없습니다</span>
+					</div>
+				</nav>
+
+				<div class="mt-6">
+					<a class="btn-outline theme-secondary" th:href="@{/notice}">목록으로</a>
+				</div>
+
+			</div>
+		</section>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

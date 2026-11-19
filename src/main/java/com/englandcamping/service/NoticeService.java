@@ -43,6 +43,16 @@ public class NoticeService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "공지를 찾을 수 없습니다."));
 	}
 
+	/** 이전 글 (없으면 null) — 상세 화면 아래 "이전 글" */
+	public Notice findPrevious(Long id) {
+		return noticeRepository.findFirstByIdLessThanOrderByIdDesc(id).orElse(null);
+	}
+
+	/** 다음 글 (없으면 null) — 상세 화면 아래 "다음 글" */
+	public Notice findNext(Long id) {
+		return noticeRepository.findFirstByIdGreaterThanOrderByIdAsc(id).orElse(null);
+	}
+
 	@Transactional
 	public Notice create(String title, String content, boolean pinned) {
 		return noticeRepository.save(new Notice(title.strip(), content.strip(), pinned));
