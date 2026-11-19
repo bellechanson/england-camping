@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head(${noticeId == null ? '새 공지' : '공지 수정'})}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<section class="admin-card" style="max-width:48rem">
+				<h1 class="fs-xl fw-semibold mb-5" th:text="${noticeId == null} ? '새 공지 쓰기' : '공지 수정'">새 공지 쓰기</h1>
+
+				<!-- noticeId가 없으면 새로 저장, 있으면 그 공지를 수정 -->
+				<form th:action="${noticeId == null} ? @{/admin/notices} : @{/admin/notices/{id}(id=${noticeId})}"
+					th:object="${form}" method="post" class="vstack gap-5" novalidate>
+
+					<div class="form-field">
+						<label class="form-label" for="title">제목</label>
+						<input type="text" class="form-control" th:field="*{title}" maxlength="100"
+							placeholder="예) 이번 주말 개수대 공사 안내">
+						<p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">제목 오류</p>
+					</div>
+
+					<div class="form-field">
+						<label class="form-label" for="content">내용</label>
+						<textarea class="form-control" th:field="*{content}" rows="12"
+							placeholder="줄을 바꾸면 홈페이지에도 그대로 줄이 바뀌어 보입니다."></textarea>
+						<p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">내용 오류</p>
+					</div>
+
+					<div class="form-field">
+						<div class="switch">
+							<input type="checkbox" id="pinned" name="pinned" value="true" role="switch" switch
+								th:checked="*{pinned}">
+						</div>
+						<label for="pinned">상단 고정 (목록 맨 위, 메인에도 먼저 보임)</label>
+					</div>
+
+					<div class="d-flex flex-wrap gap-3">
+						<button type="submit" class="btn-solid theme-primary">저장</button>
+						<a class="btn-outline theme-secondary" th:href="@{/admin/notices}">취소</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

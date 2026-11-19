@@ -118,3 +118,128 @@ body {
 	border: 1px solid var(--bs-border-color);
 	overflow: hidden;
 }
+
+
+/* ===== 관리자 화면 ===== */
+.admin-header {
+	padding-block: 1rem;
+	border-bottom: 1px solid var(--bs-border-color);
+	background: var(--bs-bg-2);
+}
+
+.admin-header a {
+	text-decoration: none;
+}
+
+.admin-main {
+	padding-block: 2.5rem 4rem;
+}
+
+.admin-card {
+	padding: 1.5rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-radius-4);
+	background: var(--bs-bg-body);
+}
+
+/* 처리 결과 안내 띠 (브라우저 alert 대신) */
+.admin-flash {
+	padding-block: 0.85rem;
+	padding-inline: 1.1rem;
+	margin-bottom: 1.25rem;
+	border-radius: var(--bs-radius-3);
+	font-size: 0.95rem;
+}
+
+.admin-flash.is-success {
+	background: #e8f3ea;
+	color: #1e5b2a;
+}
+
+.admin-flash.is-error {
+	background: #fbeaea;
+	color: #8a1f1f;
+}
+
+/* 입력 칸 아래 오류 문구 */
+.field-error {
+	margin-top: 0.35rem;
+	color: #b42318;
+	font-size: 0.85rem;
+}
+
+/* 공지 목록 표 */
+.admin-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+	padding-block: 0.75rem;
+	padding-inline: 0.5rem;
+	border-bottom: 1px solid var(--bs-border-color);
+	text-align: left;
+	vertical-align: middle;
+}
+
+.admin-table th {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--bs-fg-3);
+}
+
+.admin-table .actions {
+	text-align: right;
+	white-space: nowrap;
+}
+
+/* "고정" 표시 (관리자 목록 + 손님 목록 같이 사용) */
+.pin-badge {
+	display: inline-block;
+	margin-right: 0.4rem;
+	padding-block: 0.1rem;
+	padding-inline: 0.5rem;
+	border-radius: 999px;
+	background: var(--bs-primary-bg-subtle);
+	color: var(--bs-primary-fg);
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* 페이지 번호 (관리자 + 손님 공지 목록 같이 사용) */
+.pager {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.pager a,
+.pager span {
+	min-width: 2.2rem;
+	padding-block: 0.35rem;
+	padding-inline: 0.6rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-radius-3);
+	text-align: center;
+	text-decoration: none;
+}
+
+.pager .is-current {
+	background: var(--bs-primary-base);
+	border-color: transparent;
+	color: #fff;
+}
+
+/* 로그인 화면: 가운데 카드 하나 */
+.login-wrap {
+	min-height: 100svh;
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+	background: var(--bs-bg-2);
+}
+
+.login-card {
+	width: min(100%, 24rem);
+}

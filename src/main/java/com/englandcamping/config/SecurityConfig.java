@@ -33,7 +33,9 @@ public class SecurityConfig {
 		// 환경 변수가 없으면 임시 키 (재시작하면 자동 로그인이 풀리는 것뿐, 동작은 함)
 		String key = (rememberMeKey == null || rememberMeKey.isBlank()) ? UUID.randomUUID().toString() : rememberMeKey;
 
-		http.authorizeHttpRequests(auth -> auth.requestMatchers("/admin/**").authenticated() // 관리자 화면
+		http.authorizeHttpRequests(auth -> auth
+				// 로그인 화면은 누구나 (?error, ?locked 가 붙어도 허용 — 주소 경로만 보고 판단)
+				.requestMatchers("/admin/login").permitAll().requestMatchers("/admin/**").authenticated() // 관리자 화면
 				.anyRequest().permitAll()) // 그 외 전부 공개
 
 				.formLogin(form -> form.loginPage("/admin/login") // 로그인 화면 주소 (GET)

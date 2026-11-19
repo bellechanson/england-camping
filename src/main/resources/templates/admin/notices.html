@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('공지 관리')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<div th:replace="~{fragments/admin :: flash}"></div>
+
+			<!-- ===== 띠 공지 ===== -->
+			<section class="admin-card mb-6">
+				<h2 class="fs-lg fw-semibold mb-2">띠 공지</h2>
+				<p class="fs-sm fg-3 mb-4">켜 두면 홈페이지 맨 위에 얇은 안내 줄이 보입니다. (예: 이번 주말 개수대 공사)</p>
+				<form th:action="@{/admin/banner}" method="post" class="vstack gap-4">
+					<div class="form-field">
+						<label class="form-label" for="bannerText">내용 (100자 이내)</label>
+						<input type="text" class="form-control" id="bannerText" name="text" maxlength="100"
+							th:value="${settings['BANNER_TEXT']}">
+					</div>
+					<div class="form-field">
+						<!-- 체크하면 enabled=true, 안 하면 아예 안 보내져서 false -->
+						<div class="switch">
+							<input type="checkbox" id="bannerEnabled" name="enabled" value="true" role="switch" switch
+								th:checked="${settings['BANNER_ENABLED'] == 'true'}">
+						</div>
+						<label for="bannerEnabled">홈페이지에 보이기</label>
+					</div>
+					<div><button type="submit" class="btn-solid theme-primary">띠 공지 저장</button></div>
+				</form>
+			</section>
+
+			<!-- ===== 공지 목록 ===== -->
+			<section class="admin-card">
+				<div class="d-flex flex-wrap justify-content-between align-items-center gap-4 mb-5">
+					<h2 class="fs-lg fw-semibold mb-0" th:text="'공지사항 (' + ${page.totalElements} + '개)'">공지사항</h2>
+					<a class="btn-solid theme-primary" th:href="@{/admin/notices/new}">새 공지 쓰기</a>
+				</div>
+
+				<p class="fg-3 mb-0" th:if="${page.empty}">아직 공지가 없습니다. 오른쪽 위 "새 공지 쓰기"를 눌러 주세요.</p>
+
+				<table class="admin-table" th:unless="${page.empty}">
+					<thead>
+						<tr>
+							<th>제목</th>
+							<th style="width:7rem">작성일</th>
+							<th style="width:9rem"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="n : ${page.content}">
+							<td>
+								<span class="pin-badge" th:if="${n.pinned}">고정</span>
+								<!-- 손님이 보는 화면으로 (새 창) -->
+								<a th:href="@{/notice/{id}(id=${n.id})}" target="_blank" rel="noopener"
+									th:text="${n.title}">제목</a>
+							</td>
+							<td class="fs-sm fg-3" th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19
+							</td>
+							<td class="actions">
+								<a class="btn-outline theme-secondary btn-sm"
+									th:href="@{/admin/notices/{id}/edit(id=${n.id})}">수정</a>
+								<!-- 바로 지우지 않고 아래 확인 창을 띄움 -->
+								<button type="button" class="btn-text btn-sm" data-bs-toggle="dialog"
+									th:attr="data-bs-target=${'#delete-' + n.id}">삭제</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- 페이지 번호 (2페이지 이상일 때만) -->
+				<nav class="pager mt-5" aria-label="페이지" th:if="${page.totalPages > 1}">
+					<th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+						<span class="is-current" th:if="${i == page.number}" th:text="${i + 1}">1</span>
+						<a th:unless="${i == page.number}" th:href="@{/admin/notices(page=${i})}"
+							th:text="${i + 1}">2</a>
+					</th:block>
+				</nav>
+			</section>
+
+			<!-- ===== 삭제 확인 창 (공지마다 하나씩) ===== -->
+			<dialog class="dialog" th:each="n : ${page.content}" th:id="${'delete-' + n.id}">
+				<div class="dialog-header">
+					<h5 class="dialog-title">공지 삭제</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="닫기"></button>
+				</div>
+				<div class="dialog-body">
+					<p class="mb-0">
+						<strong th:text="${n.title}">제목</strong> 공지를 삭제할까요?<br>
+						삭제하면 되돌릴 수 없습니다.
+					</p>
+				</div>
+				<div class="dialog-footer">
+					<button type="button" class="btn-text" data-bs-dismiss="dialog">취소</button>
+					<form th:action="@{/admin/notices/{id}/delete(id=${n.id})}" method="post">
+						<button type="submit" class="btn-solid theme-primary">삭제</button>
+					</form>
+				</div>
+			</dialog>
+
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

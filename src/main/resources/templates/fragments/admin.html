@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!--
+  관리자 화면 공통 조각
+  - head(pageTitle) : CSS는 손님 화면과 같은 것 사용 + 검색엔진에 안 잡히게
+  - header          : 관리자 메뉴 + 로그아웃
+  - flash           : 처리 결과 안내 띠 (message = 성공, error = 실패)
+  스크립트는 손님 화면 것(fragments/layout :: scripts)을 그대로 씀 → 확인 창(dialog) 동작
+-->
+
+<head th:fragment="head(pageTitle)">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- 관리자 화면은 검색 결과에 나오지 않게 -->
+	<meta name="robots" content="noindex, nofollow">
+	<title th:text="${pageTitle + ' | ' + settings['CAMP_NAME'] + ' 관리'}">관리</title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
+
+	<link rel="stylesheet" th:href="@{/assets/vendor/bootstrap6/css/bootstrap.min.css}">
+	<script type="importmap">{"imports": {"bootstrap": "/assets/vendor/bootstrap6/js/bootstrap.bundle.min.js"}}</script>
+	<link rel="stylesheet" th:href="@{/assets/css/base.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/england.css}">
+</head>
+
+<!-- 관리자 메뉴 -->
+<header th:fragment="header" class="admin-header">
+	<div class="container d-flex flex-wrap align-items-center justify-content-between gap-4">
+		<a class="wordmark fg-1" th:href="@{/admin/notices}" th:text="${settings['CAMP_NAME'] + ' 관리'}">관리</a>
+		<nav class="d-flex flex-wrap align-items-center gap-5 fs-sm" aria-label="관리자 메뉴">
+			<a th:href="@{/admin/notices}">공지 관리</a>
+			<a th:href="@{/admin/password}">비밀번호 변경</a>
+			<a th:href="@{/}" target="_blank" rel="noopener">홈페이지 보기</a>
+			<!-- 로그아웃은 POST (CSRF 토큰은 th:action이 자동으로 넣음) -->
+			<form th:action="@{/admin/logout}" method="post">
+				<button type="submit" class="btn-outline theme-secondary btn-sm">로그아웃</button>
+			</form>
+		</nav>
+	</div>
+</header>
+
+<!-- 처리 결과 안내 띠 -->
+<div th:fragment="flash">
+	<div class="admin-flash is-success" role="status" th:if="${message}" th:text="${message}">성공</div>
+	<div class="admin-flash is-error" role="alert" th:if="${error}" th:text="${error}">실패</div>
+</div>
+
+</html>
