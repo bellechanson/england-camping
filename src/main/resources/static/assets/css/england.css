@@ -678,3 +678,148 @@ body:not(.sub-head-page) .site-header.is-stuck {
 .sub-head .breadcrumb-link {
 	padding-inline: 0;
 }
+
+/* ===== 모바일 손보기: 관리자 화면 ===== */
+
+/* 3. 관리자 머리글 (PC: 이름 · 메뉴 · 로그아웃 한 줄) */
+.admin-header-inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1.5rem;
+}
+
+.admin-nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1.5rem;
+	margin-left: auto;
+}
+
+.admin-logout {
+	margin: 0;
+}
+
+@media (width < 768px) {
+
+	/* 3. 폰: 첫 줄 = 이름 + 로그아웃, 둘째 줄 = 옆으로 밀어서 보는 메뉴 한 줄 */
+	.admin-logout {
+		order: 2;
+		margin-left: auto;
+	}
+
+	.admin-nav {
+		order: 3;
+		width: 100%;
+		margin-left: 0;
+		flex-wrap: nowrap;
+		gap: 1.25rem;
+		overflow-x: auto;
+		white-space: nowrap;
+		padding-bottom: 0.25rem;
+		scrollbar-width: none;
+		/* 스크롤 막대 숨김 (손가락으로 밀면 됨) */
+	}
+
+	.admin-nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* 1. 싸이트 관리: 표 대신 줄마다 카드
+	      첫 줄 = 싸이트 이름(+이용 불가 표시) · 스위치, 둘째 줄 = 메모 칸 전체 폭
+	      종류 칸은 지금 전부 "캠핑사이트"라 폰에서는 생략 */
+	.site-table thead {
+		display: none;
+	}
+
+	.site-table,
+	.site-table tbody {
+		display: block;
+	}
+
+	.site-table tr {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		gap: 0.5rem 1rem;
+		padding-block: 0.85rem;
+		padding-inline: 0.5rem;
+		border-bottom: 1px solid var(--bs-border-color);
+	}
+
+	.site-table td {
+		display: block;
+		padding: 0;
+		border-bottom: 0;
+	}
+
+	.site-table td:nth-child(2) {
+		display: none;
+	}
+
+	.site-table td:nth-child(4) {
+		grid-column: 1 / -1;
+	}
+
+	.site-table .note-input {
+		min-width: 0;
+		width: 100%;
+	}
+
+	.site-table label {
+		white-space: nowrap;
+	}
+
+	/* 이용 불가 줄: 칸마다가 아니라 줄 전체에 바탕색 */
+	.site-table tr.is-closed {
+		background: #fbf0ea;
+	}
+
+	.site-table tr.is-closed td {
+		background: transparent;
+	}
+
+	/* 2. 요금 관리: 표 대신 "항목 이름 … 값" 세로 목록 + 아래에 수정 버튼 */
+	.price-table thead {
+		display: none;
+	}
+
+	.price-table,
+	.price-table tbody,
+	.price-table tr {
+		display: block;
+	}
+
+	.price-table td {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-inline: 0;
+	}
+
+	/* 칸 앞에 항목 이름 (prices.html의 data-label) */
+	.price-table td[data-label]::before {
+		content: attr(data-label);
+		color: var(--bs-fg-3);
+		font-size: 0.85rem;
+	}
+
+	/* 종류 이름 줄은 제목처럼 */
+	.price-table td:first-child {
+		display: block;
+		padding-top: 0;
+	}
+
+	.price-table td.actions {
+		justify-content: flex-start;
+		padding-top: 1rem;
+		border-bottom: 0;
+	}
+
+	/* 4. 사진 관리 "사진 자리": 한 줄에 2개 */
+	.slot-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.75rem;
+	}
+}

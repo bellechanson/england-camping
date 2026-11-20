@@ -20,7 +20,9 @@
 
 				<p class="fg-3 mb-0" th:if="${#lists.isEmpty(types)}">등록된 사이트 종류가 없습니다.</p>
 
-				<table class="admin-table" th:unless="${#lists.isEmpty(types)}">
+				<!-- price-table: 폰에서는 표 대신 "항목 이름 … 값" 세로 목록으로 (england.css)
+				     data-label: 폰에서 값 앞에 보여 줄 항목 이름 -->
+				<table class="admin-table price-table" th:unless="${#lists.isEmpty(types)}">
 					<thead>
 						<tr>
 							<th>종류</th>
@@ -38,17 +40,17 @@
 								<span class="fs-sm fg-3" th:if="${t.floorType != null}"
 									th:text="${' · ' + t.floorType}">· 파쇄석</span>
 							</td>
-							<td
+							<td data-label="평소 1박"
 								th:text="${t.normalPrice != null} ? ${#numbers.formatInteger(t.normalPrice, 1, 'COMMA')} + '원' : '전화 문의'">
 								50,000원</td>
-							<td
+							<td data-label="성수기 1박"
 								th:text="${t.peakPrice != null} ? ${#numbers.formatInteger(t.peakPrice, 1, 'COMMA')} + '원' : '전화 문의'">
 								60,000원</td>
-							<td
+							<td data-label="추가 1인"
 								th:text="${t.extraPersonFee != null} ? ${#numbers.formatInteger(t.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">
 								10,000원</td>
-							<td class="fs-sm" th:text="'기준 ' + ${t.baseGuests} + ' · 최대 ' + ${t.maxGuests}">기준 2 · 최대 5
-							</td>
+							<td data-label="인원" class="fs-sm"
+								th:text="'기준 ' + ${t.baseGuests} + ' · 최대 ' + ${t.maxGuests}">기준 2 · 최대 5</td>
 							<td class="actions">
 								<a class="btn-outline theme-secondary btn-sm"
 									th:href="@{/admin/prices/{id}/edit(id=${t.id})}">수정</a>

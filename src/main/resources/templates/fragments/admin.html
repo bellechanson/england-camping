@@ -28,9 +28,13 @@
 
 <!-- 관리자 메뉴 -->
 <header th:fragment="header" class="admin-header">
-	<div class="container d-flex flex-wrap align-items-center justify-content-between gap-4">
+	<!-- 배치는 england.css의 admin-header-inner / admin-nav / admin-logout 에서 정함
+	     (템플릿 정리용 클래스는 폰에서 덮어쓰기가 어려워서 쓰지 않음)
+	     PC: 이름 · 메뉴 · 로그아웃 한 줄 / 폰: 이름 · 로그아웃 + 아래에 옆으로 밀어서 보는 메뉴 한 줄 -->
+	<div class="container admin-header-inner">
 		<a class="wordmark fg-1" th:href="@{/admin}" th:text="${settings['CAMP_NAME'] + ' 관리'}">관리</a>
-		<nav class="d-flex flex-wrap align-items-center gap-5 fs-sm" aria-label="관리자 메뉴">
+
+		<nav class="admin-nav fs-sm" aria-label="관리자 메뉴">
 			<a th:href="@{/admin/notices}">공지 관리</a>
 			<a th:href="@{/admin/photos}">사진 관리</a>
 			<a th:href="@{/admin/settings}">글/링크 설정</a>
@@ -38,11 +42,12 @@
 			<a th:href="@{/admin/sites}">싸이트 관리</a>
 			<a th:href="@{/admin/password}">비밀번호 변경</a>
 			<a th:href="@{/}" target="_blank" rel="noopener">홈페이지 보기</a>
-			<!-- 로그아웃은 POST (CSRF 토큰은 th:action이 자동으로 넣음) -->
-			<form th:action="@{/admin/logout}" method="post">
-				<button type="submit" class="btn-outline theme-secondary btn-sm">로그아웃</button>
-			</form>
 		</nav>
+
+		<!-- 로그아웃은 POST (CSRF 토큰은 th:action이 자동으로 넣음) -->
+		<form class="admin-logout" th:action="@{/admin/logout}" method="post">
+			<button type="submit" class="btn-outline theme-secondary btn-sm">로그아웃</button>
+		</form>
 	</div>
 </header>
 
