@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('요금 관리')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<div th:replace="~{fragments/admin :: flash}"></div>
+
+			<section class="admin-card">
+				<h1 class="fs-xl fw-semibold mb-2">요금 관리</h1>
+				<p class="fs-sm fg-3 mb-5">
+					금액을 비워 두면 홈페이지에 "전화 문의"로 나옵니다.
+					성수기·추가 인원 안내 글은 <a th:href="@{/admin/settings(tab='PRICE_TEXT')}">글/링크 설정 &gt; 요금 글</a>에서 고칩니다.
+				</p>
+
+				<p class="fg-3 mb-0" th:if="${#lists.isEmpty(types)}">등록된 사이트 종류가 없습니다.</p>
+
+				<table class="admin-table" th:unless="${#lists.isEmpty(types)}">
+					<thead>
+						<tr>
+							<th>종류</th>
+							<th>평소 1박</th>
+							<th>성수기 1박</th>
+							<th>추가 1인</th>
+							<th>인원</th>
+							<th style="width:6rem"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="t : ${types}">
+							<td>
+								<strong th:text="${t.name}">캠핑사이트</strong>
+								<span class="fs-sm fg-3" th:if="${t.floorType != null}"
+									th:text="${' · ' + t.floorType}">· 파쇄석</span>
+							</td>
+							<td
+								th:text="${t.normalPrice != null} ? ${#numbers.formatInteger(t.normalPrice, 1, 'COMMA')} + '원' : '전화 문의'">
+								50,000원</td>
+							<td
+								th:text="${t.peakPrice != null} ? ${#numbers.formatInteger(t.peakPrice, 1, 'COMMA')} + '원' : '전화 문의'">
+								60,000원</td>
+							<td
+								th:text="${t.extraPersonFee != null} ? ${#numbers.formatInteger(t.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">
+								10,000원</td>
+							<td class="fs-sm" th:text="'기준 ' + ${t.baseGuests} + ' · 최대 ' + ${t.maxGuests}">기준 2 · 최대 5
+							</td>
+							<td class="actions">
+								<a class="btn-outline theme-secondary btn-sm"
+									th:href="@{/admin/prices/{id}/edit(id=${t.id})}">수정</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

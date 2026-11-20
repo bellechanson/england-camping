@@ -397,3 +397,23 @@ body:has(.site-banner) .sub-head {
 	border: 1px solid var(--bs-border-color);
 	border-radius: var(--bs-radius-4);
 }
+
+/* ===== 5단계: 설정 / 요금 / 싸이트 관리 ===== */
+
+/* 입력 칸 아래 작은 도움말 */
+.field-hint {
+	margin-top: 0.35rem;
+	margin-bottom: 0;
+	color: var(--bs-fg-3);
+	font-size: 0.85rem;
+}
+
+/* 싸이트 관리: 이용 불가인 줄은 바탕을 살짝 어둡게 */
+.admin-table tr.is-closed td {
+	background: var(--bs-bg-2);
+}
+
+/* 싸이트 관리: 메모 칸은 넓게 */
+.admin-table .note-input {
+	min-width: 18rem;
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('글/링크 설정')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<div th:replace="~{fragments/admin :: flash}"></div>
+
+			<section class="admin-card" style="max-width:52rem">
+				<h1 class="fs-xl fw-semibold mb-5">글/링크 설정</h1>
+
+				<!-- 탭: 주소의 ?tab= 값으로 바뀜 (갤러리 탭 모양 그대로 사용) -->
+				<nav class="gallery-tabs mb-5" aria-label="설정 묶음">
+					<a th:each="g : ${groups}" th:href="@{/admin/settings(tab=${g.name()})}" th:text="${g.label}"
+						th:classappend="${g == group} ? 'is-current'"
+						th:attr="aria-current=${g == group} ? 'page' : null">소개</a>
+				</nav>
+
+				<p class="fs-sm fg-3 mb-5" th:text="${group.description}">설명</p>
+
+				<!-- 지금 탭의 항목만 저장 -->
+				<form th:action="@{/admin/settings/{tab}(tab=${group.name()})}" method="post" class="vstack gap-5"
+					novalidate>
+
+					<div class="form-field" th:each="key : ${group.keys}">
+						<label class="form-label" th:for="${key.name()}"
+							th:text="${key.label + (key.required ? ' (필수)' : '')}">항목 이름</label>
+
+						<!-- 여러 줄 (소개 본문, 이용 규칙) -->
+						<textarea th:if="${key.multiline}" class="form-control" rows="10" th:id="${key.name()}"
+							th:name="${key.name()}" th:maxlength="${key.maxLength}"
+							th:text="${values[key.name()]}"></textarea>
+
+						<!-- 한 문단짜리 긴 글 -->
+						<textarea th:if="${key.longText}" class="form-control" rows="3" th:id="${key.name()}"
+							th:name="${key.name()}" th:maxlength="${key.maxLength}"
+							th:text="${values[key.name()]}"></textarea>
+
+						<!-- 한 줄 (이름, 시간, 전화, 링크 등) -->
+						<input th:if="${!key.multiline and !key.longText}" type="text" class="form-control"
+							th:id="${key.name()}" th:name="${key.name()}" th:maxlength="${key.maxLength}"
+							th:value="${values[key.name()]}" th:attr="inputmode=${key.url} ? 'url' : null">
+
+						<!-- 도움말 -->
+						<p class="field-hint" th:if="${key.name() == 'INTRO_BODY'}">문단 사이에 빈 줄을 하나 넣어 주세요. 홈페이지에서 문단이
+							나뉘어 보입니다.</p>
+						<p class="field-hint" th:if="${key.name() == 'RULES'}">한 줄에 규칙 하나씩 적어 주세요.</p>
+						<p class="field-hint" th:if="${key.longText}">줄을 바꿔도 홈페이지에서는 한 문단으로 이어져 보입니다.</p>
+						<p class="field-hint" th:if="${key.url}">
+							https:// 로 시작하는 주소를 붙여 넣어 주세요.
+							<!-- 저장된 주소만 열어 보기 링크로 (검사를 통과한 값) -->
+							<a th:if="${!#strings.isEmpty(settings[key.name()])}" th:href="${settings[key.name()]}"
+								target="_blank" rel="noopener noreferrer">지금 저장된 주소 열어 보기</a>
+						</p>
+					</div>
+
+					<div class="d-flex flex-wrap gap-3">
+						<button type="submit" class="btn-solid theme-primary"
+							th:text="${'‘' + group.label + '’ 저장'}">저장</button>
+						<a class="btn-outline theme-secondary" th:href="@{/}" target="_blank" rel="noopener">홈페이지에서
+							확인</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('요금 수정')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<section class="admin-card" style="max-width:48rem">
+				<h1 class="fs-xl fw-semibold mb-5">요금 수정</h1>
+
+				<form th:action="@{/admin/prices/{id}(id=${typeId})}" th:object="${form}" method="post"
+					class="vstack gap-5" novalidate>
+
+					<!-- 기본 정보 -->
+					<div class="form-field">
+						<label class="form-label" for="name">종류 이름</label>
+						<input type="text" class="form-control" th:field="*{name}" maxlength="50"
+							placeholder="예) 캠핑사이트">
+						<p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">오류</p>
+					</div>
+
+					<div class="row g-5">
+						<div class="md:col-6 form-field">
+							<label class="form-label" for="floorType">바닥</label>
+							<input type="text" class="form-control" th:field="*{floorType}" maxlength="30"
+								placeholder="예) 파쇄석">
+							<p class="field-error" th:if="${#fields.hasErrors('floorType')}" th:errors="*{floorType}">오류
+							</p>
+						</div>
+						<div class="md:col-6 form-field">
+							<label class="form-label" for="sizeText">크기</label>
+							<input type="text" class="form-control" th:field="*{sizeText}" maxlength="30"
+								placeholder="예) 8m x 10m">
+							<p class="field-error" th:if="${#fields.hasErrors('sizeText')}" th:errors="*{sizeText}">오류
+							</p>
+						</div>
+					</div>
+
+					<!-- 금액 (비우면 전화 문의) -->
+					<div class="row g-5">
+						<div class="md:col-4 form-field">
+							<label class="form-label" for="normalPrice">평소 1박 (원)</label>
+							<input type="number" class="form-control" th:field="*{normalPrice}" min="0" step="1000">
+							<p class="field-error" th:if="${#fields.hasErrors('normalPrice')}"
+								th:errors="*{normalPrice}">오류</p>
+						</div>
+						<div class="md:col-4 form-field">
+							<label class="form-label" for="peakPrice">성수기(연휴) 1박 (원)</label>
+							<input type="number" class="form-control" th:field="*{peakPrice}" min="0" step="1000">
+							<p class="field-error" th:if="${#fields.hasErrors('peakPrice')}" th:errors="*{peakPrice}">오류
+							</p>
+						</div>
+						<div class="md:col-4 form-field">
+							<label class="form-label" for="extraPersonFee">추가 1인 (원)</label>
+							<input type="number" class="form-control" th:field="*{extraPersonFee}" min="0" step="1000">
+							<p class="field-error" th:if="${#fields.hasErrors('extraPersonFee')}"
+								th:errors="*{extraPersonFee}">오류</p>
+						</div>
+					</div>
+					<p class="field-hint mt-0">금액 칸을 비워 두면 홈페이지에 "전화 문의"로 나옵니다. 쉼표 없이 숫자만 넣어 주세요.</p>
+
+					<!-- 인원 / 숙박 -->
+					<div class="row g-5">
+						<div class="md:col-4 form-field">
+							<label class="form-label" for="baseGuests">기준 인원</label>
+							<input type="number" class="form-control" th:field="*{baseGuests}" min="1">
+							<p class="field-error" th:if="${#fields.hasErrors('baseGuests')}" th:errors="*{baseGuests}">
+								오류</p>
+						</div>
+						<div class="md:col-4 form-field">
+							<label class="form-label" for="maxGuests">최대 인원</label>
+							<input type="number" class="form-control" th:field="*{maxGuests}" min="1">
+							<p class="field-error" th:if="${#fields.hasErrors('maxGuests')}" th:errors="*{maxGuests}">오류
+							</p>
+							<!-- 최대 < 기준일 때 -->
+							<p class="field-error" th:if="${#fields.hasErrors('guestRangeValid')}"
+								th:errors="*{guestRangeValid}">오류</p>
+						</div>
+						<div class="md:col-4 form-field">
+							<label class="form-label" for="minNights">최소 숙박 (박)</label>
+							<input type="number" class="form-control" th:field="*{minNights}" min="1">
+							<p class="field-error" th:if="${#fields.hasErrors('minNights')}" th:errors="*{minNights}">오류
+							</p>
+						</div>
+					</div>
+
+					<div class="d-flex flex-wrap gap-3">
+						<button type="submit" class="btn-solid theme-primary">저장</button>
+						<a class="btn-outline theme-secondary" th:href="@{/admin/prices}">취소</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

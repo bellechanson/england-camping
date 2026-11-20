@@ -67,4 +67,39 @@ public enum SettingKey {
 	public String getDefaultValue() {
 		return defaultValue;
 	}
+
+	/** 링크 항목인지 (이름이 _URL로 끝나면 링크) → 저장할 때 http/https 주소만 허용 */
+	public boolean isUrl() {
+		return name().endsWith("_URL");
+	}
+
+	/** 줄 바꿈이 의미 있는 항목 (문단 목록, 규칙 목록) → 큰 입력 칸, 줄 바꿈 그대로 저장 */
+	public boolean isMultiline() {
+		return this == INTRO_BODY || this == RULES;
+	}
+
+	/** 한 문단짜리 긴 글 → 입력 칸은 3줄짜리로 보여 주지만, 줄 바꿈은 띄어쓰기로 바꿔 저장 */
+	public boolean isLongText() {
+		return switch (this) {
+		case HERO_SUBTITLE, PARKING_INFO, FACILITY_CLOSED_INFO, PEAK_SEASON_INFO, EXTRA_PERSON_INFO, LONG_STAY_INFO ->
+			true;
+		default -> false;
+		};
+	}
+
+	/** 비우면 화면이 이상해지는 항목 */
+	public boolean isRequired() {
+		return this == CAMP_NAME || this == PHONE || this == ADDRESS_ROAD || this == MAP_NAVER_URL;
+	}
+
+	/** 최대 글자 수 */
+	public int getMaxLength() {
+		if (isUrl()) {
+			return 500;
+		}
+		if (isMultiline()) {
+			return 3000;
+		}
+		return isLongText() ? 500 : 100;
+	}
 }
