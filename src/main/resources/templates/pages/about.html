@@ -14,9 +14,10 @@
 	<main id="main">
 		<section class="section">
 			<div class="container">
-				<div class="row g-7">
+				<!-- align-items-center: 글과 사진 묶음을 세로 가운데 맞춤 -->
+				<div class="row g-7 align-items-center">
 					<!-- 소개 본문 전체 (관리자 화면에서 수정) -->
-					<div class="lg:col-7">
+					<div class="lg:col-6">
 						<p class="fg-2 fs-lg mb-5" th:each="paragraph : ${introParagraphs}" th:text="${paragraph}">소개 문단
 						</p>
 						<div class="d-flex flex-wrap gap-3 mt-6">
@@ -24,23 +25,24 @@
 							<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 · 요금 보기</a>
 						</div>
 					</div>
-					<!-- 사진 자리 (관리자 > 사진 관리 > 자리에 넣기, 메인 소개 칸과 같은 사진) -->
-					<div class="lg:col-5">
-						<div class="ph ph-3x4 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
-							<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
-								loading="lazy">
-							<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
-						</div>
+					<!-- 사진 3칸: 메인 소개 칸과 같은 배치
+					     왼쪽 큰 세로 사진(3:4) + 오른쪽 작은 사진 2장 세로로 쌓기 → 글과 높이가 비슷해짐 -->
+					<div class="lg:col-6">
 						<div class="row g-4">
-							<div class="col-6">
-								<div class="ph ph-1x1 rounded-3" th:with="p=${slotPhotos['ABOUT_SUB1']}">
+							<div class="col-7">
+								<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
+									<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
+										loading="lazy">
+									<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
+								</div>
+							</div>
+							<div class="col-5">
+								<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
 									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
 										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
 									<span class="ph-label" th:if="${p == null}">사진</span>
 								</div>
-							</div>
-							<div class="col-6">
-								<div class="ph ph-1x1 rounded-3" th:with="p=${slotPhotos['ABOUT_SUB2']}">
+								<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
 									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
 										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
 									<span class="ph-label" th:if="${p == null}">사진</span>

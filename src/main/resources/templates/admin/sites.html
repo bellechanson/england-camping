@@ -41,9 +41,10 @@
 									<input type="hidden" th:field="*{rows[__${stat.index}__].name}">
 									<input type="hidden" th:field="*{rows[__${stat.index}__].typeName}">
 									<strong th:text="${row.name}">01번 싸이트</strong>
+									<!-- 이용 불가인 싸이트는 이름 옆에 빨간 표시 (저장된 상태 기준) -->
+									<span class="closed-badge" th:unless="${row.available}">이용 불가</span>
 								</td>
 								<td class="fs-sm fg-3" th:text="${row.typeName}">캠핑사이트</td>
-								<td>
 								<td>
 									<div class="d-flex align-items-center gap-2">
 										<div class="switch">
@@ -60,8 +61,7 @@
 								</td>
 								<td>
 									<input type="text" class="form-control note-input" maxlength="200"
-										th:field="*{rows[__${stat.index}__].note}"
-										placeholder="예) 장박 이용 중 (2027년 3월까지)">
+										th:field="*{rows[__${stat.index}__].note}" placeholder="메모">
 									<p class="field-error" th:if="${#fields.hasErrors('rows[__${stat.index}__].note')}"
 										th:errors="*{rows[__${stat.index}__].note}">오류</p>
 								</td>

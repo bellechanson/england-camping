@@ -93,13 +93,13 @@
 								<option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}"
 									th:selected="${c == p.category}">사이트</option>
 							</select>
-							<input type="text" class="form-control" name="caption" maxlength="100"
-								placeholder="설명 (크게 볼 때 보임, 없어도 됨)" th:value="${p.caption}">
+							<input type="text" class="form-control" name="caption" maxlength="100" placeholder="설명 (선택)"
+								th:value="${p.caption}">
 							<div><button type="submit" class="btn-outline theme-secondary btn-sm">정보 저장</button></div>
 						</form>
 
 						<!-- 자리에 넣기 -->
-						<form th:action="@{/admin/photos/slots}" method="post" class="d-flex gap-2 mb-3">
+						<form th:action="@{/admin/photos/slots}" method="post" class="vstack gap-2 mb-3">
 							<input type="hidden" name="photoId" th:value="${p.id}">
 							<select class="form-control" name="slot" aria-label="넣을 자리">
 								<option th:each="s : ${slots}" th:value="${s.name()}" th:text="${s.label}">메인 큰 사진

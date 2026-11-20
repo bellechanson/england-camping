@@ -25,8 +25,6 @@
 			<h1 class="stay-title mb-5" th:text="${settings['INTRO_TITLE']}">메인 제목</h1>
 			<p class="fs-lg mb-0" style="max-width:34rem;opacity:.88" th:text="${settings['HERO_SUBTITLE']}">부제목</p>
 		</div>
-		<!-- 오른쪽 세로 띠 (넓은 화면에서만 보임) -->
-		<div class="stay-rail" aria-hidden="true"><span th:text="${settings['ADDRESS_ROAD']}">주소</span></div>
 	</section>
 
 	<!-- ===== 2. 예약 바 =====
@@ -69,12 +67,19 @@
 		</div>
 	</div>
 
-	<!-- 스크롤을 내리면 위에 붙는 작은 예약 바 (main.js가 보였다/숨겼다 함) -->
+	<!-- 스크롤을 내리면 위에 붙는 작은 바 (main.js가 보였다/숨겼다 함)
+	     메뉴도 같이 넣어서 메인 중간에서도 다른 페이지로 바로 이동 (넓은 화면에서만, 좁은 화면은 6단계) -->
 	<div class="book-dock" id="bookDock">
-		<div class="container-fluid px-0 d-flex flex-wrap align-items-center justify-content-between gap-4">
-			<span class="fs-sm fw-semibold" th:text="${settings['CAMP_NAME']} + ' · 가평 북면'">잉글랜드 캠핑장</span>
-			<span class="fs-sm fg-2 d-none md:d-inline"
-				th:text="'체크인 ' + ${settings['CHECK_IN']} + ' · 체크아웃 ' + ${settings['CHECK_OUT']}">체크인 · 체크아웃</span>
+		<div class="container-fluid px-0 d-flex align-items-center justify-content-between gap-4">
+			<a class="wordmark dock-name" th:href="@{/}" th:text="${settings['CAMP_NAME']}">잉글랜드 캠핑장</a>
+			<nav class="dock-nav" aria-label="메뉴">
+				<a th:href="@{/about}">소개</a>
+				<a th:href="@{/sites}">사이트·요금</a>
+				<a th:href="@{/guide}">이용안내</a>
+				<a th:href="@{/location}">오시는 길</a>
+				<a th:href="@{/notice}">공지사항</a>
+				<a th:href="@{/gallery}">갤러리</a>
+			</nav>
 			<a class="btn-solid theme-primary btn-sm" href="#book" data-scroll-top>예약하기</a>
 		</div>
 	</div>
@@ -167,13 +172,8 @@
 		<!-- ===== 4. 사이트 · 요금 ===== -->
 		<section class="section bg-2" id="sites">
 			<div class="container">
-				<div class="d-flex flex-wrap justify-content-between align-items-end gap-4 mb-7">
-					<div>
-						<p class="eyebrow fs-sm fg-primary mb-3">사이트 · 요금</p>
-						<h2 class="section-title fs-4xl mb-0">넓게 배치한 싸이트</h2>
-					</div>
-					<p class="fg-2 fs-sm mb-0">요금은 1박 기준입니다</p>
-				</div>
+				<p class="eyebrow fs-sm fg-primary mb-3">사이트 · 요금</p>
+				<h2 class="section-title fs-4xl mb-7">넓게 배치한 싸이트</h2>
 
 				<div class="row g-7" th:if="${mainType != null}">
 					<!-- 왼쪽: 사이트 종류 카드 -->
@@ -186,10 +186,13 @@
 									<span class="ph-label" th:if="${p == null}">싸이트 사진</span>
 								</div>
 								<span class="room-price"
-									th:text="${mainType.normalPrice != null} ? ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원~' : '전화 문의'">50,000원~</span>
+									th:text="${mainType.normalPrice != null} ? '1박 ' + ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원~' : '전화 문의'">1박
+									50,000원~</span>
 							</div>
-							<h3 class="room-name mb-1" th:text="'[' + ${mainType.floorType} + '] ' + ${mainType.name}">
-								[파쇄석] 캠핑사이트</h3>
+							<!-- 바닥이 비어 있으면 이름만 -->
+							<h3 class="room-name mb-1"
+								th:text="${mainType.floorType != null} ? ${mainType.floorType + ' · ' + mainType.name} : ${mainType.name}">
+								파쇄석 · 캠핑사이트</h3>
 							<p class="fg-3 fs-sm mb-0"
 								th:text="${mainType.sizeText} + ' · 기준 ' + ${mainType.baseGuests} + '인 (최대 ' + ${mainType.maxGuests} + '인) · 최소 ' + ${mainType.minNights} + '박'">
 								8m x 10m · 기준 2인</p>
@@ -224,10 +227,14 @@
 						<div class="row g-0 lg:gx-6">
 							<div class="md:col-6">
 								<div class="amenity">
+									<!-- 화장실: 남녀 사람 모양 -->
 									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
 										stroke-width="1.5" aria-hidden="true">
-										<path d="M2 13h12M4 13V6l4-3.5L12 6v7" stroke-linejoin="round" />
-										<path d="M6.75 13v-3h2.5v3" />
+										<circle cx="4.5" cy="3" r="1.25" />
+										<circle cx="11.5" cy="3" r="1.25" />
+										<path d="M3.25 6h2.5v4h-2.5zM3.75 10v4M5.25 10v4" stroke-linejoin="round" />
+										<path d="M11.5 5.75 9.5 11h4zM10.75 11v3M12.25 11v3" stroke-linejoin="round" />
+										<path d="M8 2v12" stroke-linecap="round" />
 									</svg>
 									<div>
 										<p class="fw-semibold mb-1">남녀 화장실</p>
@@ -235,10 +242,13 @@
 									</div>
 								</div>
 								<div class="amenity">
+									<!-- 샤워실: 샤워기와 물줄기 -->
 									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
 										stroke-width="1.5" aria-hidden="true">
-										<path
-											d="M1.5 11.5c1.6 0 1.6 1 3.25 1s1.65-1 3.25-1 1.65 1 3.25 1 1.65-1 3.25-1M1.5 8c1.6 0 1.6 1 3.25 1S6.4 8 8 8s1.65 1 3.25 1S12.9 8 14.5 8"
+										<path d="M2.5 14V4.5A2.5 2.5 0 0 1 5 2h3a2 2 0 0 1 2 2v1"
+											stroke-linecap="round" />
+										<path d="M7.5 5.25h5" stroke-linecap="round" />
+										<path d="M8.5 8v1M10 8v1M11.5 8v1M9.25 11v1M10.75 11v1"
 											stroke-linecap="round" />
 									</svg>
 									<div>
@@ -247,9 +257,10 @@
 									</div>
 								</div>
 								<div class="amenity">
+									<!-- 개수대·매점: 물방울 -->
 									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
 										stroke-width="1.5" aria-hidden="true">
-										<path d="M3.5 14V5.5a4.5 4.5 0 0 1 9 0V14M6 14V8m4 6V8" stroke-linecap="round"
+										<path d="M8 2s-4 4.6-4 7.5a4 4 0 0 0 8 0C12 6.6 8 2 8 2z"
 											stroke-linejoin="round" />
 									</svg>
 									<div>
@@ -260,10 +271,11 @@
 							</div>
 							<div class="md:col-6">
 								<div class="amenity">
+									<!-- 주차: P 표지판 -->
 									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
 										stroke-width="1.5" aria-hidden="true">
-										<rect x="2" y="3.5" width="12" height="9" rx="1.5" />
-										<path d="M2 6.5h12" />
+										<rect x="2.5" y="2.5" width="11" height="11" rx="2" />
+										<path d="M6.5 11V5h2.25a1.75 1.75 0 0 1 0 3.5H6.5" stroke-linejoin="round" />
 									</svg>
 									<div>
 										<p class="fw-semibold mb-1">무료 주차</p>
@@ -271,11 +283,12 @@
 									</div>
 								</div>
 								<div class="amenity">
+									<!-- 계곡: 물결 -->
 									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
 										stroke-width="1.5" aria-hidden="true">
-										<path d="M8 14s5.5-3.2 5.5-7a5.5 5.5 0 0 0-11 0c0 3.8 5.5 7 5.5 7"
-											stroke-linejoin="round" />
-										<circle cx="8" cy="7" r="2" />
+										<path
+											d="M1.5 11.5c1.6 0 1.6 1 3.25 1s1.65-1 3.25-1 1.65 1 3.25 1 1.65-1 3.25-1M1.5 8c1.6 0 1.6 1 3.25 1S6.4 8 8 8s1.65 1 3.25 1S12.9 8 14.5 8"
+											stroke-linecap="round" />
 									</svg>
 									<div>
 										<p class="fw-semibold mb-1">캠핑장 앞 계곡</p>
@@ -283,10 +296,11 @@
 									</div>
 								</div>
 								<div class="amenity">
+									<!-- 나무 그늘: 나무 -->
 									<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
 										stroke-width="1.5" aria-hidden="true">
-										<circle cx="8" cy="8" r="6.25" />
-										<path d="M8 4.5v3.8l2.5 1.5" stroke-linecap="round" />
+										<path d="M8 2 4.5 7h2L4 10.5h8L9.5 7h2z" stroke-linejoin="round" />
+										<path d="M8 10.5V14" stroke-linecap="round" />
 									</svg>
 									<div>
 										<p class="fw-semibold mb-1">큰 나무 그늘</p>
@@ -313,7 +327,8 @@
 					<a class="btn-outline theme-secondary" th:href="@{/gallery}">갤러리 전체 보기</a>
 				</div>
 			</div>
-			<div class="container-fluid px-5 lg:px-6">
+			<!-- 다른 칸과 같은 폭으로 (전에는 화면 끝까지) -->
+			<div class="container">
 				<!-- 사진이 있으면 갤러리 앞 5장 (첫 장은 큰 칸이라 큰 사진, 누르면 갤러리 페이지로) -->
 				<div class="mosaic" th:if="${!#lists.isEmpty(galleryPreview)}">
 					<a th:each="p, stat : ${galleryPreview}" th:href="@{/gallery}">
