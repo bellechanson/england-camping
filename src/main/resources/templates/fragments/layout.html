@@ -16,6 +16,19 @@
 	<title th:text="${pageTitle}">잉글랜드 캠핑장</title>
 	<meta name="description" th:content="${settings['HERO_SUBTITLE']}">
 
+
+	<!-- 검색·카톡 미리보기 (링크를 보내면 사진+제목+설명 카드가 뜸)
+	     사진은 관리자 > 사진 관리에서 "메인 큰 사진"으로 지정한 것. 없으면 글만 나옴 -->
+	<link rel="canonical" th:href="${currentUrl}">
+	<meta property="og:type" content="website">
+	<meta property="og:locale" content="ko_KR">
+	<meta property="og:site_name" th:content="${settings['CAMP_NAME']}">
+	<meta property="og:title" th:content="${pageTitle}">
+	<meta property="og:description" th:content="${settings['HERO_SUBTITLE']}">
+	<meta property="og:url" th:content="${currentUrl}">
+	<meta property="og:image" th:if="${slotPhotos['HERO'] != null}" th:content="${baseUrl + slotPhotos['HERO'].url}">
+	<meta name="twitter:card" content="summary_large_image">
+
 	<!-- 한글 제목 글꼴 (Google Fonts). 막혀 있으면 기본 글꼴로 보임 -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,6 +104,14 @@
 
 <!-- ===== 3. 꼬리말 ===== -->
 <footer th:fragment="footer" class="site-footer section pb-6">
+	<!-- 관리자로 로그인한 상태에서만 보이는 바로가기 (왼쪽 아래 떠 있음, 손님에게는 안 보임) -->
+	<div class="admin-quickbar" th:if="${adminLoggedIn}">
+		<span>관리자로 보는 중</span>
+		<a th:href="@{/admin}">관리자 화면</a>
+		<form th:action="@{/admin/logout}" method="post">
+			<button type="submit">로그아웃</button>
+		</form>
+	</div>
 	<div class="container">
 		<div class="row g-6">
 			<div class="md:col-4">

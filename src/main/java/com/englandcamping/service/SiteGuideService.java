@@ -47,6 +47,16 @@ public class SiteGuideService {
 		return types.isEmpty() ? null : types.get(0);
 	}
 
+	/** 전체 싸이트 수 (관리자 첫 화면) */
+	public long countAllSites() {
+		return campSiteRepository.count();
+	}
+
+	/** 이용 불가 싸이트 수 (관리자 첫 화면) */
+	public long countClosedSites() {
+		return findAllSites().stream().filter(site -> !site.isAvailable()).count();
+	}
+
 	/** 사이트 종류 하나 (없으면 404 페이지) */
 	public SiteType getType(Long id) {
 		return siteTypeRepository.findById(id)

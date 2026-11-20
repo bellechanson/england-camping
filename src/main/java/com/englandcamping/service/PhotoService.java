@@ -61,6 +61,11 @@ public class PhotoService {
 		return photoRepository.findAllByOrderBySortOrderAscIdAsc();
 	}
 
+	/** 사진 전체 장수 (관리자 첫 화면) */
+	public long countAll() {
+		return photoRepository.count();
+	}
+
 	/** 분류별 (null 이면 전체) */
 	public List<Photo> findByCategory(PhotoCategory category) {
 		return (category == null) ? findAll() : photoRepository.findByCategoryOrderBySortOrderAscIdAsc(category);

@@ -42,12 +42,6 @@ public class AdminController {
 		return "admin/login";
 	}
 
-	/** /admin → 공지 관리로 */
-	@GetMapping
-	public String home() {
-		return "redirect:/admin/notices";
-	}
-
 	/** 띠 공지 저장 (켜기/끄기 + 내용) */
 	@PostMapping("/banner")
 	public String updateBanner(@RequestParam(defaultValue = "false") boolean enabled,

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('관리자 첫 화면')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<div th:replace="~{fragments/admin :: flash}"></div>
+
+			<div class="d-flex flex-wrap justify-content-between align-items-center gap-4 mb-6">
+				<h1 class="fs-xl fw-semibold mb-0">무엇을 고칠까요?</h1>
+				<a class="btn-outline theme-secondary" th:href="@{/}" target="_blank" rel="noopener">홈페이지 보기</a>
+			</div>
+
+			<div class="admin-tiles">
+
+				<a class="admin-tile" th:href="@{/admin/notices}">
+					<span class="admin-tile-title">공지 관리</span>
+					<span class="admin-tile-desc"
+						th:text="${'공지 ' + noticeCount + '개 · 띠 공지 ' + (settings['BANNER_ENABLED'] == 'true' ? '켜짐' : '꺼짐')}">공지
+						3개 · 띠 공지 꺼짐</span>
+				</a>
+
+				<a class="admin-tile" th:href="@{/admin/photos}">
+					<span class="admin-tile-title">사진 관리</span>
+					<span class="admin-tile-desc" th:text="${'사진 ' + photoCount + '장'}">사진 12장</span>
+					<!-- 메인 큰 사진이 없으면 알려 줌 (카톡 미리보기 사진으로도 쓰임) -->
+					<span class="admin-tile-warn" th:if="${slotPhotos['HERO'] == null}">메인 큰 사진이 아직 없어요 (카톡 미리보기에도
+						쓰여요)</span>
+				</a>
+
+				<a class="admin-tile" th:href="@{/admin/settings}">
+					<span class="admin-tile-title">글/링크 설정</span>
+					<span class="admin-tile-desc">소개 글, 연락처, 이용 안내, 요금 글, 예약 링크</span>
+				</a>
+
+				<a class="admin-tile" th:href="@{/admin/prices}">
+					<span class="admin-tile-title">요금 관리</span>
+					<span class="admin-tile-desc"
+						th:text="${mainType == null ? '요금 정보 없음' : (mainType.normalPrice == null ? '평소 1박 전화 문의' : '평소 1박 ' + #numbers.formatInteger(mainType.normalPrice, 1, 'COMMA') + '원')}">평소
+						1박 50,000원</span>
+				</a>
+
+				<a class="admin-tile" th:href="@{/admin/sites}">
+					<span class="admin-tile-title">싸이트 관리</span>
+					<span class="admin-tile-desc"
+						th:text="${'전체 ' + siteCount + '개 · 이용 불가 ' + closedSiteCount + '개'}">전체 22개 · 이용 불가 1개</span>
+				</a>
+
+				<a class="admin-tile" th:href="@{/admin/password}">
+					<span class="admin-tile-title">비밀번호 변경</span>
+					<span class="admin-tile-desc">관리자 비밀번호 바꾸기</span>
+				</a>
+
+			</div>
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

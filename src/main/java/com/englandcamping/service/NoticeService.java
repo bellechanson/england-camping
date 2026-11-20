@@ -37,6 +37,11 @@ public class NoticeService {
 		return noticeRepository.findTop3ByOrderByPinnedDescCreatedAtDescIdDesc();
 	}
 
+	/** 공지 전체 개수 (관리자 첫 화면) */
+	public long countAll() {
+		return noticeRepository.count();
+	}
+
 	/** 하나 (없으면 404 페이지) */
 	public Notice get(Long id) {
 		return noticeRepository.findById(id)
