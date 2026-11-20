@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 
 /**
- * 싸이트 관리 화면 = 싸이트 22줄을 한 번에 받는 폼. 저장하는 건 "이용 가능 여부"와 "메모"뿐. 이름·종류는 화면 표시용(저장 안
+ * 사이트 관리 화면 = 사이트 22줄을 한 번에 받는 폼. 저장하는 건 "이용 가능 여부"와 "메모"뿐. 이름·종류는 화면 표시용(저장 안
  * 함).
  */
 public class CampSiteForm {
@@ -18,7 +18,7 @@ public class CampSiteForm {
 	@Valid
 	private List<Row> rows = new ArrayList<>();
 
-	/** 화면 처음 열 때: DB 싸이트 목록으로 채우기 */
+	/** 화면 처음 열 때: DB 사이트 목록으로 채우기 */
 	public static CampSiteForm from(List<CampSite> sites) {
 		CampSiteForm form = new CampSiteForm();
 		for (CampSite site : sites) {
@@ -41,7 +41,7 @@ public class CampSiteForm {
 		this.rows = rows;
 	}
 
-	/** 싸이트 한 줄 */
+	/** 사이트 한 줄 */
 	public static class Row {
 
 		private Long id;

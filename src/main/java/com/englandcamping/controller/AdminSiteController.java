@@ -17,8 +17,8 @@ import com.englandcamping.service.SiteGuideService;
 import jakarta.validation.Valid;
 
 /**
- * 관리자: 요금(사이트 종류) 수정 + 싸이트 이용 가능/불가·메모 - /admin/prices 요금 목록 -
- * /admin/prices/{id}/edit 요금 수정 화면 - /admin/sites 싸이트 22개 한 화면에서 저장
+ * 관리자: 요금(사이트 종류) 수정 + 사이트 이용 가능/불가·메모 - /admin/prices 요금 목록 -
+ * /admin/prices/{id}/edit 요금 수정 화면 - /admin/sites 사이트 22개 한 화면에서 저장
  */
 @Controller
 @RequestMapping("/admin")
@@ -60,16 +60,16 @@ public class AdminSiteController {
 		return "redirect:/admin/prices";
 	}
 
-	// ===== 싸이트 =====
+	// ===== 사이트 =====
 
-	/** 싸이트 관리 화면 */
+	/** 사이트 관리 화면 */
 	@GetMapping("/sites")
 	public String sites(Model model) {
 		model.addAttribute("form", CampSiteForm.from(siteGuideService.findAllSites()));
 		return "admin/sites";
 	}
 
-	/** 싸이트 전체 저장 (바뀐 줄만 실제로 고침) */
+	/** 사이트 전체 저장 (바뀐 줄만 실제로 고침) */
 	@PostMapping("/sites")
 	public String updateSites(@Valid @ModelAttribute("form") CampSiteForm form, BindingResult bindingResult,
 			Model model, RedirectAttributes redirect) {
@@ -78,7 +78,7 @@ public class AdminSiteController {
 			return "admin/sites";
 		}
 		int changed = siteGuideService.updateSiteStatuses(form.getRows());
-		redirect.addFlashAttribute("message", changed == 0 ? "바뀐 내용이 없습니다." : "싸이트 " + changed + "개를 저장했습니다.");
+		redirect.addFlashAttribute("message", changed == 0 ? "바뀐 내용이 없습니다." : "사이트 " + changed + "개를 저장했습니다.");
 		return "redirect:/admin/sites";
 	}
 }

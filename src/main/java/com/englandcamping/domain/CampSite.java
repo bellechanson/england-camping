@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
- * 개별 싸이트 하나 = 한 행. (01번 ~ 14번, A ~ H → 총 22개) - available = false 이면 손님 화면에서
+ * 개별 사이트 하나 = 한 행. (01번 ~ 14번, A ~ H → 총 22개) - available = false 이면 손님 화면에서
  * "이용 불가"로 표시 (예: 장박 중인 08번) - note 는 관리자만 보는 메모 (손님 화면에는 안 보여 줄 예정)
  */
 @Entity
@@ -22,7 +22,7 @@ public class CampSite {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	/** 싸이트 이름 (예: 01번 싸이트, A 싸이트) */
+	/** 사이트 이름 (예: 01번 사이트, A 사이트) */
 	@Column(nullable = false, length = 30)
 	private String name;
 

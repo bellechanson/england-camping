@@ -60,7 +60,7 @@ public class DataInitializer implements ApplicationRunner {
 		int addedTypes = 0;
 		int addedSites = 0;
 
-		// 사이트 종류와 싸이트는 "둘 다 비어 있을 때"만 같이 만든다
+		// 사이트 종류와 사이트는 "둘 다 비어 있을 때"만 같이 만든다
 		if (siteTypeRepository.count() == 0 && campSiteRepository.count() == 0) {
 			SiteType basic = siteTypeRepository.save(createBasicType());
 			addedTypes = 1;
@@ -69,7 +69,7 @@ public class DataInitializer implements ApplicationRunner {
 
 		String adminStatus = initAdmin();
 
-		log.info("[DataInitializer] 글/링크 {}개, 사이트 종류 {}개, 싸이트 {}개 추가 / 관리자 계정: {}", addedSettings, addedTypes,
+		log.info("[DataInitializer] 글/링크 {}개, 사이트 종류 {}개, 사이트 {}개 추가 / 관리자 계정: {}", addedSettings, addedTypes,
 				addedSites, adminStatus);
 	}
 
@@ -86,7 +86,7 @@ public class DataInitializer implements ApplicationRunner {
 	}
 
 	/**
-	 * 지금 운영 중인 사이트 종류 (전 싸이트 동일) 파쇄석 8m x 10m / 기준 2인, 최대 5인 / 평소 50,000원, 연휴
+	 * 지금 운영 중인 사이트 종류 (전 사이트 동일) 파쇄석 8m x 10m / 기준 2인, 최대 5인 / 평소 50,000원, 연휴
 	 * 60,000원 추가 1인 10,000원 / 최소 1박
 	 */
 	private SiteType createBasicType() {
@@ -94,15 +94,15 @@ public class DataInitializer implements ApplicationRunner {
 	}
 
 	/**
-	 * 싸이트 22개: 01번 ~ 14번 다음에 A ~ H 순서 08번은 장박 이용 중이라 막아 둠 (관리자 화면에서 다시 열 수 있음)
+	 * 사이트 22개: 01번 ~ 14번 다음에 A ~ H 순서 08번은 장박 이용 중이라 막아 둠 (관리자 화면에서 다시 열 수 있음)
 	 */
 	private int initSites(SiteType type) {
 		List<CampSite> sites = new ArrayList<>();
 		int order = 1;
 
-		// 숫자 싸이트: 01번 ~ 14번
+		// 숫자 사이트: 01번 ~ 14번
 		for (int i = 1; i <= 14; i++) {
-			String name = String.format("%02d번 싸이트", i);
+			String name = String.format("%02d번 사이트", i);
 			if (i == 8) {
 				sites.add(new CampSite(name, type, false, "장박 이용 중 (2027년 3월까지)", order++));
 			} else {
@@ -110,9 +110,9 @@ public class DataInitializer implements ApplicationRunner {
 			}
 		}
 
-		// 알파벳 싸이트: A ~ H
+		// 알파벳 사이트: A ~ H
 		for (char c = 'A'; c <= 'H'; c++) {
-			sites.add(new CampSite(c + " 싸이트", type, true, null, order++));
+			sites.add(new CampSite(c + " 사이트", type, true, null, order++));
 		}
 
 		campSiteRepository.saveAll(sites);

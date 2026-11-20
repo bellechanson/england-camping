@@ -76,7 +76,7 @@ body {
 	grid-row: span 2;
 }
 
-/* ===== 싸이트 목록 (01번 ~ H) ===== */
+/* ===== 사이트 목록 (01번 ~ H) ===== */
 .site-chips {
 	display: flex;
 	flex-wrap: wrap;
@@ -92,7 +92,7 @@ body {
 	font-size: 0.85rem;
 }
 
-/* 이용 불가 싸이트 (예: 장박 중인 08번) */
+/* 이용 불가 사이트 (예: 장박 중인 08번) */
 .site-chip.is-closed {
 	opacity: 0.45;
 	text-decoration: line-through;
@@ -398,7 +398,7 @@ body:has(.site-banner) .sub-head {
 	border-radius: var(--bs-radius-4);
 }
 
-/* ===== 5단계: 설정 / 요금 / 싸이트 관리 ===== */
+/* ===== 5단계: 설정 / 요금 / 사이트 관리 ===== */
 
 /* 입력 칸 아래 작은 도움말 */
 .field-hint {
@@ -408,12 +408,12 @@ body:has(.site-banner) .sub-head {
 	font-size: 0.85rem;
 }
 
-/* 싸이트 관리: 이용 불가인 줄은 바탕을 살짝 어둡게 */
+/* 사이트 관리: 이용 불가인 줄은 바탕을 살짝 어둡게 */
 .admin-table tr.is-closed td {
 	background: var(--bs-bg-2);
 }
 
-/* 싸이트 관리: 메모 칸은 넓게 */
+/* 사이트 관리: 메모 칸은 넓게 */
 .admin-table .note-input {
 	min-width: 18rem;
 }
@@ -564,7 +564,7 @@ body:has(.site-banner) .sub-head {
 	grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 }
 
-/* 관리자 싸이트 관리: 이용 불가 줄을 더 눈에 띄게 */
+/* 관리자 사이트 관리: 이용 불가 줄을 더 눈에 띄게 */
 .admin-table tr.is-closed td {
 	background: #fbf0ea;
 }
@@ -726,8 +726,8 @@ body:not(.sub-head-page) .site-header.is-stuck {
 		display: none;
 	}
 
-	/* 1. 싸이트 관리: 표 대신 줄마다 카드
-	      첫 줄 = 싸이트 이름(+이용 불가 표시) · 스위치, 둘째 줄 = 메모 칸 전체 폭
+	/* 1. 사이트 관리: 표 대신 줄마다 카드
+	      첫 줄 = 사이트 이름(+이용 불가 표시) · 스위치, 둘째 줄 = 메모 칸 전체 폭
 	      종류 칸은 지금 전부 "캠핑사이트"라 폰에서는 생략 */
 	.site-table thead {
 		display: none;

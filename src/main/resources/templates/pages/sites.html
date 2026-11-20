@@ -9,7 +9,7 @@
 	<header th:replace="~{fragments/layout :: header}"></header>
 
 	<div
-		th:replace="~{fragments/layout :: subhead('사이트 · 요금', '싸이트와 요금 안내', ${'요금은 1박 기준입니다. ' + settings['PEAK_SEASON_INFO']})}">
+		th:replace="~{fragments/layout :: subhead('사이트 · 요금', '사이트와 요금 안내', ${'요금은 1박 기준입니다. ' + settings['PEAK_SEASON_INFO']})}">
 	</div>
 
 	<main id="main">
@@ -59,17 +59,17 @@
 			</div>
 		</section>
 
-		<!-- ===== 싸이트 목록 ===== -->
+		<!-- ===== 사이트 목록 ===== -->
 		<section class="section bg-2">
 			<div class="container">
-				<p class="eyebrow fs-sm fg-primary mb-3">싸이트 목록</p>
-				<h2 class="section-title fs-3xl mb-6" th:text="'전체 ' + ${#lists.size(sites)} + '개 싸이트'">전체 22개 싸이트</h2>
+				<p class="eyebrow fs-sm fg-primary mb-3">사이트 목록</p>
+				<h2 class="section-title fs-3xl mb-6" th:text="'전체 ' + ${#lists.size(sites)} + '개 사이트'">전체 22개 사이트</h2>
 				<div class="site-chips">
 					<span th:each="site : ${sites}" class="site-chip"
 						th:classappend="${site.available} ? '' : 'is-closed'"
-						th:title="${site.available} ? '이용 가능' : '현재 이용 불가'" th:text="${site.name}">01번 싸이트</span>
+						th:title="${site.available} ? '이용 가능' : '현재 이용 불가'" th:text="${site.name}">01번 사이트</span>
 				</div>
-				<p class="fs-xs fg-3 mt-4 mb-0">흐리게 표시된 싸이트는 현재 이용할 수 없습니다.</p>
+				<p class="fs-xs fg-3 mt-4 mb-0">흐리게 표시된 사이트는 현재 이용할 수 없습니다.</p>
 			</div>
 		</section>
 
@@ -94,7 +94,7 @@
 								<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary"
 									th:href="${link.url}" th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
 							</div>
-							<p class="fs-sm fg-3 mb-0">빈 싸이트와 날짜는 각 예약 사이트에서 확인해 주세요.</p>
+							<p class="fs-sm fg-3 mb-0">빈 사이트와 날짜는 각 예약처에서 확인해 주세요.</p>
 						</div>
 					</div>
 				</div>

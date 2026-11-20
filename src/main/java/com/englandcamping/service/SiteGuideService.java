@@ -18,7 +18,7 @@ import com.englandcamping.dto.SiteTypeForm;
 import com.englandcamping.repository.CampSiteRepository;
 import com.englandcamping.repository.SiteTypeRepository;
 
-/** 사이트 안내 / 요금 페이지에서 쓸 데이터 읽기 + 관리자 요금·싸이트 저장 */
+/** 사이트 안내 / 요금 페이지에서 쓸 데이터 읽기 + 관리자 요금·사이트 저장 */
 @Service
 @Transactional(readOnly = true)
 public class SiteGuideService {
@@ -36,7 +36,7 @@ public class SiteGuideService {
 		return siteTypeRepository.findAllByOrderBySortOrderAscIdAsc();
 	}
 
-	/** 개별 싸이트 전체 (종류 정보 포함) */
+	/** 개별 사이트 전체 (종류 정보 포함) */
 	public List<CampSite> findAllSites() {
 		return campSiteRepository.findAllByOrderBySortOrderAscIdAsc();
 	}
@@ -47,12 +47,12 @@ public class SiteGuideService {
 		return types.isEmpty() ? null : types.get(0);
 	}
 
-	/** 전체 싸이트 수 (관리자 첫 화면) */
+	/** 전체 사이트 수 (관리자 첫 화면) */
 	public long countAllSites() {
 		return campSiteRepository.count();
 	}
 
-	/** 이용 불가 싸이트 수 (관리자 첫 화면) — 22개를 불러오지 않고 DB에서 바로 셈 */
+	/** 이용 불가 사이트 수 (관리자 첫 화면) — 22개를 불러오지 않고 DB에서 바로 셈 */
 	public long countClosedSites() {
 		return campSiteRepository.countByAvailableFalse();
 	}
@@ -73,9 +73,9 @@ public class SiteGuideService {
 	}
 
 	/**
-	 * 관리자: 싸이트 이용 가능/불가 + 메모 한꺼번에 저장. 이름·종류·순서는 건드리지 않는다.
+	 * 관리자: 사이트 이용 가능/불가 + 메모 한꺼번에 저장. 이름·종류·순서는 건드리지 않는다.
 	 *
-	 * @return 실제로 바뀐 싸이트 수 (안내 문구용)
+	 * @return 실제로 바뀐 사이트 수 (안내 문구용)
 	 */
 	@Transactional
 	public int updateSiteStatuses(List<CampSiteForm.Row> rows) {
