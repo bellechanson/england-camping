@@ -18,8 +18,8 @@ import com.englandcamping.service.AdminAccountService;
 import com.englandcamping.service.SiteSettingService;
 
 /**
- * 관리자 공통: 로그인 화면, 첫 화면, 띠 공지, 비밀번호 변경 (로그인 "처리"는 Spring Security가 하고, 여기서는 화면만
- * 보여 줌)
+ * 관리자 공통: 로그인 화면, 띠 공지 저장, 비밀번호 변경 - 로그인 "처리"는 Spring Security가 하고, 여기서는 화면만 보여
+ * 줌 - 관리자 첫 화면(/admin)은 AdminHomeController
  */
 @Controller
 @RequestMapping("/admin")
@@ -27,6 +27,12 @@ public class AdminController {
 
 	/** 띠 공지 최대 글자 수 */
 	private static final int BANNER_MAX_LENGTH = 100;
+
+	/** 띠 공지는 공지 관리 화면 안에 있어서, 저장 후 그 화면으로 */
+	private static final String REDIRECT_NOTICES = "redirect:/admin/notices";
+
+	/** 비밀번호 변경 후에는 관리자 첫 화면으로 */
+	private static final String REDIRECT_HOME = "redirect:/admin";
 
 	private final AdminAccountService adminAccountService;
 	private final SiteSettingService siteSettingService;
@@ -50,17 +56,17 @@ public class AdminController {
 
 		if (enabled && trimmed.isEmpty()) {
 			redirect.addFlashAttribute("error", "띠 공지를 켜려면 내용을 입력해 주세요.");
-			return "redirect:/admin/notices";
+			return REDIRECT_NOTICES;
 		}
 		if (trimmed.length() > BANNER_MAX_LENGTH) {
 			redirect.addFlashAttribute("error", "띠 공지는 " + BANNER_MAX_LENGTH + "자 이내로 입력해 주세요.");
-			return "redirect:/admin/notices";
+			return REDIRECT_NOTICES;
 		}
 
 		siteSettingService.update(SettingKey.BANNER_TEXT, trimmed);
 		siteSettingService.update(SettingKey.BANNER_ENABLED, String.valueOf(enabled));
 		redirect.addFlashAttribute("message", enabled ? "띠 공지를 켰습니다." : "띠 공지를 저장했습니다. (꺼짐)");
-		return "redirect:/admin/notices";
+		return REDIRECT_NOTICES;
 	}
 
 	/** 비밀번호 변경 화면 */
@@ -83,7 +89,7 @@ public class AdminController {
 			return passwordError(model, e.getMessage());
 		}
 		redirect.addFlashAttribute("message", "비밀번호를 바꿨습니다.");
-		return "redirect:/admin/notices";
+		return REDIRECT_HOME;
 	}
 
 	private String passwordError(Model model, String message) {

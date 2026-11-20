@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.englandcamping.domain.CampSite;
-import com.englandcamping.domain.SiteType;
 import com.englandcamping.service.NoticeService;
 import com.englandcamping.service.PhotoService;
 import com.englandcamping.service.SiteGuideService;
@@ -28,12 +27,11 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String home(Model model) {
-		List<SiteType> types = siteGuideService.findAllTypes();
 		List<CampSite> sites = siteGuideService.findAllSites();
 
-		// 지금은 사이트 종류가 하나뿐이라 첫 번째를 "대표 종류"로 사용
-		// (데이터가 비어 있으면 null → 화면에서 요금 부분을 숨김)
-		model.addAttribute("mainType", types.isEmpty() ? null : types.get(0));
+		// 대표 사이트 종류 (이용안내·관리자 첫 화면과 같은 방법으로 고름)
+		// 데이터가 비어 있으면 null → 화면에서 요금 부분을 숨김
+		model.addAttribute("mainType", siteGuideService.findMainType());
 		model.addAttribute("sites", sites);
 		model.addAttribute("siteCount", sites.size());
 

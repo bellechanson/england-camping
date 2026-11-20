@@ -52,9 +52,9 @@ public class SiteGuideService {
 		return campSiteRepository.count();
 	}
 
-	/** 이용 불가 싸이트 수 (관리자 첫 화면) */
+	/** 이용 불가 싸이트 수 (관리자 첫 화면) — 22개를 불러오지 않고 DB에서 바로 셈 */
 	public long countClosedSites() {
-		return findAllSites().stream().filter(site -> !site.isAvailable()).count();
+		return campSiteRepository.countByAvailableFalse();
 	}
 
 	/** 사이트 종류 하나 (없으면 404 페이지) */
