@@ -580,3 +580,101 @@ body:has(.site-banner) .sub-head {
 	font-size: 0.7rem;
 	vertical-align: middle;
 }
+
+
+/* ===== 모바일 손보기: 손님 화면 ===== */
+
+/* 1. 메인: 스크롤을 조금 내려도 머리글 바탕은 투명하게
+      (템플릿 base.css의 .is-stuck 크림색 바탕이 style.css의 투명 설정을 이겨서
+       흰 캠핑장 이름이 안 보이던 문제. 하위 페이지는 진한 글씨라 그대로 둠) */
+body:not(.sub-head-page) .site-header.is-stuck {
+	background: transparent;
+	border-bottom-color: transparent;
+	backdrop-filter: none;
+}
+
+/* 2. 서랍 메뉴 (좁은 화면): 왼쪽부터, 크게, 줄 구분 */
+@media (max-width: 991.98px) {
+	.site-header .drawer .navbar-nav {
+		width: 100%;
+		margin-left: 0 !important;
+		align-items: stretch;
+	}
+
+	.site-header .drawer .nav-link {
+		display: block;
+		padding-block: 0.85rem;
+		font-size: 1.15rem;
+		border-bottom: 1px solid var(--bs-border-color);
+	}
+}
+
+/* 서랍 아래 예약처·전화 버튼
+   보일지 말지는 layout.html 맨 아래 스크립트가 정함 (좁은 화면에서만 보이게)
+   넓은 화면에서는 템플릿 CSS가 이 영역의 보이기·크기를 강하게 정해서 CSS로는 숨겨지지 않았음
+   여기서는 모양만 */
+.drawer-actions {
+	flex-direction: column;
+	gap: 0.6rem;
+	margin-top: 1.75rem;
+}
+
+.drawer-actions-label {
+	margin: 0;
+	color: var(--bs-fg-3);
+	font-size: 0.8rem;
+}
+
+/* 3. 메인 위에 붙는 띠의 ≡ 버튼: 가로 메뉴가 보이는 넓은 화면에서는 숨김 */
+.dock-menu-btn {
+	display: inline-flex;
+	color: inherit;
+}
+
+@media (width >=992px) {
+	.dock-menu-btn {
+		display: none;
+	}
+}
+
+/* 폰 화면 공통 */
+@media (width < 768px) {
+
+	/* 4. 메인 예약 바: 정보 4개를 2칸씩, 예약 버튼 줄은 한 줄 전체 */
+	.book-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.75rem 1rem;
+	}
+
+	.book-grid>.book-field:last-child {
+		grid-column: 1 / -1;
+	}
+
+	/* 5. 갤러리 페이지: 한 줄에 2장 */
+	.gallery-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.5rem;
+	}
+
+	/* 6. 주차처럼 긴 줄: 제목 아래 줄에 왼쪽 정렬로 */
+	.spec-row-long {
+		flex-wrap: wrap;
+		gap: 0.35rem;
+	}
+
+	.spec-row-long>.text-end {
+		flex-basis: 100%;
+		text-align: left;
+	}
+
+	/* 8. 하위 페이지 큰 제목을 폰에 맞게 */
+	.sub-head .section-title {
+		font-size: 2.25rem;
+		line-height: 1.25;
+	}
+}
+
+/* 8. 위치 표시 "홈 › 페이지": "홈" 글자 양옆 여백 없애기 (왼쪽 줄도 맞춰짐) */
+.sub-head .breadcrumb-link {
+	padding-inline: 0;
+}

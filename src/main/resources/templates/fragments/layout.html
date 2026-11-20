@@ -70,6 +70,15 @@
 						<li class="nav-item"><a class="nav-link" th:href="@{/notice}">공지사항</a></li>
 						<li class="nav-item"><a class="nav-link" th:href="@{/gallery}">갤러리</a></li>
 					</ul>
+					<!-- 폰 서랍 메뉴 아래: 예약처 버튼 + 전화 (넓은 화면에서는 CSS로 숨김)
+					     예약처는 새 창이라 서랍이 열려 있어도 문제없음 -->
+					<div class="drawer-actions">
+						<p class="drawer-actions-label">예약하기</p>
+						<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary" th:href="${link.url}"
+							th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
+						<a class="btn-outline theme-secondary" th:href="'tel:' + ${settings['PHONE']}"
+							th:text="'전화 문의 ' + ${settings['PHONE']}">전화 문의</a>
+					</div>
 				</div>
 			</dialog>
 
@@ -121,7 +130,7 @@
 					<span th:text="'(우) ' + ${settings['ZIP_CODE']}">우편번호</span>
 				</p>
 			</div>
-			<div class="md:col-2">
+			<div class="col-6 md:col-2">
 				<p class="fw-semibold fs-sm mb-4">안내</p>
 				<ul class="list-unstyled fs-sm fg-3 mb-0">
 					<li class="mb-3"><a th:href="@{/about}">소개</a></li>
@@ -129,7 +138,7 @@
 					<li class="mb-3"><a th:href="@{/guide}">이용안내</a></li>
 				</ul>
 			</div>
-			<div class="md:col-2">
+			<div class="col-6 md:col-2">
 				<p class="fw-semibold fs-sm mb-4">소식</p>
 				<ul class="list-unstyled fs-sm fg-3 mb-0">
 					<li class="mb-3"><a th:href="@{/notice}">공지사항</a></li>
@@ -154,6 +163,22 @@
 <!-- ===== 4. 스크립트 (템플릿 main.js 그대로) ===== -->
 <th:block th:fragment="scripts">
 	<script type="module" th:src="@{/assets/js/main.js}"></script>
+	<!-- 서랍 아래 예약처·전화 버튼: 좁은 화면(서랍 메뉴)에서만 보이게
+	     넓은 화면에서는 템플릿 CSS가 이 영역을 강하게 정해서 CSS로 숨길 수 없음
+	     → 요소에 직접 display를 적음 (요소에 직접 쓴 !important는 어떤 CSS 파일보다 우선)
+	     기준 992px = 템플릿이 가로 메뉴로 바꾸는 폭과 같음 -->
+	<script>
+		(() => {
+			const actions = document.querySelector('#navDrawer .drawer-actions');
+			if (!actions) {
+				return; // 관리자 화면 등 서랍이 없는 페이지
+			}
+			const narrow = window.matchMedia('(max-width: 991.98px)');
+			const apply = () => actions.style.setProperty('display', narrow.matches ? 'flex' : 'none', 'important');
+			apply();
+			narrow.addEventListener('change', apply); // 창 크기를 바꿀 때도 다시 맞춤
+		})();
+	</script>
 </th:block>
 
 </html>

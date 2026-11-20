@@ -33,8 +33,8 @@
 								th:text="${settings['ZIP_CODE']}">12403</span></div>
 						<div class="spec-row"><span class="fg-3 fs-sm">전화</span><a class="fs-sm"
 								th:href="'tel:' + ${settings['PHONE']}" th:text="${settings['PHONE']}">전화번호</a></div>
-						<div class="spec-row"><span class="fg-3 fs-sm">주차</span><span class="fs-sm text-end"
-								th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
+						<div class="spec-row spec-row-long"><span class="fg-3 fs-sm">주차</span><span
+								class="fs-sm text-end" th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
 
 						<div class="d-grid gap-3 mt-6">
 							<!-- 카카오맵 길찾기: 도착지를 캠핑장 좌표로 -->

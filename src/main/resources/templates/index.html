@@ -80,7 +80,17 @@
 				<a th:href="@{/notice}">공지사항</a>
 				<a th:href="@{/gallery}">갤러리</a>
 			</nav>
-			<a class="btn-solid theme-primary btn-sm" href="#book" data-scroll-top>예약하기</a>
+			<div class="d-flex align-items-center gap-2">
+				<a class="btn-solid theme-primary btn-sm" href="#book" data-scroll-top>예약하기</a>
+				<!-- 폰에서만: 머리글과 같은 서랍 메뉴 열기 (넓은 화면에서는 가로 메뉴가 있어서 CSS로 숨김) -->
+				<button class="btn-icon dock-menu-btn" type="button" data-bs-toggle="drawer" data-bs-target="#navDrawer"
+					aria-controls="navDrawer" aria-label="메뉴 열기">
+					<svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+						stroke-linecap="round" aria-hidden="true">
+						<path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" />
+					</svg>
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -419,8 +429,8 @@
 								th:text="${settings['ZIP_CODE']}">12403</span></div>
 						<div class="spec-row"><span class="fg-3 fs-sm">전화</span><a class="fs-sm"
 								th:href="'tel:' + ${settings['PHONE']}" th:text="${settings['PHONE']}">전화번호</a></div>
-						<div class="spec-row"><span class="fg-3 fs-sm">주차</span><span class="fs-sm text-end"
-								th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
+						<div class="spec-row spec-row-long"><span class="fg-3 fs-sm">주차</span><span
+								class="fs-sm text-end" th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
 						<a class="btn-outline theme-secondary mt-6" th:href="@{/location}">지도로 보기</a>
 					</div>
 					<div class="lg:col-7">
