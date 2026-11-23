@@ -86,11 +86,11 @@ public class DataInitializer implements ApplicationRunner {
 	}
 
 	/**
-	 * 지금 운영 중인 사이트 종류 (전 사이트 동일) 파쇄석 8m x 10m / 기준 2인, 최대 5인 / 평소 50,000원, 연휴
-	 * 60,000원 추가 1인 10,000원 / 최소 1박
+	 * 지금 운영 중인 사이트 종류 (전 사이트 동일) 파쇄석 8m x 10m / 기준 성인 2 + 소인 2, 성인 최대 3 / 평소
+	 * 50,000원, 연휴 60,000원 / 성인 추가 1인 10,000원 (소인은 무료) / 최소 1박
 	 */
 	private SiteType createBasicType() {
-		return new SiteType("캠핑사이트", "파쇄석", "8m x 10m", 2, 5, 50000, 60000, 10000, 1, 1);
+		return new SiteType("캠핑사이트", "파쇄석", "8m x 10m", 2, 3, 2, 50000, 60000, 10000, 1, 1);
 	}
 
 	/**

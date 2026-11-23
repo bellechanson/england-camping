@@ -57,10 +57,13 @@
 
 						<div class="spec-row"><span class="fg-3 fs-sm">크기</span><span class="fs-sm"
 								th:text="${type.sizeText}">8m x 10m</span></div>
-						<div class="spec-row"><span class="fg-3 fs-sm">인원</span>
+						<div class="spec-row"><span class="fg-3 fs-sm">기준 인원</span>
 							<span class="fs-sm"
-								th:text="'기준 ' + ${type.baseGuests} + '인 · 최대 ' + ${type.maxGuests} + '인'">기준 2인 · 최대
-								5인</span>
+								th:text="'성인 ' + ${type.baseGuests} + '명 + 소인 ' + ${type.baseChildren} + '명'">성인 2명 + 소인
+								2명</span>
+						</div>
+						<div class="spec-row"><span class="fg-3 fs-sm">성인 최대</span>
+							<span class="fs-sm" th:text="${type.maxGuests} + '명'">3명</span>
 						</div>
 						<div class="spec-row"><span class="fg-3 fs-sm">최소 숙박</span><span class="fs-sm"
 								th:text="${type.minNights} + '박'">1박</span></div>
@@ -72,7 +75,7 @@
 							<span class="fs-sm fw-semibold"
 								th:text="${type.peakPrice != null} ? ${#numbers.formatInteger(type.peakPrice, 1, 'COMMA')} + '원' : '전화 문의'">60,000원</span>
 						</div>
-						<div class="spec-row"><span class="fg-3 fs-sm">추가 1인</span>
+						<div class="spec-row"><span class="fg-3 fs-sm">성인 추가 1인</span>
 							<span class="fs-sm"
 								th:text="${type.extraPersonFee != null} ? ${#numbers.formatInteger(type.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">10,000원</span>
 						</div>

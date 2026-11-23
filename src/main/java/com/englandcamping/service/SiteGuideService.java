@@ -68,8 +68,8 @@ public class SiteGuideService {
 	public void updateType(Long id, SiteTypeForm form) {
 		SiteType type = getType(id);
 		type.update(form.getName().strip(), blankToNull(form.getFloorType()), blankToNull(form.getSizeText()),
-				form.getBaseGuests(), form.getMaxGuests(), form.getNormalPrice(), form.getPeakPrice(),
-				form.getExtraPersonFee(), form.getMinNights(), type.getSortOrder());
+				form.getBaseGuests(), form.getMaxGuests(), form.getBaseChildren(), form.getNormalPrice(),
+				form.getPeakPrice(), form.getExtraPersonFee(), form.getMinNights(), type.getSortOrder());
 	}
 
 	/**

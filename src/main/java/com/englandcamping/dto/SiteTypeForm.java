@@ -10,7 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * 요금(사이트 종류) 수정 화면에서 받는 값. 금액 칸을 비우면 null → 손님 화면에 "전화 문의"로 나옴.
+ * 요금(사이트 종류) 수정 화면에서 받는 값. 금액 칸을 비우면 null → 손님 화면에 "전화 문의"로 나옴. 인원: 기준
+ * 성인(baseGuests), 최대 성인(maxGuests), 기준 소인(baseChildren)
  */
 public class SiteTypeForm {
 
@@ -24,15 +25,23 @@ public class SiteTypeForm {
 	@Size(max = 30, message = "크기는 30자 이내로 입력해 주세요.")
 	private String sizeText;
 
-	@NotNull(message = "기준 인원을 입력해 주세요.")
-	@Min(value = 1, message = "기준 인원은 1명 이상이어야 합니다.")
-	@Max(value = 50, message = "기준 인원이 너무 큽니다.")
+	/** 기준 성인 */
+	@NotNull(message = "기준 성인을 입력해 주세요.")
+	@Min(value = 1, message = "기준 성인은 1명 이상이어야 합니다.")
+	@Max(value = 50, message = "기준 성인 수가 너무 큽니다.")
 	private Integer baseGuests;
 
-	@NotNull(message = "최대 인원을 입력해 주세요.")
-	@Min(value = 1, message = "최대 인원은 1명 이상이어야 합니다.")
-	@Max(value = 50, message = "최대 인원이 너무 큽니다.")
+	/** 최대 성인 */
+	@NotNull(message = "최대 성인을 입력해 주세요.")
+	@Min(value = 1, message = "최대 성인은 1명 이상이어야 합니다.")
+	@Max(value = 50, message = "최대 성인 수가 너무 큽니다.")
 	private Integer maxGuests;
+
+	/** 기준 소인 (없으면 0) */
+	@NotNull(message = "기준 소인을 입력해 주세요. 없으면 0")
+	@Min(value = 0, message = "기준 소인은 0명 이상이어야 합니다.")
+	@Max(value = 50, message = "기준 소인 수가 너무 큽니다.")
+	private Integer baseChildren;
 
 	@Min(value = 0, message = "0원 이상으로 입력해 주세요.")
 	@Max(value = 10_000_000, message = "금액이 너무 큽니다.")
@@ -51,8 +60,8 @@ public class SiteTypeForm {
 	@Max(value = 365, message = "최소 숙박일이 너무 큽니다.")
 	private Integer minNights;
 
-	/** 최대 인원 >= 기준 인원 (둘 중 하나라도 비었으면 위의 @NotNull이 잡으므로 여기선 통과) */
-	@AssertTrue(message = "최대 인원은 기준 인원보다 적을 수 없습니다.")
+	/** 최대 성인 >= 기준 성인 (둘 중 하나라도 비었으면 위의 @NotNull이 잡으므로 여기선 통과) */
+	@AssertTrue(message = "최대 성인은 기준 성인보다 적을 수 없습니다.")
 	public boolean isGuestRangeValid() {
 		if (baseGuests == null || maxGuests == null) {
 			return true;
@@ -68,6 +77,7 @@ public class SiteTypeForm {
 		form.setSizeText(type.getSizeText());
 		form.setBaseGuests(type.getBaseGuests());
 		form.setMaxGuests(type.getMaxGuests());
+		form.setBaseChildren(type.getBaseChildren());
 		form.setNormalPrice(type.getNormalPrice());
 		form.setPeakPrice(type.getPeakPrice());
 		form.setExtraPersonFee(type.getExtraPersonFee());
@@ -113,6 +123,14 @@ public class SiteTypeForm {
 
 	public void setMaxGuests(Integer maxGuests) {
 		this.maxGuests = maxGuests;
+	}
+
+	public Integer getBaseChildren() {
+		return baseChildren;
+	}
+
+	public void setBaseChildren(Integer baseChildren) {
+		this.baseChildren = baseChildren;
 	}
 
 	public Integer getNormalPrice() {

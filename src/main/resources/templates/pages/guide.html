@@ -46,11 +46,12 @@
 						<div class="offer">
 							<p class="offer-flag mb-4">추가 인원</p>
 							<h3 class="fs-xl fw-semibold mb-3"
-								th:text="${mainType != null and mainType.extraPersonFee != null} ? '1인 ' + ${#numbers.formatInteger(mainType.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">
-								1인 10,000원</h3>
+								th:text="${mainType != null and mainType.extraPersonFee != null} ? '성인 1인 ' + ${#numbers.formatInteger(mainType.extraPersonFee, 1, 'COMMA')} + '원' : '전화 문의'">
+								성인 1인 10,000원</h3>
 							<p class="fg-2 fs-sm mb-0">
 								<span th:if="${mainType != null}"
-									th:text="'기준 ' + ${mainType.baseGuests} + '인을 넘으면 추가됩니다. '">기준 2인 초과 시</span>
+									th:text="'성인이 기준 ' + ${mainType.baseGuests} + '명을 넘으면 추가됩니다(성인 최대 ' + ${mainType.maxGuests} + '명). '">성인
+									기준 초과 시</span>
 								<span th:text="${settings['EXTRA_PERSON_INFO']}">16세 이하 무료</span>
 							</p>
 						</div>

@@ -55,7 +55,7 @@
 							</p>
 						</div>
 						<div class="md:col-4 form-field">
-							<label class="form-label" for="extraPersonFee">추가 1인 (원)</label>
+							<label class="form-label" for="extraPersonFee">성인 추가 1인 (원)</label>
 							<input type="number" class="form-control" th:field="*{extraPersonFee}" min="0" step="1000">
 							<p class="field-error" th:if="${#fields.hasErrors('extraPersonFee')}"
 								th:errors="*{extraPersonFee}">오류</p>
@@ -63,16 +63,22 @@
 					</div>
 					<p class="field-hint mt-0">금액 칸을 비워 두면 홈페이지에 "전화 문의"로 나옵니다. 쉼표 없이 숫자만 넣어 주세요.</p>
 
-					<!-- 인원 / 숙박 -->
+					<!-- 인원 / 숙박 (성인 = 16세 초과, 소인 = 16세 이하) -->
 					<div class="row g-5">
-						<div class="md:col-4 form-field">
-							<label class="form-label" for="baseGuests">기준 인원</label>
+						<div class="md:col-3 form-field">
+							<label class="form-label" for="baseGuests">기준 성인</label>
 							<input type="number" class="form-control" th:field="*{baseGuests}" min="1">
 							<p class="field-error" th:if="${#fields.hasErrors('baseGuests')}" th:errors="*{baseGuests}">
 								오류</p>
 						</div>
-						<div class="md:col-4 form-field">
-							<label class="form-label" for="maxGuests">최대 인원</label>
+						<div class="md:col-3 form-field">
+							<label class="form-label" for="baseChildren">기준 소인</label>
+							<input type="number" class="form-control" th:field="*{baseChildren}" min="0">
+							<p class="field-error" th:if="${#fields.hasErrors('baseChildren')}"
+								th:errors="*{baseChildren}">오류</p>
+						</div>
+						<div class="md:col-3 form-field">
+							<label class="form-label" for="maxGuests">최대 성인</label>
 							<input type="number" class="form-control" th:field="*{maxGuests}" min="1">
 							<p class="field-error" th:if="${#fields.hasErrors('maxGuests')}" th:errors="*{maxGuests}">오류
 							</p>
@@ -80,13 +86,14 @@
 							<p class="field-error" th:if="${#fields.hasErrors('guestRangeValid')}"
 								th:errors="*{guestRangeValid}">오류</p>
 						</div>
-						<div class="md:col-4 form-field">
+						<div class="md:col-3 form-field">
 							<label class="form-label" for="minNights">최소 숙박 (박)</label>
 							<input type="number" class="form-control" th:field="*{minNights}" min="1">
 							<p class="field-error" th:if="${#fields.hasErrors('minNights')}" th:errors="*{minNights}">오류
 							</p>
 						</div>
 					</div>
+					<p class="field-hint mt-0">성인은 16세 초과, 소인은 16세 이하입니다. 소인은 인원 제한 없이 무료라 최대 인원은 성인만 정합니다.</p>
 
 					<div class="d-flex flex-wrap gap-3">
 						<button type="submit" class="btn-solid theme-primary">저장</button>
