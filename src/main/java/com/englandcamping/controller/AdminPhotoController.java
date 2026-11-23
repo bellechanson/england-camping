@@ -37,6 +37,7 @@ public class AdminPhotoController {
 		model.addAttribute("photos", photoService.findAll());
 		model.addAttribute("categories", PhotoCategory.values());
 		model.addAttribute("slots", PhotoSlot.values());
+		model.addAttribute("heroFocusX", photoService.findFocusX(PhotoSlot.HERO));
 		return "admin/photos";
 	}
 
@@ -80,6 +81,18 @@ public class AdminPhotoController {
 		photoService.assignSlot(slot, photoId);
 		redirect.addFlashAttribute("message", (photoId == null) ? "'" + slot.getLabel() + "' 자리를 비웠습니다."
 				: "'" + slot.getLabel() + "' 자리에 사진을 넣었습니다.");
+		return REDIRECT;
+	}
+
+	/** 메인 큰 사진: 폰에서 보일 가로 위치 저장 (관리자 화면에서 틀을 끌어서 정한 0~100) */
+	@PostMapping("/slots/focus")
+	public String changeFocus(@RequestParam PhotoSlot slot, @RequestParam int focusX, RedirectAttributes redirect) {
+		try {
+			photoService.changeFocusX(slot, focusX);
+			redirect.addFlashAttribute("message", "'" + slot.getLabel() + "'의 폰 화면 위치를 저장했습니다.");
+		} catch (IllegalArgumentException e) {
+			redirect.addFlashAttribute("error", e.getMessage());
+		}
 		return REDIRECT;
 	}
 

@@ -15,7 +15,7 @@
 	<section class="stay">
 		<!-- 메인 큰 사진 (관리자 > 사진 관리에서 지정, 없으면 갈색 그라데이션) -->
 		<img class="hero-bg" th:if="${slotPhotos['HERO'] != null}" th:src="@{${slotPhotos['HERO'].url}}" alt=""
-			loading="eager">
+			th:style="'object-position: ' + ${heroFocus}" loading="eager">
 		<div class="stay-inner">
 			<p class="stay-eyebrow mb-5">
 				<span>가평 북면</span>

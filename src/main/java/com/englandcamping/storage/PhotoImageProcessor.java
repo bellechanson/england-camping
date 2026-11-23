@@ -19,7 +19,7 @@ import net.coobird.thumbnailator.Thumbnails;
 public class PhotoImageProcessor {
 
 	/** 큰 사진: 긴 변 최대 */
-	public static final int MAX_SIZE = 1920;
+	public static final int MAX_SIZE = 2560;
 	/** 미리보기: 긴 변 최대 */
 	public static final int THUMB_SIZE = 600;
 	/** JPG 화질 (0~1) */

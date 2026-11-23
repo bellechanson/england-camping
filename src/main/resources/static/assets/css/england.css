@@ -823,3 +823,56 @@ body:not(.sub-head-page) .site-header.is-stuck {
 		gap: 0.75rem;
 	}
 }
+
+/* 관리자: 메인 큰 사진 — 폰 화면 틀 드래그 */
+.focus-editor {
+	margin-top: 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--bs-border-color);
+}
+
+/* 사진 + 틀을 담는 칸 (밖으로 나간 그림자는 잘라냄) */
+.focus-stage {
+	position: relative;
+	max-width: 32rem;
+	overflow: hidden;
+	border-radius: var(--bs-radius-4);
+	user-select: none;
+}
+
+.focus-stage img {
+	display: block;
+	width: 100%;
+	height: auto;
+	pointer-events: none;
+	/* 사진이 끌려가지 않게 */
+}
+
+/* 폰 화면 틀: 바깥은 어둡게 (큰 그림자로 덮음) */
+.focus-frame {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 35%;
+	border: 2px solid #fff;
+	border-radius: 0.5rem;
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+	cursor: grab;
+	touch-action: none;
+	/* 폰에서 끌 때 화면이 같이 움직이지 않게 */
+}
+
+.focus-frame:active {
+	cursor: grabbing;
+}
+
+.focus-frame:focus-visible {
+	outline: 3px solid var(--brand);
+	outline-offset: 2px;
+}
+
+/* 세로 사진이라 못 움직일 때 */
+.focus-frame.is-fixed {
+	cursor: default;
+}

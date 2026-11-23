@@ -226,4 +226,21 @@ public class PhotoService {
 		slotRepository.findById(slot).ifPresentOrElse(assignment -> assignment.changePhoto(photo),
 				() -> slotRepository.save(new PhotoSlotAssignment(slot, photo)));
 	}
+
+	/** 자리의 폰 화면 가로 위치 0~100 (자리가 없으면 가운데) */
+	public int findFocusX(PhotoSlot slot) {
+		return slotRepository.findById(slot).map(PhotoSlotAssignment::getFocusX)
+				.orElse(PhotoSlotAssignment.DEFAULT_FOCUS_X);
+	}
+
+	/** 폰 화면 가로 위치 저장 (사진이 들어 있는 자리만, 0~100만) */
+	@Transactional
+	public void changeFocusX(PhotoSlot slot, int focusX) {
+		if (focusX < 0 || focusX > 100) {
+			throw new IllegalArgumentException("위치 값이 잘못됐습니다. 다시 끌어서 저장해 주세요.");
+		}
+		PhotoSlotAssignment assignment = slotRepository.findById(slot).filter(a -> a.getPhoto() != null)
+				.orElseThrow(() -> new IllegalArgumentException("먼저 이 자리에 사진을 넣어 주세요."));
+		assignment.changeFocusX(focusX);
+	}
 }
