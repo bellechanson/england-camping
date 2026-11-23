@@ -59,17 +59,19 @@
 			</div>
 		</section>
 
-		<!-- ===== 사이트 목록 ===== -->
+		<!-- ===== 사이트 배치도 (크게, 이용 불가는 회색) ===== -->
 		<section class="section bg-2">
 			<div class="container">
-				<p class="eyebrow fs-sm fg-primary mb-3">사이트 목록</p>
+				<p class="eyebrow fs-sm fg-primary mb-3">사이트 배치도</p>
 				<h2 class="section-title fs-3xl mb-6" th:text="'전체 ' + ${#lists.size(sites)} + '개 사이트'">전체 22개 사이트</h2>
-				<div class="site-chips">
-					<span th:each="site : ${sites}" class="site-chip"
-						th:classappend="${site.available} ? '' : 'is-closed'"
-						th:title="${site.available} ? '이용 가능' : '현재 이용 불가'" th:text="${site.name}">01번 사이트</span>
+				<div class="site-map-large">
+					<div class="room-media">
+						<div class="site-map-box">
+							<svg th:replace="~{fragments/sites :: map}"></svg>
+						</div>
+					</div>
+					<p class="fs-xs fg-3 mb-0">회색 사이트는 현재 이용할 수 없습니다.</p>
 				</div>
-				<p class="fs-xs fg-3 mt-4 mb-0">흐리게 표시된 사이트는 현재 이용할 수 없습니다.</p>
 			</div>
 		</section>
 
@@ -106,5 +108,3 @@
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
 	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
-
-</html>

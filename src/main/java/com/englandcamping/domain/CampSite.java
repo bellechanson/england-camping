@@ -72,6 +72,13 @@ public class CampSite {
 		return name;
 	}
 
+	/**
+	 * 짧은 이름: "01번 사이트" → "01", "A 사이트" → "A" (손님 화면 네모 칸에 씀) "싸이트"로 된 옛날 데이터도 같이 처리
+	 */
+	public String getShortName() {
+		return name.replaceFirst("\\s*[사싸]이트$", "").replaceFirst("번$", "").strip();
+	}
+
 	public SiteType getSiteType() {
 		return siteType;
 	}
