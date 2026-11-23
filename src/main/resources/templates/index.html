@@ -547,23 +547,6 @@
 
 	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 
-	<!-- 사이트·요금 칸: [사진] [배치도] 탭 바꾸기 -->
-	<script>
-		document.querySelectorAll('[data-media-tabs]').forEach(function (box) {
-			const tabs = box.querySelectorAll('[role="tab"]');
-			tabs.forEach(function (tab) {
-				tab.addEventListener('click', function () {
-					tabs.forEach(function (t) {
-						const on = (t === tab);
-						t.classList.toggle('is-active', on);
-						t.setAttribute('aria-selected', on ? 'true' : 'false');
-						// 연결된 내용 칸 보이기/숨기기
-						document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-					});
-				});
-			});
-		});
-	</script>
 </body>
 
 </html>
