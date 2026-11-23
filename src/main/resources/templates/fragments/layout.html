@@ -195,6 +195,23 @@
 			});
 		});
 	</script>
+	<!-- 머리글 예약하기 버튼: 메인에서는 예약 바로 서서히 이동 (스크롤 띠 버튼과 같은 움직임)
+	     다른 페이지에서는 예약 바가 없으니 원래 링크대로 메인(/#book)으로 이동 -->
+	<script>
+		document.querySelectorAll('a.header-book-btn[href="/#book"]').forEach(function (btn) {
+			btn.addEventListener('click', function (e) {
+				const bar = document.getElementById('bookBar');
+				if (!bar) {
+					return; // 메인이 아님 → 링크 그대로
+				}
+				e.preventDefault();
+				// 기기에서 "동작 줄이기"를 켠 사람은 바로 이동 (어지러움 방지)
+				const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				bar.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'center'});
+				history.replaceState(null, '', '#book'); // 주소창도 #book 으로 (뒤로가기 기록은 안 늘림)
+			});
+		});
+	</script>
 </th:block>
 
 <!-- 예약처 로고 + 아래 작은 이름 (메인 예약 바, 폰 서랍 메뉴, 사이트 및 이용요금 페이지에서 같이 씀)
