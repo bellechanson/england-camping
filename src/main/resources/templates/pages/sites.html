@@ -107,9 +107,8 @@
 						<div class="offer">
 							<p class="offer-flag mb-4">예약</p>
 							<h3 class="fs-xl fw-semibold mb-3">예약은 아래에서 받습니다</h3>
-							<div class="reserve-buttons mb-5">
-								<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary"
-									th:href="${link.url}" th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
+							<div class="mb-5">
+								<div th:replace="~{fragments/layout :: reserveLogos}"></div>
 							</div>
 							<p class="fs-sm fg-3 mb-0">빈 사이트와 날짜는 각 예약처에서 확인해 주세요.</p>
 						</div>

@@ -45,9 +45,9 @@ public class GlobalModelAdvice {
 	@ModelAttribute("reserveLinks")
 	public List<ReserveLink> reserveLinks() {
 		List<ReserveLink> links = new ArrayList<>();
-		addIfPresent(links, "네이버 예약", SettingKey.RESERVE_NAVER_URL);
-		addIfPresent(links, "캠핏", SettingKey.RESERVE_CAMFIT_URL);
-		addIfPresent(links, "땡큐캠핑", SettingKey.RESERVE_THANKYOU_URL);
+		addIfPresent(links, "네이버 예약", SettingKey.RESERVE_NAVER_URL, "/assets/img/naverLogo.png");
+		addIfPresent(links, "캠핏", SettingKey.RESERVE_CAMFIT_URL, "/assets/img/camfitLogo.png");
+		addIfPresent(links, "땡큐캠핑", SettingKey.RESERVE_THANKYOU_URL, "/assets/img/thankqLogo.png");
 		return links;
 	}
 
@@ -107,10 +107,11 @@ public class GlobalModelAdvice {
 		return auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
 	}
 
-	private void addIfPresent(List<ReserveLink> links, String name, SettingKey key) {
+	/** 예약 주소가 있는 것만 버튼으로 (icon = 로고 그림 주소) */
+	private void addIfPresent(List<ReserveLink> links, String name, SettingKey key, String icon) {
 		String url = siteSettingService.get(key);
 		if (url != null && !url.isBlank()) {
-			links.add(new ReserveLink(name, url.strip()));
+			links.add(new ReserveLink(name, url.strip(), icon));
 		}
 	}
 }

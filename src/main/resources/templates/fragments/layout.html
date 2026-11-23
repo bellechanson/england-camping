@@ -74,8 +74,7 @@
 					     예약처는 새 창이라 서랍이 열려 있어도 문제없음 -->
 					<div class="drawer-actions">
 						<p class="drawer-actions-label">예약하기</p>
-						<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary" th:href="${link.url}"
-							th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
+						<div th:replace="~{fragments/layout :: reserveLogos}"></div>
 						<a class="btn-outline theme-secondary" th:href="'tel:' + ${settings['PHONE']}"
 							th:text="'전화 문의 ' + ${settings['PHONE']}">전화 문의</a>
 					</div>
@@ -197,5 +196,15 @@
 		});
 	</script>
 </th:block>
+
+<!-- 예약처 로고 + 아래 작은 이름 (메인 예약 바, 폰 서랍 메뉴, 사이트 및 이용요금 페이지에서 같이 씀)
+     주소가 비어 있는 예약처는 GlobalModelAdvice 에서 빠지므로 여기에도 안 나옴. 누르면 새 창 -->
+<div th:fragment="reserveLogos" class="reserve-logos">
+	<a th:each="link : ${reserveLinks}" class="reserve-logo" th:href="${link.url}" target="_blank" rel="noopener"
+		th:title="${link.name} + ' 예약 (새 창)'">
+		<img th:if="${link.icon != null}" th:src="@{${link.icon}}" alt="" width="44" height="44">
+		<span th:text="${link.name}">네이버 예약</span>
+	</a>
+</div>
 
 </html>

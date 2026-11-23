@@ -53,14 +53,10 @@
 				</div>
 				<div class="book-field">
 					<p class="form-label">예약하기</p>
-					<div class="reserve-buttons">
-						<!-- 예약처 주소가 있는 것만 버튼으로 (새 창) -->
-						<a th:each="link : ${reserveLinks}" class="btn-solid theme-primary" th:href="${link.url}"
-							th:text="${link.name}" target="_blank" rel="noopener">예약처</a>
-						<!-- 예약처 주소가 하나도 없으면 전화 버튼 -->
-						<a th:if="${#lists.isEmpty(reserveLinks)}" class="btn-outline theme-secondary"
-							th:href="'tel:' + ${settings['PHONE']}">전화 예약</a>
-					</div>
+					<div th:replace="~{fragments/layout :: reserveLogos}"></div>
+					<!-- 예약처 주소가 하나도 없으면 전화 버튼 -->
+					<a th:if="${#lists.isEmpty(reserveLinks)}" class="btn-outline theme-secondary"
+						th:href="'tel:' + ${settings['PHONE']}">전화 예약</a>
 				</div>
 			</div>
 			<p class="fs-xs fg-3 mb-0 mt-4">예약은 네이버 · 캠핏 · 땡큐캠핑에서 받습니다. 장박은 전화로 먼저 상담해 주세요.</p>
@@ -130,7 +126,7 @@
 						<a class="btn-outline theme-secondary" th:href="@{/about}">소개 더 보기</a>
 
 						<!-- 숫자로 보는 캠핑장 -->
-						< <div class="row g-5 mt-7">
+						<div class="row g-5 mt-7">
 							<!-- PC 폭 나눔: 짧은 칸(22, 무료)은 좁게, 글자가 긴 기준 인원 칸은 넓게 (합 12) -->
 							<div class="col-6 md:col-2">
 								<p class="fs-2xl fw-semibold mb-0 fg-primary" th:text="${siteCount}">22</p>
@@ -152,33 +148,33 @@
 								<p class="fs-2xl fw-semibold mb-0 fg-primary">무료</p>
 								<p class="fs-xs fg-3 mb-0">주차</p>
 							</div>
-					</div>
-				</div>
-				<!-- 사진 자리 3칸 (관리자 > 사진 관리 > 자리에 넣기) -->
-				<div class="lg:col-6">
-					<div class="row g-4">
-						<div class="col-7">
-							<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
-								<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
-									loading="lazy">
-								<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
-							</div>
-						</div>
-						<div class="col-5">
-							<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
-								<img th:if="${p != null}" th:src="@{${p.thumbUrl}}" th:alt="${p.caption ?: '캠핑장 사진'}"
-									loading="lazy">
-								<span class="ph-label" th:if="${p == null}">사진</span>
-							</div>
-							<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
-								<img th:if="${p != null}" th:src="@{${p.thumbUrl}}" th:alt="${p.caption ?: '캠핑장 사진'}"
-									loading="lazy">
-								<span class="ph-label" th:if="${p == null}">사진</span>
-							</div>
 						</div>
 					</div>
+					<!-- 사진 자리 3칸 (관리자 > 사진 관리 > 자리에 넣기) -->
+					<div class="lg:col-6">
+						<div class="row g-4">
+							<div class="col-7">
+								<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
+									<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
+										loading="lazy">
+									<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
+								</div>
+							</div>
+							<div class="col-5">
+								<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
+									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
+										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+									<span class="ph-label" th:if="${p == null}">사진</span>
+								</div>
+								<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
+									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
+										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+									<span class="ph-label" th:if="${p == null}">사진</span>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
 			</div>
 		</section>
 
