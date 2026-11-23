@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head(${'사이트 · 요금 | ' + settings['CAMP_NAME']})}"></head>
+<head th:replace="~{fragments/layout :: head(${'사이트 및 이용요금 | ' + settings['CAMP_NAME']})}"></head>
 
 <body class="sub-head-page">
 
@@ -9,7 +9,7 @@
 	<header th:replace="~{fragments/layout :: header}"></header>
 
 	<div
-		th:replace="~{fragments/layout :: subhead('사이트 · 요금', '사이트와 요금 안내', ${'요금은 1박 기준입니다. ' + settings['PEAK_SEASON_INFO']})}">
+		th:replace="~{fragments/layout :: subhead('사이트 및 이용요금', '사이트 및 이용요금 안내', ${'요금은 1박 기준입니다. ' + settings['PEAK_SEASON_INFO']})}">
 	</div>
 
 	<main id="main">

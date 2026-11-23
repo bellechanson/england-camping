@@ -1020,3 +1020,14 @@ body:not(.sub-head-page) .site-header.is-stuck {
 .focus-frame.is-fixed {
 	cursor: default;
 }
+
+
+/* ===== 머리글·스크롤 띠의 예약하기 버튼: PC에서만 더 길게 (아빠 요청)
+   폰은 지금 크기가 맞아서 그대로 ===== */
+@media (min-width: 992px) {
+	.header-book-btn {
+		min-width: 8rem;
+		padding-inline: 1.5rem;
+		text-align: center;
+	}
+}

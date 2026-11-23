@@ -73,15 +73,15 @@
 		<div class="container-fluid px-0 d-flex align-items-center justify-content-between gap-4">
 			<a class="wordmark dock-name" th:href="@{/}" th:text="${settings['CAMP_NAME']}">잉글랜드 캠핑장</a>
 			<nav class="dock-nav" aria-label="메뉴">
-				<a th:href="@{/about}">소개</a>
-				<a th:href="@{/sites}">사이트·요금</a>
+				<a th:href="@{/about}">캠핑장 소개</a>
+				<a th:href="@{/sites}">사이트 및 이용요금</a>
 				<a th:href="@{/guide}">이용안내</a>
 				<a th:href="@{/location}">오시는 길</a>
 				<a th:href="@{/notice}">공지사항</a>
 				<a th:href="@{/gallery}">갤러리</a>
 			</nav>
 			<div class="d-flex align-items-center gap-2">
-				<a class="btn-solid theme-primary btn-sm" href="#book" data-scroll-top>예약하기</a>
+				<a class="btn-solid theme-primary btn-sm header-book-btn" href="#book" data-scroll-top>예약하기</a>
 				<!-- 폰에서만: 머리글과 같은 서랍 메뉴 열기 (넓은 화면에서는 가로 메뉴가 있어서 CSS로 숨김) -->
 				<button class="btn-icon dock-menu-btn" type="button" data-bs-toggle="drawer" data-bs-target="#navDrawer"
 					aria-controls="navDrawer" aria-label="메뉴 열기">
@@ -179,10 +179,10 @@
 			</div>
 		</section>
 
-		<!-- ===== 4. 사이트 · 요금 ===== -->
+		<!-- ===== 4. 사이트 및 이용요금 ===== -->
 		<section class="section bg-2" id="sites">
 			<div class="container">
-				<p class="eyebrow fs-sm fg-primary mb-3">사이트 · 요금</p>
+				<p class="eyebrow fs-sm fg-primary mb-3">사이트 및 이용요금</p>
 				<h2 class="section-title fs-4xl mb-7">넓게 배치한 사이트</h2>
 
 				<div class="row g-7 lg:align-items-center" th:if="${mainType != null}">
@@ -242,7 +242,7 @@
 							<span class="fs-sm" th:text="'전체 ' + ${siteCount} + '개'">전체 22개</span>
 						</div>
 						<p class="fs-xs fg-3 mt-4 mb-5">배치도에서 점선으로 표시된 사이트는 현재 이용할 수 없습니다.</p>
-						<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 · 요금 자세히 보기</a>
+						<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 및 이용요금 자세히 보기</a>
 					</div>
 				</div>
 			</div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head(${'소개 | ' + settings['CAMP_NAME']})}"></head>
+<head th:replace="~{fragments/layout :: head(${'캠핑장 소개 | ' + settings['CAMP_NAME']})}"></head>
 <!-- sub-head-page: 머리글 글자를 진한 색으로 (밝은 배경용) -->
 
 <body class="sub-head-page">
@@ -22,7 +22,7 @@
 						</p>
 						<div class="d-flex flex-wrap gap-3 mt-6">
 							<a class="btn-solid theme-primary" href="/#book">예약하기</a>
-							<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 · 요금 보기</a>
+							<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 및 이용요금 보기</a>
 						</div>
 					</div>
 					<!-- 사진 3칸: 메인 소개 칸과 같은 배치
