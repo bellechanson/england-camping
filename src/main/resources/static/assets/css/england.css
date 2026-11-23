@@ -1138,3 +1138,39 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 		white-space: nowrap;
 	}
 }
+
+/* ===== 페이지 넘어갈 때 부드럽게 (브라우저 View Transitions)
+   - 이전 화면은 살짝 왼쪽으로 밀리며 사라지고, 새 화면은 오른쪽에서 들어오며 나타남
+   - 크롬·엣지·삼성 인터넷·최신 사파리에서 동작, 지원 안 하는 브라우저는 그냥 기존처럼 넘어감
+   - "동작 줄이기" 설정이면 끔 ===== */
+@view-transition {
+	navigation: auto;
+}
+
+::view-transition-old(root) {
+	animation: page-out 0.3s ease both;
+}
+
+::view-transition-new(root) {
+	animation: page-in 0.35s ease both;
+}
+
+@keyframes page-out {
+	to {
+		opacity: 0;
+		transform: translateX(-24px);
+	}
+}
+
+@keyframes page-in {
+	from {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	@view-transition {
+		navigation: none;
+	}
+}

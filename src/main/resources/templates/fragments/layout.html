@@ -83,7 +83,8 @@
 
 			<div class="d-flex align-items-center gap-3 ms-auto">
 				<!-- 어느 페이지에서든 메인의 예약 바로 이동 -->
-				<a class="btn-solid theme-primary btn-sm header-book-btn" href="/#book">예약하기</a>
+				<!-- /#reserve: 메인에 그런 id가 없어서 브라우저가 순간이동하지 않음 → 아래 스크립트가 서서히 내려 줌 -->
+				<a class="btn-solid theme-primary btn-sm header-book-btn" href="/#reserve">예약하기</a>
 				<!-- 다크모드 버튼은 쓰지 않기로 해서 뺌 -->
 				<button class="btn-icon navbar-toggler" type="button" data-bs-toggle="drawer"
 					data-bs-target="#navDrawer" aria-controls="navDrawer" aria-label="메뉴 열기">
@@ -195,22 +196,44 @@
 			});
 		});
 	</script>
-	<!-- 머리글 예약하기 버튼: 메인에서는 예약 바로 서서히 이동 (스크롤 띠 버튼과 같은 움직임)
-	     다른 페이지에서는 예약 바가 없으니 원래 링크대로 메인(/#book)으로 이동 -->
+	<!-- 예약하기 → 메인 예약 바로 서서히 이동 (화면 가운데에 멈춤)
+	     1) 메인에서 누르면: 바로 그 자리에서 서서히 내려감
+	     2) 다른 페이지에서 누르면: /#reserve 로 메인을 열고 → 맨 위에서 시작해서 서서히 내려감
+	     3) 누가 /#book 으로 들어와도: 예약 바를 화면 가운데로 맞춤
+	     "동작 줄이기" 설정이면 움직임 없이 바로 이동 -->
 	<script>
-		document.querySelectorAll('a.header-book-btn[href="/#book"]').forEach(function (btn) {
-			btn.addEventListener('click', function (e) {
-				const bar = document.getElementById('bookBar');
-				if (!bar) {
-					return; // 메인이 아님 → 링크 그대로
-				}
-				e.preventDefault();
-				// 기기에서 "동작 줄이기"를 켠 사람은 바로 이동 (어지러움 방지)
-				const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-				bar.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'center'});
-				history.replaceState(null, '', '#book'); // 주소창도 #book 으로 (뒤로가기 기록은 안 늘림)
+		(function () {
+			const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			const bar = document.getElementById('bookBar'); // 메인에만 있음
+
+			function goToBar(smooth) {
+				bar.scrollIntoView({behavior: (smooth && !reduce) ? 'smooth' : 'auto', block: 'center'});
+				history.replaceState(null, '', '#book'); // 주소는 #book 으로 (뒤로가기 기록은 안 늘림)
+			}
+
+			// 1) 메인에서 예약하기 링크를 누른 경우
+			document.querySelectorAll('a[href="/#reserve"]').forEach(function (link) {
+				link.addEventListener('click', function (e) {
+					if (!bar) {
+						return; // 메인이 아님 → 링크 그대로 메인으로 이동
+					}
+					e.preventDefault();
+					goToBar(true);
+				});
 			});
-		});
+
+			if (!bar) {
+				return;
+			}
+			// 2) 다른 페이지에서 넘어온 경우: 페이지 전환 효과가 끝날 즈음 서서히 내려감
+			if (location.hash === '#reserve') {
+				setTimeout(function () {goToBar(true);}, reduce ? 0 : 350);
+			}
+			// 3) /#book 으로 바로 들어온 경우: 맨 위에 붙지 않게 가운데로 맞춤
+			else if (location.hash === '#book') {
+				goToBar(false);
+			}
+		})();
 	</script>
 </th:block>
 
