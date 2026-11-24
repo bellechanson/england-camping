@@ -20,9 +20,12 @@
 					<div class="lg:col-6">
 						<p class="fg-2 fs-lg mb-5" th:each="paragraph : ${introParagraphs}" th:text="${paragraph}">소개 문단
 						</p>
-						<div class="d-flex flex-wrap gap-3 mt-6">
-							<a class="btn-solid theme-primary" href="/#reserve">예약하기</a>
-							<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 및 이용요금 보기</a>
+						<!-- 예약하기: 머리글 예약하기와 같은 투명 주황 알약 (header-book-btn 재사용)
+						     옆 링크: 밑줄 + 화살표 글자 링크 (england.css .arrow-link) -->
+						<div class="d-flex flex-wrap align-items-center gap-5 mt-6">
+							<a class="btn-solid theme-primary header-book-btn" href="/#reserve">예약하기</a>
+							<a class="arrow-link" th:href="@{/sites}">사이트 및 이용요금 보기<span class="arrow"
+									aria-hidden="true">→</span></a>
 						</div>
 					</div>
 					<!-- 사진 3칸: 메인 소개 칸과 같은 배치
