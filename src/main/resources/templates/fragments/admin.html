@@ -3,7 +3,7 @@
 <!--
   관리자 화면 공통 조각
   - head(pageTitle) : CSS는 손님 화면과 같은 것 사용 + 검색엔진에 안 잡히게
-  - header          : 관리자 메뉴 + 로그아웃
+  - header          : 관리자 메뉴 + 오른쪽 버튼(홈페이지 바로가기 · 로그아웃 · 비밀번호)
   - flash           : 처리 결과 안내 띠 (message = 성공, error = 실패)
   스크립트는 손님 화면 것(fragments/layout :: scripts)을 그대로 씀 → 확인 창(dialog) 동작
 -->
@@ -40,11 +40,17 @@
 			<a th:href="@{/admin/settings}">글/링크 설정</a>
 			<a th:href="@{/admin/prices}">요금 관리</a>
 			<a th:href="@{/admin/sites}">사이트 관리</a>
-			<a th:href="@{/}" target="_blank" rel="noopener">홈페이지 보기</a>
 		</nav>
 
-		<!-- 오른쪽 계정 버튼 묶음: 로그아웃 + 비밀번호 변경 (메뉴와 구분되게 버튼 모양) -->
+		<!-- 오른쪽 버튼 묶음: 홈페이지 바로가기 + 로그아웃 + 비밀번호 변경 (관리 메뉴와 구분되게 버튼 모양) -->
 		<div class="admin-account">
+			<!-- 홈페이지 바로가기 (새 창). 폰에서는 "바로가기"를 숨겨 "홈페이지"만 (머리글이 넘치지 않게) -->
+			<a class="btn-outline theme-secondary btn-sm pill-neutral admin-account-btn" th:href="@{/}" target="_blank"
+				rel="noopener" title="홈페이지 바로가기 (새 창)" aria-label="홈페이지 바로가기 (새 창)">
+				<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"
+					stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M2.5 7.5 8 3l5.5 4.5M4 6.5V13h3V9.5h2V13h3V6.5" />
+				</svg>홈페이지<span class="admin-account-label">바로가기</span></a>
 			<!-- 로그아웃은 POST (CSRF 토큰은 th:action이 자동으로 넣음) -->
 			<form class="admin-logout" th:action="@{/admin/logout}" method="post">
 				<button type="submit" class="btn-outline theme-secondary btn-sm pill-neutral admin-account-btn">
