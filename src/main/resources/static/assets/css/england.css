@@ -875,7 +875,6 @@ a.np-link:focus-visible {
    min-width: 0 → 옆에 날짜가 있는 줄(flex)에서도 제목 칸이 줄어들 수 있게 */
 .notice-content,
 .sub-head h1,
-.notice-nav a,
 .site-banner,
 .admin-table td a {
 	overflow-wrap: anywhere;
@@ -1260,7 +1259,8 @@ a.np-link:focus-visible {
 	flex-direction: column;
 	gap: 0.5rem;
 	padding: 0.8rem 0.9rem;
-	border: 1px solid var(--bs-border-color);
+	border: 1px solid #cfe3cf;
+	/* 이용 가능 = 연초록 (불가 예정·지금 불가는 아래 상태 색 구역에서 바꿈) */
 	border-radius: 0.75rem;
 }
 
@@ -1356,10 +1356,6 @@ a.np-link:focus-visible {
 
 /* ===== 상태 색 (타일·아래 칸 같은 규칙) =====
    이용 가능 = 연초록 / 불가 예정 = 연노랑 / 지금 불가 = 회색 점선 / 저장 전 = 왼쪽 주황 줄 */
-.site-memo-row {
-	border-color: #cfe3cf;
-}
-
 .site-tile.is-planned,
 .site-memo-row.is-planned {
 	border-color: #ecd59a;
