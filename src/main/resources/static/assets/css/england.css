@@ -516,16 +516,6 @@ body:has(.site-banner) .sub-head {
 	font-size: 0.85rem;
 }
 
-/* 사이트 관리: 이용 불가인 줄을 눈에 띄게 */
-.admin-table tr.is-closed td {
-	background: #fbf0ea;
-}
-
-/* 사이트 관리: 메모 칸은 넓게 */
-.admin-table .note-input {
-	min-width: 18rem;
-}
-
 /* ===== 웹 마무리: 관리자 첫 화면 / 관리 바로가기 / 오류 화면 ===== */
 
 /* 관리자 첫 화면 메뉴 카드 (화면 폭에 맞춰 칸 수 자동) */
@@ -1035,6 +1025,179 @@ a.np-link:focus-visible {
 	}
 }
 
+/* ===== 관리자 사이트 관리: 위치별 타일 보드 =====
+   타일을 누르면 이용 가능 ↔ 이용 불가 (숨은 체크박스 + CSS :has 로 모양 바꿈) */
+.site-summary {
+	margin-bottom: 1.5rem;
+	color: var(--bs-fg-2);
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.site-area+.site-area {
+	margin-top: 1.5rem;
+}
+
+.site-area-title {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+/* 타일 칸: 폭에 맞춰 자동 (PC 한 줄에 여러 개, 폰은 4~5개) */
+.site-tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+	gap: 0.6rem;
+}
+
+.site-tile {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.15rem;
+	padding: 0.7rem 0.4rem 0.6rem;
+	/* 이용 가능: 아주 연한 초록 바탕 + 연한 초록 테두리 */
+	border: 1px solid #cfe3cf;
+	border-radius: 0.75rem;
+	background: #f1f8f0;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.site-tile:hover {
+	border-color: #8fbf92;
+}
+
+/* 키보드(Tab)로 왔을 때 테두리 표시 */
+.site-tile:has(:focus-visible) {
+	outline: 2px solid var(--brand);
+	outline-offset: 2px;
+}
+
+/* 체크박스는 눈에 안 보이게 (타일 전체가 버튼) */
+.site-tile-check {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.site-tile-name {
+	font-size: 1.15rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.site-tile-state {
+	font-size: 0.72rem;
+}
+
+.site-tile-state.is-on {
+	color: #1f5a2e;
+	font-weight: 600;
+}
+
+.site-tile-state.is-off {
+	display: none;
+	color: #a2502a;
+	font-weight: 600;
+}
+
+/* 꺼진 타일 (이용 불가): 점선 + 회색 바탕 + 번호에 줄 + "이용 불가" */
+.site-tile:has(.site-tile-check:not(:checked)) {
+	border-style: dashed;
+	border-color: var(--bs-border-color);
+	background: var(--bs-bg-2);
+}
+
+.site-tile:has(.site-tile-check:not(:checked)) .site-tile-name {
+	color: var(--bs-fg-3);
+	text-decoration: line-through;
+}
+
+.site-tile:has(.site-tile-check:not(:checked)) .is-on {
+	display: none;
+}
+
+.site-tile:has(.site-tile-check:not(:checked)) .is-off {
+	display: inline;
+}
+
+/* 메모 있음: 오른쪽 위 작은 주황 점 (글자는 숨기고 마우스 올리면 툴팁) */
+.site-tile-memo {
+	position: absolute;
+	top: 0.35rem;
+	right: 0.4rem;
+	width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 50%;
+	background: var(--brand);
+	font-size: 0;
+}
+
+/* 아래 메모 칸 */
+.site-memos {
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--bs-border-color);
+}
+
+/* 메모 제목 줄: 왼쪽 제목, 오른쪽 펼치기·접기 버튼 */
+.site-memos-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-bottom: 1rem;
+}
+
+/* 메모 칸 목록: 폰 1열, PC 2열 (펼쳤을 때 너무 길지 않게) */
+.site-memo-list {
+	display: grid;
+	gap: 0.6rem 1.5rem;
+}
+
+@media (min-width: 992px) {
+	.site-memo-list {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.site-memo-row {
+	display: grid;
+	grid-template-columns: 3rem minmax(0, 1fr);
+	align-items: center;
+	gap: 0.4rem 0.75rem;
+}
+
+/* display:grid 가 hidden 을 덮어쓰지 않게 */
+.site-memo-row[hidden] {
+	display: none;
+}
+
+.site-memo-name {
+	font-weight: 600;
+	text-align: center;
+}
+
+.site-memo-row .field-error {
+	grid-column: 2;
+	margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.site-tile {
+		transition: none;
+	}
+}
+
 /* 관리자 공지 목록: 폰에서는 표 대신 공지 하나를 두 줄로
    윗줄 = 배지 + 제목 + 기간 (폭 전체) / 아랫줄 = 작성일(왼쪽) + 수정·삭제(오른쪽)
    PC는 그대로 표 3칸, 요금·사이트 관리 표는 영향 없음 */
@@ -1108,19 +1271,6 @@ a.np-link:focus-visible {
 		transition: none;
 	}
 }
-
-.closed-badge {
-	display: inline-block;
-	margin-left: 0.4rem;
-	padding-block: 0.1rem;
-	padding-inline: 0.45rem;
-	border-radius: 999px;
-	background: #b42318;
-	color: #fff;
-	font-size: 0.7rem;
-	vertical-align: middle;
-}
-
 
 /* ===== 모바일 손보기: 손님 화면 ===== */
 
@@ -1264,60 +1414,6 @@ body:not(.sub-head-page) .site-header.is-stuck {
 
 	.admin-nav::-webkit-scrollbar {
 		display: none;
-	}
-
-	/* 1. 사이트 관리: 표 대신 줄마다 카드
-	      첫 줄 = 사이트 이름(+이용 불가 표시) · 스위치, 둘째 줄 = 메모 칸 전체 폭
-	      종류 칸은 지금 전부 "캠핑사이트"라 폰에서는 생략 */
-	.site-table thead {
-		display: none;
-	}
-
-	.site-table,
-	.site-table tbody {
-		display: block;
-	}
-
-	.site-table tr {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		align-items: center;
-		gap: 0.5rem 1rem;
-		padding-block: 0.85rem;
-		padding-inline: 0.5rem;
-		border-bottom: 1px solid var(--bs-border-color);
-	}
-
-	.site-table td {
-		display: block;
-		padding: 0;
-		border-bottom: 0;
-	}
-
-	.site-table td:nth-child(2) {
-		display: none;
-	}
-
-	.site-table td:nth-child(4) {
-		grid-column: 1 / -1;
-	}
-
-	.site-table .note-input {
-		min-width: 0;
-		width: 100%;
-	}
-
-	.site-table label {
-		white-space: nowrap;
-	}
-
-	/* 이용 불가 줄: 칸마다가 아니라 줄 전체에 바탕색 */
-	.site-table tr.is-closed {
-		background: #fbf0ea;
-	}
-
-	.site-table tr.is-closed td {
-		background: transparent;
 	}
 
 	/* 2. 요금 관리: 표 대신 "항목 이름 … 값" 세로 목록 + 아래에 수정 버튼 */

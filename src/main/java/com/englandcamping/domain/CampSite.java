@@ -76,6 +76,14 @@ public class CampSite {
 	 * 짧은 이름: "01번 사이트" → "01", "A 사이트" → "A" (손님 화면 네모 칸에 씀) "싸이트"로 된 옛날 데이터도 같이 처리
 	 */
 	public String getShortName() {
+		return shortNameOf(name);
+	}
+
+	/** 이름 → 짧은 이름 (관리자 사이트 관리 화면에서도 같은 규칙으로 쓰려고 static) */
+	public static String shortNameOf(String name) {
+		if (name == null) {
+			return "";
+		}
 		return name.replaceFirst("\\s*[사싸]이트$", "").replaceFirst("번$", "").strip();
 	}
 
