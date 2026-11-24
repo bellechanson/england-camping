@@ -28,7 +28,7 @@
 
 <!-- 관리자 메뉴 -->
 <header th:fragment="header" class="admin-header">
-	<!-- 배치는 england.css의 admin-header-inner / admin-nav / admin-logout 에서 정함
+	<!-- 배치는 england.css의 admin-header-inner / admin-nav / admin-account 에서 정함
 	     (템플릿 정리용 클래스는 폰에서 덮어쓰기가 어려워서 쓰지 않음)
 	     PC: 이름 · 메뉴 · 로그아웃 한 줄 / 폰: 이름 · 로그아웃 + 아래에 옆으로 밀어서 보는 메뉴 한 줄 -->
 	<div class="container admin-header-inner">
@@ -40,15 +40,84 @@
 			<a th:href="@{/admin/settings}">글/링크 설정</a>
 			<a th:href="@{/admin/prices}">요금 관리</a>
 			<a th:href="@{/admin/sites}">사이트 관리</a>
-			<a th:href="@{/admin/password}">비밀번호 변경</a>
 			<a th:href="@{/}" target="_blank" rel="noopener">홈페이지 보기</a>
 		</nav>
 
-		<!-- 로그아웃은 POST (CSRF 토큰은 th:action이 자동으로 넣음) -->
-		<form class="admin-logout" th:action="@{/admin/logout}" method="post">
-			<button type="submit" class="btn-outline theme-secondary btn-sm">로그아웃</button>
-		</form>
+		<!-- 오른쪽 계정 버튼 묶음: 로그아웃 + 비밀번호 변경 (메뉴와 구분되게 버튼 모양) -->
+		<div class="admin-account">
+			<!-- 로그아웃은 POST (CSRF 토큰은 th:action이 자동으로 넣음) -->
+			<form class="admin-logout" th:action="@{/admin/logout}" method="post">
+				<button type="submit" class="btn-outline theme-secondary btn-sm pill-neutral admin-account-btn">
+					<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"
+						stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6M10 5l3 3-3 3M13 8H6.5" />
+					</svg>로그아웃</button>
+			</form>
+			<!-- 비밀번호 변경: 열쇠 아이콘 알약 버튼 → 아래 팝업을 엶 -->
+			<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral admin-account-btn"
+				data-bs-toggle="dialog" data-bs-target="#passwordDialog" title="비밀번호 변경">
+				<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"
+					stroke-linecap="round" aria-hidden="true">
+					<circle cx="5" cy="8" r="3" />
+					<path d="M8 8h6.5M12 8v2.5M14.5 8v2" />
+				</svg>비밀번호</button>
+		</div>
 	</div>
+
+	<!-- ===== 비밀번호 변경 팝업 =====
+	     머리글 "비밀번호" 버튼, 관리자 첫 화면 카드에서 엶
+	     실패하면 서버가 passwordError 를 보내고 → 아래 스크립트가 팝업을 다시 열어 이유를 보여 줌
+	     비밀번호는 실패해도 다시 채워 넣지 않음 (그래서 th:field 없이 name만) -->
+	<dialog class="dialog" id="passwordDialog" aria-labelledby="passwordDialogTitle">
+		<form th:action="@{/admin/password}" method="post" novalidate>
+			<div class="dialog-header">
+				<h5 class="dialog-title" id="passwordDialogTitle">비밀번호 변경</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="닫기"></button>
+			</div>
+			<div class="dialog-body vstack gap-4">
+				<p class="field-error mb-0" role="alert" th:if="${passwordError}" th:text="${passwordError}">오류</p>
+				<div class="form-field">
+					<label class="form-label" for="currentPassword">현재 비밀번호</label>
+					<input type="password" class="form-control" id="currentPassword" name="currentPassword"
+						autocomplete="current-password">
+				</div>
+				<div class="form-field">
+					<label class="form-label" for="newPassword">새 비밀번호 (8자 이상)</label>
+					<input type="password" class="form-control" id="newPassword" name="newPassword"
+						autocomplete="new-password">
+				</div>
+				<div class="form-field">
+					<label class="form-label" for="newPasswordConfirm">새 비밀번호 확인</label>
+					<input type="password" class="form-control" id="newPasswordConfirm" name="newPasswordConfirm"
+						autocomplete="new-password">
+				</div>
+				<p class="fs-xs fg-3 mb-0">비밀번호를 바꾸면 다른 기기에 켜 둔 "로그인 유지"는 풀립니다.</p>
+				<!-- 바꾼 뒤 돌아올 화면 (아래 스크립트가 지금 주소로 채움, 서버는 /admin 주소만 받아 줌) -->
+				<input type="hidden" name="returnTo" id="passwordReturnTo" value="/admin">
+			</div>
+			<div class="dialog-footer">
+				<button type="button" class="btn-text" data-bs-dismiss="dialog">취소</button>
+				<button type="submit" class="btn-solid theme-primary">변경</button>
+			</div>
+		</form>
+	</dialog>
+
+	<script th:inline="javascript">
+		document.addEventListener('DOMContentLoaded', () => {
+			const dialog = document.getElementById('passwordDialog');
+			if (!dialog) {
+				return;
+			}
+			// 바꾼 뒤 지금 보던 화면으로 돌아오게
+			document.getElementById('passwordReturnTo').value = location.pathname;
+			// 실패하고 돌아왔으면 팝업을 바로 다시 열어서 이유를 보여 줌
+			const hasError = /*[[${passwordError != null}]]*/ false;
+			if (hasError) {
+				dialog.showModal();
+				document.getElementById('currentPassword').focus();
+			}
+		});
+	</script>
 </header>
 
 <!-- 처리 결과 안내 띠 -->

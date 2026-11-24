@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +20,8 @@ import com.englandcamping.service.SiteSettingService;
 
 /**
  * 관리자 공통: 로그인 화면, 띠 공지 저장, 비밀번호 변경 - 로그인 "처리"는 Spring Security가 하고, 여기서는 화면만 보여
- * 줌 - 관리자 첫 화면(/admin)은 AdminHomeController
+ * 줌 - 관리자 첫 화면(/admin)은 AdminHomeController - 비밀번호 변경은 머리글의
+ * 팝업(fragments/admin)에서 보냄
  */
 @Controller
 @RequestMapping("/admin")
@@ -33,7 +33,7 @@ public class AdminController {
 	/** 띠 공지는 공지 관리 화면 안에 있어서, 저장 후 그 화면으로 */
 	private static final String REDIRECT_NOTICES = "redirect:/admin/notices";
 
-	/** 비밀번호 변경 후에는 관리자 첫 화면으로 */
+	/** 관리자 첫 화면 */
 	private static final String REDIRECT_HOME = "redirect:/admin";
 
 	private final AdminAccountService adminAccountService;
@@ -79,32 +79,43 @@ public class AdminController {
 		return REDIRECT_NOTICES;
 	}
 
-	/** 비밀번호 변경 화면 */
+	/** 예전 비밀번호 변경 주소로 들어오면 관리자 첫 화면으로 (이제는 팝업) */
 	@GetMapping("/password")
-	public String passwordForm(Model model) {
-		model.addAttribute("form", new PasswordForm());
-		return "admin/password";
+	public String passwordPage() {
+		return REDIRECT_HOME;
 	}
 
-	/** 비밀번호 변경 처리 (실패하면 같은 화면에 이유 표시, 입력한 비밀번호는 다시 채우지 않음) */
+	/**
+	 * 비밀번호 변경 처리 (머리글 팝업에서 보냄). 성공·실패 모두 원래 보던 화면(returnTo)으로 돌아감. 실패하면
+	 * passwordError → 그 화면에서 팝업이 다시 열리고 이유 표시 (입력한 비밀번호는 다시 채우지 않음)
+	 */
 	@PostMapping("/password")
-	public String changePassword(@ModelAttribute("form") PasswordForm form, Principal principal, Model model,
-			RedirectAttributes redirect) {
+	public String changePassword(@ModelAttribute PasswordForm form,
+			@RequestParam(defaultValue = "/admin") String returnTo, Principal principal, RedirectAttributes redirect) {
+		String back = "redirect:" + safeAdminPath(returnTo);
+
 		if (!Objects.equals(form.getNewPassword(), form.getNewPasswordConfirm())) {
-			return passwordError(model, "새 비밀번호 두 칸이 서로 다릅니다.");
+			redirect.addFlashAttribute("passwordError", "새 비밀번호 두 칸이 서로 다릅니다.");
+			return back;
 		}
 		try {
 			adminAccountService.changePassword(principal.getName(), form.getCurrentPassword(), form.getNewPassword());
 		} catch (IllegalArgumentException e) {
-			return passwordError(model, e.getMessage());
+			redirect.addFlashAttribute("passwordError", e.getMessage());
+			return back;
 		}
 		redirect.addFlashAttribute("message", "비밀번호를 바꿨습니다.");
-		return REDIRECT_HOME;
+		return back;
 	}
 
-	private String passwordError(Model model, String message) {
-		model.addAttribute("form", new PasswordForm()); // 입력값 비우기
-		model.addAttribute("error", message);
-		return "admin/password";
+	/**
+	 * 돌아갈 주소 검사: 관리자 화면 주소(/admin, /admin/notices, /admin/prices/1/edit ...)만 허용. 그
+	 * 외(다른 사이트 주소 등)는 관리자 첫 화면으로 → 다른 사이트로 튕겨 보내기 막음
+	 */
+	private static String safeAdminPath(String path) {
+		if (path != null && path.matches("/admin(/[\\w\\-/]*)?")) {
+			return path;
+		}
+		return "/admin";
 	}
 }

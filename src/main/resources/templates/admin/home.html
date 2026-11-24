@@ -51,10 +51,11 @@
 						th:text="${'전체 ' + siteCount + '개 · 이용 불가 ' + closedSiteCount + '개'}">전체 22개 · 이용 불가 1개</span>
 				</a>
 
-				<a class="admin-tile" th:href="@{/admin/password}">
+				<!-- 비밀번호 변경: 머리글과 같은 팝업을 엶 -->
+				<button type="button" class="admin-tile" data-bs-toggle="dialog" data-bs-target="#passwordDialog">
 					<span class="admin-tile-title">비밀번호 변경</span>
 					<span class="admin-tile-desc">관리자 비밀번호 바꾸기</span>
-				</a>
+				</button>
 
 			</div>
 		</div>

@@ -554,6 +554,15 @@ body:has(.site-banner) .sub-head {
 	font-size: 0.9rem;
 }
 
+
+/* 관리자 첫 화면 카드가 버튼일 때 (비밀번호 변경 팝업): 링크 카드와 같은 모양 */
+button.admin-tile {
+	width: 100%;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
 /* 카드 안 주의 문구 (예: 메인 큰 사진 없음) */
 .admin-tile-warn {
 	color: #b42318;
@@ -1391,10 +1400,24 @@ body:not(.sub-head-page) .site-header.is-stuck {
 	margin: 0;
 }
 
+/* 머리글 오른쪽 계정 버튼 묶음: 로그아웃 + 비밀번호 변경 */
+.admin-account {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* 계정 버튼 (로그아웃 · 비밀번호): 아이콘 + 글자 알약, 둘이 같은 모양 */
+.admin-account-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
 @media (width < 768px) {
 
 	/* 3. 폰: 첫 줄 = 이름 + 로그아웃, 둘째 줄 = 옆으로 밀어서 보는 메뉴 한 줄 */
-	.admin-logout {
+	.admin-account {
 		order: 2;
 		margin-left: auto;
 	}
