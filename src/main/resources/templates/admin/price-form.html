@@ -9,102 +9,178 @@
 
 	<main class="admin-main">
 		<div class="container">
-			<section class="admin-card" style="max-width:48rem">
-				<h1 class="fs-xl fw-semibold mb-5">요금 수정</h1>
+			<!-- 입력 칸 + 미리보기: PC는 왼쪽(넓게)·오른쪽, 폰은 위아래
+			     (공지 쓰기와 같은 .notice-editor 틀, 요금은 입력 칸이 많아 .price-editor 로 왼쪽을 3:2로 넓힘) -->
+			<div class="notice-editor price-editor">
+				<section class="admin-card">
+					<h1 class="fs-xl fw-semibold mb-5">요금 수정</h1>
 
-				<form th:action="@{/admin/prices/{id}(id=${typeId})}" th:object="${form}" method="post"
-					class="vstack gap-5" novalidate>
+					<form th:action="@{/admin/prices/{id}(id=${typeId})}" th:object="${form}" method="post"
+						class="vstack gap-5" novalidate>
 
-					<!-- 기본 정보 -->
-					<div class="form-field">
-						<label class="form-label" for="name">종류 이름</label>
-						<input type="text" class="form-control" th:field="*{name}" maxlength="50"
-							placeholder="예) 캠핑사이트">
-						<p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">오류</p>
+						<!-- 기본 정보 -->
+						<div class="form-field">
+							<label class="form-label" for="name">종류 이름</label>
+							<input type="text" class="form-control" th:field="*{name}" maxlength="50"
+								placeholder="예) 캠핑사이트">
+							<p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">오류</p>
+						</div>
+
+						<div class="row g-5">
+							<div class="md:col-6 form-field">
+								<label class="form-label" for="floorType">바닥</label>
+								<input type="text" class="form-control" th:field="*{floorType}" maxlength="30"
+									placeholder="예) 파쇄석">
+								<p class="field-error" th:if="${#fields.hasErrors('floorType')}"
+									th:errors="*{floorType}">오류</p>
+							</div>
+							<div class="md:col-6 form-field">
+								<label class="form-label" for="sizeText">크기</label>
+								<input type="text" class="form-control" th:field="*{sizeText}" maxlength="30"
+									placeholder="예) 8m x 10m">
+								<p class="field-error" th:if="${#fields.hasErrors('sizeText')}" th:errors="*{sizeText}">
+									오류</p>
+							</div>
+						</div>
+
+						<!-- 금액 (비우면 전화 문의) -->
+						<div class="row g-5">
+							<div class="md:col-4 form-field">
+								<label class="form-label" for="normalPrice">평소 1박 (원)</label>
+								<input type="number" class="form-control" th:field="*{normalPrice}" min="0" step="1000">
+								<p class="field-error" th:if="${#fields.hasErrors('normalPrice')}"
+									th:errors="*{normalPrice}">오류</p>
+							</div>
+							<div class="md:col-4 form-field">
+								<label class="form-label" for="peakPrice">성수기(연휴) 1박 (원)</label>
+								<input type="number" class="form-control" th:field="*{peakPrice}" min="0" step="1000">
+								<p class="field-error" th:if="${#fields.hasErrors('peakPrice')}"
+									th:errors="*{peakPrice}">오류</p>
+							</div>
+							<div class="md:col-4 form-field">
+								<label class="form-label" for="extraPersonFee">성인 추가 1인 (원)</label>
+								<input type="number" class="form-control" th:field="*{extraPersonFee}" min="0"
+									step="1000">
+								<p class="field-error" th:if="${#fields.hasErrors('extraPersonFee')}"
+									th:errors="*{extraPersonFee}">오류</p>
+							</div>
+						</div>
+						<p class="field-hint mt-0">금액 칸을 비워 두면 홈페이지에 "전화 문의"로 나옵니다. 쉼표 없이 숫자만 넣어 주세요.</p>
+
+						<!-- 인원 / 숙박 (성인 = 16세 초과, 소인 = 16세 이하) -->
+						<div class="row g-5">
+							<div class="md:col-3 form-field">
+								<label class="form-label" for="baseGuests">기준 성인</label>
+								<input type="number" class="form-control" th:field="*{baseGuests}" min="1">
+								<p class="field-error" th:if="${#fields.hasErrors('baseGuests')}"
+									th:errors="*{baseGuests}">오류</p>
+							</div>
+							<div class="md:col-3 form-field">
+								<label class="form-label" for="baseChildren">기준 소인</label>
+								<input type="number" class="form-control" th:field="*{baseChildren}" min="0">
+								<p class="field-error" th:if="${#fields.hasErrors('baseChildren')}"
+									th:errors="*{baseChildren}">오류</p>
+							</div>
+							<div class="md:col-3 form-field">
+								<label class="form-label" for="maxGuests">최대 성인</label>
+								<input type="number" class="form-control" th:field="*{maxGuests}" min="1">
+								<p class="field-error" th:if="${#fields.hasErrors('maxGuests')}"
+									th:errors="*{maxGuests}">오류</p>
+								<!-- 최대 < 기준일 때 -->
+								<p class="field-error" th:if="${#fields.hasErrors('guestRangeValid')}"
+									th:errors="*{guestRangeValid}">오류</p>
+							</div>
+							<div class="md:col-3 form-field">
+								<label class="form-label" for="minNights">최소 숙박 (박)</label>
+								<input type="number" class="form-control" th:field="*{minNights}" min="1">
+								<p class="field-error" th:if="${#fields.hasErrors('minNights')}"
+									th:errors="*{minNights}">오류</p>
+							</div>
+						</div>
+						<p class="field-hint mt-0">성인은 16세 초과, 소인은 16세 이하입니다. 소인은 인원 제한 없이 무료라 최대 인원은 성인만 정합니다.</p>
+
+						<div class="d-flex flex-wrap gap-3">
+							<button type="submit" class="btn-solid theme-primary">저장</button>
+							<a class="btn-outline theme-secondary" th:href="@{/admin/prices}">취소</a>
+						</div>
+					</form>
+				</section>
+
+				<!-- ===== 손님 화면 미리보기 =====
+				     저장과는 상관없음. 왼쪽 칸에 입력하는 대로 바로 바뀜 (아래 스크립트)
+				     "사이트 및 이용요금" 페이지 표와 같은 CSS(.eyebrow, .section-title, .spec-row) -->
+				<section class="admin-card notice-preview" aria-label="손님 화면 미리보기">
+					<p class="fs-sm fg-3 mb-4">손님 화면 미리보기 (사이트 및 이용요금 페이지)</p>
+
+					<p class="eyebrow fs-sm fg-primary mb-3" id="pvFloor">파쇄석</p>
+					<h2 class="section-title fs-3xl mb-5" id="pvName">캠핑사이트</h2>
+
+					<div class="spec-row"><span class="fg-3 fs-sm">크기</span><span class="fs-sm" id="pvSize">8m x
+							10m</span></div>
+					<div class="spec-row"><span class="fg-3 fs-sm">기준 인원</span><span class="fs-sm" id="pvBase">성인
+							2명 + 소인 2명</span></div>
+					<div class="spec-row"><span class="fg-3 fs-sm">성인 최대</span><span class="fs-sm" id="pvMax">3명</span>
 					</div>
+					<div class="spec-row"><span class="fg-3 fs-sm">최소 숙박</span><span class="fs-sm"
+							id="pvNights">1박</span></div>
+					<div class="spec-row"><span class="fg-3 fs-sm">평소 1박</span><span class="fs-sm fw-semibold"
+							id="pvNormal">50,000원</span></div>
+					<div class="spec-row"><span class="fg-3 fs-sm">성수기(연휴) 1박</span><span class="fs-sm fw-semibold"
+							id="pvPeak">60,000원</span></div>
+					<div class="spec-row"><span class="fg-3 fs-sm">성인 추가 1인</span><span class="fs-sm"
+							id="pvExtra">10,000원</span></div>
 
-					<div class="row g-5">
-						<div class="md:col-6 form-field">
-							<label class="form-label" for="floorType">바닥</label>
-							<input type="text" class="form-control" th:field="*{floorType}" maxlength="30"
-								placeholder="예) 파쇄석">
-							<p class="field-error" th:if="${#fields.hasErrors('floorType')}" th:errors="*{floorType}">오류
-							</p>
-						</div>
-						<div class="md:col-6 form-field">
-							<label class="form-label" for="sizeText">크기</label>
-							<input type="text" class="form-control" th:field="*{sizeText}" maxlength="30"
-								placeholder="예) 8m x 10m">
-							<p class="field-error" th:if="${#fields.hasErrors('sizeText')}" th:errors="*{sizeText}">오류
-							</p>
-						</div>
-					</div>
-
-					<!-- 금액 (비우면 전화 문의) -->
-					<div class="row g-5">
-						<div class="md:col-4 form-field">
-							<label class="form-label" for="normalPrice">평소 1박 (원)</label>
-							<input type="number" class="form-control" th:field="*{normalPrice}" min="0" step="1000">
-							<p class="field-error" th:if="${#fields.hasErrors('normalPrice')}"
-								th:errors="*{normalPrice}">오류</p>
-						</div>
-						<div class="md:col-4 form-field">
-							<label class="form-label" for="peakPrice">성수기(연휴) 1박 (원)</label>
-							<input type="number" class="form-control" th:field="*{peakPrice}" min="0" step="1000">
-							<p class="field-error" th:if="${#fields.hasErrors('peakPrice')}" th:errors="*{peakPrice}">오류
-							</p>
-						</div>
-						<div class="md:col-4 form-field">
-							<label class="form-label" for="extraPersonFee">성인 추가 1인 (원)</label>
-							<input type="number" class="form-control" th:field="*{extraPersonFee}" min="0" step="1000">
-							<p class="field-error" th:if="${#fields.hasErrors('extraPersonFee')}"
-								th:errors="*{extraPersonFee}">오류</p>
-						</div>
-					</div>
-					<p class="field-hint mt-0">금액 칸을 비워 두면 홈페이지에 "전화 문의"로 나옵니다. 쉼표 없이 숫자만 넣어 주세요.</p>
-
-					<!-- 인원 / 숙박 (성인 = 16세 초과, 소인 = 16세 이하) -->
-					<div class="row g-5">
-						<div class="md:col-3 form-field">
-							<label class="form-label" for="baseGuests">기준 성인</label>
-							<input type="number" class="form-control" th:field="*{baseGuests}" min="1">
-							<p class="field-error" th:if="${#fields.hasErrors('baseGuests')}" th:errors="*{baseGuests}">
-								오류</p>
-						</div>
-						<div class="md:col-3 form-field">
-							<label class="form-label" for="baseChildren">기준 소인</label>
-							<input type="number" class="form-control" th:field="*{baseChildren}" min="0">
-							<p class="field-error" th:if="${#fields.hasErrors('baseChildren')}"
-								th:errors="*{baseChildren}">오류</p>
-						</div>
-						<div class="md:col-3 form-field">
-							<label class="form-label" for="maxGuests">최대 성인</label>
-							<input type="number" class="form-control" th:field="*{maxGuests}" min="1">
-							<p class="field-error" th:if="${#fields.hasErrors('maxGuests')}" th:errors="*{maxGuests}">오류
-							</p>
-							<!-- 최대 < 기준일 때 -->
-							<p class="field-error" th:if="${#fields.hasErrors('guestRangeValid')}"
-								th:errors="*{guestRangeValid}">오류</p>
-						</div>
-						<div class="md:col-3 form-field">
-							<label class="form-label" for="minNights">최소 숙박 (박)</label>
-							<input type="number" class="form-control" th:field="*{minNights}" min="1">
-							<p class="field-error" th:if="${#fields.hasErrors('minNights')}" th:errors="*{minNights}">오류
-							</p>
-						</div>
-					</div>
-					<p class="field-hint mt-0">성인은 16세 초과, 소인은 16세 이하입니다. 소인은 인원 제한 없이 무료라 최대 인원은 성인만 정합니다.</p>
-
-					<div class="d-flex flex-wrap gap-3">
-						<button type="submit" class="btn-solid theme-primary">저장</button>
-						<a class="btn-outline theme-secondary" th:href="@{/admin/prices}">취소</a>
-					</div>
-				</form>
-			</section>
+					<!-- 메인 첫 화면 예약 바의 요금 칸 -->
+					<p class="fs-sm fg-3 mt-6 mb-2">메인 예약 바</p>
+					<div class="spec-row"><span class="fg-3 fs-sm">1박 요금</span><span class="fs-sm fw-semibold"
+							id="pvHero">50,000원~</span></div>
+				</section>
+			</div>
 		</div>
 	</main>
 
 	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+
+	<!-- ===== 요금 수정: 손님 화면 미리보기 =====
+	     입력할 때마다 바로 바뀜. 글자는 textContent로만 넣어서 HTML로 해석되지 않음 -->
+	<script>
+		(() => {
+			const $ = (id) => document.getElementById(id);
+			const ids = ['name', 'floorType', 'sizeText', 'normalPrice', 'peakPrice', 'extraPersonFee',
+				'baseGuests', 'baseChildren', 'maxGuests', 'minNights'];
+			const fields = ids.map($).filter(Boolean);
+			if (fields.length !== ids.length) {
+				return;
+			}
+
+			// 입력값 (앞뒤 공백 제거)
+			const v = (id) => $(id).value.trim();
+
+			// 금액: 비었으면 "전화 문의", 있으면 "50,000원" (손님 화면과 같은 규칙)
+			const won = (value, suffix) => {
+				if (value === '' || Number.isNaN(Number(value))) {
+					return '전화 문의';
+				}
+				return Number(value).toLocaleString('ko-KR') + '원' + (suffix || '');
+			};
+
+			function update() {
+				$('pvFloor').textContent = v('floorType');
+				$('pvName').textContent = v('name') || '종류 이름';
+				$('pvSize').textContent = v('sizeText');
+				$('pvBase').textContent = '성인 ' + v('baseGuests') + '명 + 소인 ' + v('baseChildren') + '명';
+				$('pvMax').textContent = v('maxGuests') + '명';
+				$('pvNights').textContent = v('minNights') + '박';
+				$('pvNormal').textContent = won(v('normalPrice'));
+				$('pvPeak').textContent = won(v('peakPrice'));
+				$('pvExtra').textContent = won(v('extraPersonFee'));
+				$('pvHero').textContent = won(v('normalPrice'), '~');
+			}
+
+			fields.forEach((el) => el.addEventListener('input', update));
+			update(); // 처음 열 때 저장된 값으로
+		})();
+	</script>
 </body>
 
 </html>
