@@ -707,6 +707,162 @@ body:has(.site-banner) .sub-head {
 	min-width: 0;
 }
 
+/* ===== 공지사항 목록 페이지: 카드형 =====
+   (메인 최근 공지 칸은 예전 .notice-list / .notice-item 그대로) */
+.notice-cards {
+	display: grid;
+	/* 칸 폭 = 화면(container) 폭으로 고정
+   	   (없으면 grid가 미리보기 한 줄 길이만큼 카드를 늘려서 화면 밖으로 넘침) */
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.notice-card {
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+	padding: 1.1rem 1.25rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: 1rem;
+	background: color-mix(in oklch, var(--bs-bg-body) 40%, #fff);
+	color: inherit;
+	text-decoration: none;
+	transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 마우스를 올리면: 테두리 주황 + 살짝 떠오름 */
+.notice-card:hover,
+.notice-card:focus-visible {
+	border-color: color-mix(in oklch, var(--brand) 55%, transparent);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 18px -10px rgba(59, 42, 20, 0.35);
+}
+
+/* 고정 공지: 연한 주황 바탕 */
+.notice-card.is-pinned {
+	background: color-mix(in oklch, var(--brand) 7%, var(--bs-bg-body));
+	border-color: color-mix(in oklch, var(--brand) 30%, transparent);
+}
+
+/* 왼쪽 날짜 칸: 위 "2026.11" 작게, 아래 "24" 크게(세리프) */
+.nc-date {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	width: 4.2rem;
+	padding-right: 1.1rem;
+	border-right: 1px solid var(--bs-border-color);
+	text-align: center;
+}
+
+.nc-ym {
+	color: var(--bs-fg-3);
+	font-size: 0.75rem;
+}
+
+.nc-day {
+	font-family: var(--kor-serif);
+	font-size: 1.75rem;
+	line-height: 1.1;
+}
+
+/* 가운데: 제목 + 미리보기 (min-width: 0 → 길면 줄어들 수 있게) */
+.nc-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 0;
+}
+
+.nc-title {
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.nc-title .pin-badge,
+.nc-title .new-badge {
+	vertical-align: 0.1em;
+}
+
+/* 미리보기: 한 줄, 넘치면 … */
+.nc-preview {
+	overflow: hidden;
+	color: var(--bs-fg-3);
+	font-size: 0.875rem;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.nc-arrow {
+	flex: none;
+	color: var(--brand);
+	transition: transform 0.2s ease;
+}
+
+.notice-card:hover .nc-arrow,
+.notice-card:focus-visible .nc-arrow {
+	transform: translateX(3px);
+}
+
+/* 고정 공지 카드 안의 "고정" 배지: 연한 주황 바탕에 묻히지 않게 진한 주황 + 흰 글씨
+   (메인 최근 공지·관리자 목록의 "고정" 배지는 그대로) */
+.notice-card.is-pinned .pin-badge {
+	background: var(--brand);
+	color: #fff;
+}
+
+/* NEW: 주황 테두리 알약 (고정은 기존 .pin-badge) */
+.new-badge {
+	display: inline-block;
+	margin-right: 0.4rem;
+	padding: 0.05rem 0.5rem;
+	border: 1px solid var(--brand);
+	border-radius: 999px;
+	color: color-mix(in oklch, var(--brand) 85%, #000);
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+}
+
+/* 폰: 여백·날짜 칸 줄이고 화살표 숨김 */
+@media (max-width: 575.98px) {
+	.notice-card {
+		gap: 0.9rem;
+		padding: 0.9rem 1rem;
+	}
+
+	.nc-date {
+		width: 3.4rem;
+		padding-right: 0.8rem;
+	}
+
+	.nc-day {
+		font-size: 1.4rem;
+	}
+
+	.nc-arrow {
+		display: none;
+	}
+}
+
+/* 동작 줄이기 설정이면 움직임 끔 */
+@media (prefers-reduced-motion: reduce) {
+
+	.notice-card,
+	.nc-arrow {
+		transition: none;
+	}
+
+	.notice-card:hover,
+	.notice-card:focus-visible {
+		transform: none;
+	}
+}
+
 .closed-badge {
 	display: inline-block;
 	margin-left: 0.4rem;

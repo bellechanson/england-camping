@@ -1,5 +1,7 @@
 package com.englandcamping.controller;
 
+import java.time.LocalDate;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,9 @@ import com.englandcamping.service.NoticeService;
 @RequestMapping("/notice")
 public class NoticeController {
 
+	/** NEW 표시 기간: 쓴 날 포함 3일 (예: 24일에 쓴 글 → 24·25·26일 동안 NEW) */
+	private static final int NEW_DAYS = 3;
+
 	private final NoticeService noticeService;
 
 	public NoticeController(NoticeService noticeService) {
@@ -24,6 +29,8 @@ public class NoticeController {
 	@GetMapping
 	public String list(@RequestParam(defaultValue = "0") int page, Model model) {
 		model.addAttribute("page", noticeService.findPage(page));
+		// 이 시각 이후에 쓴 글이면 NEW (오늘 0시에서 2일 전 = 쓴 날 포함 3일)
+		model.addAttribute("newSince", LocalDate.now().minusDays(NEW_DAYS - 1).atStartOfDay());
 		return "pages/notice-list";
 	}
 

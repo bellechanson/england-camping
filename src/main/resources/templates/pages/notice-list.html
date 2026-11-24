@@ -16,16 +16,27 @@
 
 				<p class="fg-3 mb-0" th:if="${page.empty}">아직 등록된 공지가 없습니다.</p>
 
-				<!-- 고정 공지 먼저, 그다음 최신순 -->
-				<ul class="notice-list" th:unless="${page.empty}">
+				<!-- 고정 공지 먼저, 그다음 최신순
+				     카드 하나 = 왼쪽 날짜 칸(년.월 + 큰 일자) / 제목(고정·NEW 배지) + 본문 미리보기 한 줄 / 화살표
+				     (메인 최근 공지 칸은 예전 .notice-list 그대로 씀) -->
+				<ul class="notice-cards" th:unless="${page.empty}">
 					<li th:each="n : ${page.content}">
-						<a class="notice-item" th:href="@{/notice/{id}(id=${n.id})}">
-							<span class="notice-title">
-								<span class="pin-badge" th:if="${n.pinned}">고정</span><span class="notice-title-text"
-									th:text="${n.title}">제목</span>
+						<a class="notice-card" th:classappend="${n.pinned} ? 'is-pinned'"
+							th:href="@{/notice/{id}(id=${n.id})}">
+							<span class="nc-date">
+								<span class="nc-ym"
+									th:text="${#temporals.format(n.createdAt, 'yyyy.MM')}">2026.11</span>
+								<span class="nc-day" th:text="${#temporals.format(n.createdAt, 'dd')}">24</span>
 							</span>
-							<span class="notice-date fs-sm fg-3"
-								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19</span>
+							<span class="nc-body">
+								<span class="nc-title"><span class="pin-badge" th:if="${n.pinned}">고정</span><span
+										class="new-badge" th:if="${n.createdAt.isAfter(newSince)}">NEW</span><span
+										th:text="${n.title}">제목</span></span>
+								<!-- 본문 앞부분만 (줄바꿈은 띄어쓰기로 보이고, 칸을 넘으면 … 으로 자름) -->
+								<span class="nc-preview" th:if="${!#strings.isEmpty(n.content)}"
+									th:text="${#strings.abbreviate(n.content, 120)}">본문 미리보기</span>
+							</span>
+							<span class="nc-arrow" aria-hidden="true">→</span>
 						</a>
 					</li>
 				</ul>
