@@ -18,7 +18,7 @@
 
 				<!-- 고정 공지 먼저, 그다음 최신순
 				     한 줄 = 왼쪽 날짜(세리프) / 제목(고정·NEW 배지) + 본문 미리보기 한 줄 / 마우스 올리면 → 
-				     고정 공지는 왼쪽 주황 세로선 (메인 최근 공지 칸은 예전 .notice-list 그대로) -->
+				     고정 공지는 왼쪽 주황 세로선 (메인 최근 공지 칸도 같은 .notice-rows, 미리보기만 없음) -->
 				<ul class="notice-rows" th:unless="${page.empty}">
 					<li th:each="n : ${page.content}">
 						<a class="notice-row" th:classappend="${n.pinned} ? 'is-pinned'"

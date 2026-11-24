@@ -39,6 +39,9 @@ public class HomeController {
 		// 최근 공지 3개 (고정 공지 먼저). 없으면 메인에서 공지 칸을 숨김
 		model.addAttribute("recentNotices", noticeService.findRecent());
 
+		// 최근 공지 NEW 배지 기준 (공지 목록과 같음)
+		model.addAttribute("newSince", noticeService.newSince());
+
 		// 갤러리 칸: 갤러리 순서 앞에서 5장 (없으면 사진 자리 그대로)
 		model.addAttribute("galleryPreview", photoService.findPreview());
 

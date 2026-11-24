@@ -98,15 +98,20 @@
 					<h2 class="section-title fs-2xl mb-0">공지사항</h2>
 					<a class="fs-sm" th:href="@{/notice}">전체 보기 →</a>
 				</div>
-				<ul class="notice-list">
+				<!-- 공지사항 페이지와 같은 줄 목록 (미리보기 줄만 뺌)
+				     한 줄 = 날짜(세리프) / 제목(고정·NEW 배지) / 마우스 올리면 → , 고정 공지는 왼쪽 주황 세로선 -->
+				<ul class="notice-rows">
 					<li th:each="n : ${recentNotices}">
-						<a class="notice-item" th:href="@{/notice/{id}(id=${n.id})}">
-							<span class="notice-title">
-								<span class="pin-badge" th:if="${n.pinned}">고정</span><span class="notice-title-text"
-									th:text="${n.title}">제목</span>
+						<a class="notice-row" th:classappend="${n.pinned} ? 'is-pinned'"
+							th:href="@{/notice/{id}(id=${n.id})}">
+							<span class="nrw-date"
+								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.24</span>
+							<span class="nrw-body">
+								<span class="nrw-title"><span class="pin-badge" th:if="${n.pinned}">고정</span><span
+										class="new-badge" th:if="${n.createdAt.isAfter(newSince)}">NEW</span><span
+										th:text="${n.title}">제목</span></span>
 							</span>
-							<span class="notice-date fs-sm fg-3"
-								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19</span>
+							<span class="nrw-arrow" aria-hidden="true">→</span>
 						</a>
 					</li>
 				</ul>

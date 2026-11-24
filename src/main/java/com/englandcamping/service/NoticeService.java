@@ -1,5 +1,7 @@
 package com.englandcamping.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -35,6 +37,14 @@ public class NoticeService {
 	/** 메인용 최근 3개 (고정 공지 먼저) */
 	public List<Notice> findRecent() {
 		return noticeRepository.findTop3ByOrderByPinnedDescCreatedAtDescIdDesc();
+	}
+
+	/** NEW 표시 기간: 쓴 날 포함 3일 (예: 24일에 쓴 글 → 24·25·26일 동안 NEW) */
+	private static final int NEW_DAYS = 3;
+
+	/** 이 시각 이후에 쓴 글이면 NEW (오늘 0시에서 2일 전) — 공지 목록·메인 최근 공지에서 사용 */
+	public LocalDateTime newSince() {
+		return LocalDate.now().minusDays(NEW_DAYS - 1).atStartOfDay();
 	}
 
 	/** 공지 전체 개수 (관리자 첫 화면) */
