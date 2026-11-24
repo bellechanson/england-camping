@@ -991,6 +991,43 @@ a.np-link:focus-visible {
 }
 
 
+/* 관리자 공지 쓰기: 칸 아래 글자 수 (오른쪽 정렬, 작고 흐리게) */
+.field-count {
+	margin: 0.35rem 0 0;
+	color: var(--bs-fg-3);
+	font-size: 0.8rem;
+	text-align: right;
+}
+
+/* 관리자 공지 쓰기 미리보기: 아직 입력 전이면 흐린 안내 글자 */
+#previewTitle.is-placeholder,
+#previewContent.is-placeholder {
+	opacity: 0.45;
+}
+
+
+/* 관리자 공지 쓰기: 쓰기 칸 + 미리보기 배치
+   폰·태블릿: 위아래 (폭 48rem까지) / PC: 왼쪽 쓰기, 오른쪽 미리보기 반반
+   미리보기는 스크롤해도 화면 위쪽에 붙어 있음 (내용이 길어도 계속 보이게) */
+.notice-editor {
+	display: grid;
+	gap: 1.5rem;
+	max-width: 48rem;
+}
+
+@media (min-width: 992px) {
+	.notice-editor {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+		max-width: none;
+	}
+
+	.notice-preview {
+		position: sticky;
+		top: 1.5rem;
+	}
+}
+
 /* 관리자 공지 목록: 폰에서는 표 대신 공지 하나를 두 줄로
    윗줄 = 배지 + 제목 + 기간 (폭 전체) / 아랫줄 = 작성일(왼쪽) + 수정·삭제(오른쪽)
    PC는 그대로 표 3칸, 요금·사이트 관리 표는 영향 없음 */

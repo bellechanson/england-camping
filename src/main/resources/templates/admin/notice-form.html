@@ -9,69 +9,174 @@
 
 	<main class="admin-main">
 		<div class="container">
-			<section class="admin-card" style="max-width:48rem">
-				<h1 class="fs-xl fw-semibold mb-5" th:text="${noticeId == null} ? '새 공지 쓰기' : '공지 수정'">새 공지 쓰기</h1>
+			<!-- 쓰기 칸 + 미리보기: PC는 왼쪽·오른쪽 반반, 폰은 위아래 (england.css .notice-editor) -->
+			<div class="notice-editor">
+				<section class="admin-card">
+					<h1 class="fs-xl fw-semibold mb-5" th:text="${noticeId == null} ? '새 공지 쓰기' : '공지 수정'">새 공지 쓰기</h1>
 
-				<!-- noticeId가 없으면 새로 저장, 있으면 그 공지를 수정 -->
-				<form th:action="${noticeId == null} ? @{/admin/notices} : @{/admin/notices/{id}(id=${noticeId})}"
-					th:object="${form}" method="post" class="vstack gap-5" novalidate>
+					<!-- noticeId가 없으면 새로 저장, 있으면 그 공지를 수정 -->
+					<form th:action="${noticeId == null} ? @{/admin/notices} : @{/admin/notices/{id}(id=${noticeId})}"
+						th:object="${form}" method="post" class="vstack gap-5" novalidate>
 
-					<!-- 분류: 목록·상세에 작은 배지로 보임 (처음엔 "안내") -->
-					<div class="form-field">
-						<label class="form-label" for="category">분류</label>
-						<select class="form-control" th:field="*{category}" style="max-width:14rem">
-							<option th:each="c : ${noticeCategories}" th:value="${c}" th:text="${c.label}">안내</option>
-						</select>
-						<p class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">분류 오류
-						</p>
-					</div>
+						<!-- 분류: 목록·상세에 작은 배지로 보임 (처음엔 "안내") -->
+						<div class="form-field">
+							<label class="form-label" for="category">분류</label>
+							<select class="form-control" th:field="*{category}" style="max-width:14rem">
+								<option th:each="c : ${noticeCategories}" th:value="${c}" th:text="${c.label}">안내
+								</option>
+							</select>
+							<p class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">분류
+								오류
+							</p>
+						</div>
 
-					<div class="form-field">
-						<label class="form-label" for="title">제목</label>
-						<input type="text" class="form-control" th:field="*{title}" maxlength="100"
-							placeholder="예) 이번 주말 개수대 공사 안내">
-						<p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">제목 오류</p>
-					</div>
+						<div class="form-field">
+							<label class="form-label" for="title">제목</label>
+							<input type="text" class="form-control" th:field="*{title}" maxlength="100"
+								placeholder="예) 이번 주말 개수대 공사 안내">
+							<!-- 글자 수 (아래 스크립트가 입력할 때마다 바꿈) -->
+							<p class="field-count" id="titleCount" aria-live="polite">0 / 100자</p>
+							<p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">제목 오류</p>
+						</div>
 
-					<div class="form-field">
-						<label class="form-label" for="content">내용</label>
-						<textarea class="form-control" th:field="*{content}" rows="12"
-							placeholder="줄을 바꾸면 홈페이지에도 그대로 줄이 바뀌어 보입니다."></textarea>
-						<p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">내용 오류</p>
-					</div>
+						<div class="form-field">
+							<label class="form-label" for="content">내용</label>
+							<textarea class="form-control" th:field="*{content}" rows="12"
+								placeholder="줄을 바꾸면 홈페이지에도 그대로 줄이 바뀌어 보입니다."></textarea>
+							<p class="field-count" id="contentCount" aria-live="polite">글자 0자</p>
+							<p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">내용 오류
+							</p>
+						</div>
 
-					<!-- 게시 기간 (둘 다 비워도 됨): 손님 화면 본문 위에 "기간 ..."으로 보임
+						<!-- 게시 기간 (둘 다 비워도 됨): 손님 화면 본문 위에 "기간 ..."으로 보임
 					     끝나는 날이 지나면 고정이 자동으로 풀리고 "종료" 표시 -->
-					<div class="form-field">
-						<span class="form-label">게시 기간 (선택)</span>
-						<div class="date-range">
-							<input type="date" class="form-control" th:field="*{startDate}" aria-label="시작일">
-							<span class="fg-3">~</span>
-							<input type="date" class="form-control" th:field="*{endDate}" aria-label="끝나는 날">
+						<div class="form-field">
+							<span class="form-label">게시 기간 (선택)</span>
+							<div class="date-range">
+								<input type="date" class="form-control" th:field="*{startDate}" aria-label="시작일">
+								<span class="fg-3">~</span>
+								<input type="date" class="form-control" th:field="*{endDate}" aria-label="끝나는 날">
+							</div>
+							<p class="field-hint">비워 두면 기간 없이 계속 보입니다. 끝나는 날이 지나면 상단 고정이 자동으로 풀리고 "종료" 표시가 붙습니다.</p>
+							<p class="field-error" th:if="${#fields.hasErrors('periodValid')}"
+								th:errors="*{periodValid}">
+								기간 오류</p>
 						</div>
-						<p class="field-hint">비워 두면 기간 없이 계속 보입니다. 끝나는 날이 지나면 상단 고정이 자동으로 풀리고 "종료" 표시가 붙습니다.</p>
-						<p class="field-error" th:if="${#fields.hasErrors('periodValid')}" th:errors="*{periodValid}">
-							기간 오류</p>
-					</div>
 
-					<div class="form-field">
-						<div class="switch">
-							<input type="checkbox" id="pinned" name="pinned" value="true" role="switch" switch
-								th:checked="*{pinned}">
+						<div class="form-field">
+							<div class="switch">
+								<input type="checkbox" id="pinned" name="pinned" value="true" role="switch" switch
+									th:checked="*{pinned}">
+							</div>
+							<label for="pinned">상단 고정 (목록 맨 위, 메인에도 먼저 보임 · 게시 기간이 끝나면 자동 해제)</label>
 						</div>
-						<label for="pinned">상단 고정 (목록 맨 위, 메인에도 먼저 보임 · 게시 기간이 끝나면 자동 해제)</label>
-					</div>
 
-					<div class="d-flex flex-wrap gap-3">
-						<button type="submit" class="btn-solid theme-primary">저장</button>
-						<a class="btn-outline theme-secondary" th:href="@{/admin/notices}">취소</a>
-					</div>
-				</form>
-			</section>
+						<div class="d-flex flex-wrap gap-3">
+							<button type="submit" class="btn-solid theme-primary">저장</button>
+							<a class="btn-outline theme-secondary" th:href="@{/admin/notices}">취소</a>
+						</div>
+					</form>
+				</section>
+
+				<!-- ===== 손님 화면 미리보기 =====
+			     저장과는 상관없음. 위 칸에 입력하는 대로 바로 바뀜 (아래 스크립트)
+			     손님 공지 상세와 같은 CSS(.notice-meta, .notice-content, 배지)를 써서 모양이 같음 -->
+				<section class="admin-card notice-preview" aria-label="손님 화면 미리보기">
+					<p class="fs-sm fg-3 mb-4">손님 화면 미리보기 (저장하면 이렇게 보입니다)</p>
+					<h2 class="section-title fs-2xl mb-4" id="previewTitle">제목</h2>
+					<p class="notice-meta" id="previewMeta"></p>
+					<div class="notice-content fs-lg fg-2" id="previewContent">내용</div>
+				</section>
+			</div>
 		</div>
 	</main>
 
 	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+
+	<!-- ===== 공지 쓰기: 글자 수 + 손님 화면 미리보기 =====
+	     입력할 때마다 바로 바뀜. 입력한 글은 textContent로만 넣어서 HTML로 해석되지 않음 (보안) -->
+	<script>
+		(() => {
+			const $ = (id) => document.getElementById(id);
+			const title = $('title');
+			const content = $('content');
+			const category = $('category');
+			const start = $('startDate');
+			const end = $('endDate');
+			const pinned = $('pinned');
+			if (!title || !content) {
+				return;
+			}
+
+			// "2026-11-27" → "2026.11.27"
+			const dot = (v) => v.replaceAll('-', '.');
+
+			// 오늘 날짜 "2026-11-24" (이 컴퓨터 시간 기준) — 끝나는 날이 이보다 앞이면 "종료"
+			const now = new Date();
+			const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'),
+			String(now.getDate()).padStart(2, '0')].join('-');
+
+			// 배지 하나 만들기
+			const badge = (cls, text) => {
+				const span = document.createElement('span');
+				span.className = cls;
+				span.textContent = text;
+				return span;
+			};
+
+			function update() {
+				// 글자 수 (서버 검사와 같은 기준: 제목 100자)
+				$('titleCount').textContent = title.value.length + ' / 100자';
+				$('contentCount').textContent = '글자 ' + content.value.length + '자';
+
+				// 기간 글자 (Notice.getPeriodText 와 같은 규칙)
+				const s = start.value;
+				const e = end.value;
+				let period = null;
+				if (s && e) {
+					period = dot(s) + ' ~ ' + dot(e);
+				} else if (s) {
+					period = dot(s) + '부터';
+				} else if (e) {
+					period = dot(e) + '까지';
+				}
+				const ended = e !== '' && e < today;
+
+				// 배지 줄: 고정(기간이 안 끝났을 때만) / 분류 / 종료 / 기간
+				const meta = $('previewMeta');
+				meta.replaceChildren();
+				if (pinned.checked && !ended) {
+					meta.append(badge('pin-badge', '고정'));
+				}
+				const option = category.options[category.selectedIndex];
+				meta.append(badge('cat-badge cat-' + category.value.toLowerCase(), option ? option.text : '안내'));
+				if (ended) {
+					meta.append(badge('ended-badge', '종료'));
+				}
+				if (period) {
+					const span = document.createElement('span');
+					const strong = document.createElement('strong');
+					strong.textContent = period;
+					span.append('기간 ', strong);
+					meta.append(span);
+				}
+
+				// 제목·본문 (비어 있으면 흐린 안내 글자)
+				const previewTitle = $('previewTitle');
+				const previewContent = $('previewContent');
+				previewTitle.textContent = title.value.trim() || '제목을 입력하면 여기에 보입니다';
+				previewTitle.classList.toggle('is-placeholder', !title.value.trim());
+				previewContent.textContent = content.value.trim() || '내용을 입력하면 여기에 보입니다';
+				previewContent.classList.toggle('is-placeholder', !content.value.trim());
+			}
+
+			[title, content, category, start, end, pinned].forEach((el) => {
+				el.addEventListener('input', update);
+				el.addEventListener('change', update);
+			});
+			update(); // 수정 화면: 저장된 내용으로 처음부터 미리보기
+		})();
+	</script>
 </body>
 
 </html>
