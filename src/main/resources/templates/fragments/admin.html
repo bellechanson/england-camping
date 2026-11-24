@@ -14,6 +14,11 @@
 	<!-- 관리자 화면은 검색 결과에 나오지 않게 -->
 	<meta name="robots" content="noindex, nofollow">
 	<title th:text="${pageTitle + ' | ' + settings['CAMP_NAME'] + ' 관리'}">관리</title>
+	<!-- 파비콘 (브라우저 탭 아이콘) + 폰 홈 화면 아이콘. 파일은 static 폴더 맨 위 -->
+	<link rel="icon" th:href="@{/favicon.ico}" sizes="32x32">
+	<link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+	<link rel="icon" type="image/png" sizes="192x192" th:href="@{/icon-192.png}">
+	<link rel="apple-touch-icon" th:href="@{/apple-touch-icon.png}">
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
