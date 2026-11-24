@@ -84,7 +84,8 @@
 						</div>
 
 						<p class="fs-sm fg-3 mt-5 mb-2" th:text="${settings['EXTRA_PERSON_INFO']}">16세 이하 무료</p>
-						<p class="fs-xs fg-3 mb-0">배치도에서 점선으로 표시된 사이트는 현재 이용할 수 없습니다.</p>
+						<!-- 사이트 이용 안내 (지금 불가 + 불가 예정, fragments/sites :: statusList) -->
+						<div th:replace="~{fragments/sites :: statusList}"></div>
 					</div>
 				</div>
 			</div>

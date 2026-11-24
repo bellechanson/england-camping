@@ -1,6 +1,8 @@
 package com.englandcamping.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.englandcamping.domain.CampSite;
 import com.englandcamping.domain.SiteType;
 import com.englandcamping.dto.CampSiteForm;
+import com.englandcamping.dto.SiteStatusNotice;
 import com.englandcamping.dto.SiteTypeForm;
 import com.englandcamping.repository.CampSiteRepository;
 import com.englandcamping.repository.SiteTypeRepository;
@@ -57,6 +60,43 @@ public class SiteGuideService {
 	public long countClosedSites() {
 		return campSiteRepository.findAllByOrderBySortOrderAscIdAsc().stream().filter(site -> !site.isOpenNow())
 				.count();
+	}
+
+	/**
+	 * 손님 화면 "사이트 이용 안내": 지금 이용 불가 + 앞으로 불가 예정 사이트. 지금 불가 먼저(배치도 순서), 그다음 예정을 시작일 빠른
+	 * 순. 기간이 끝난 사이트는 저절로 빠짐. 비어 있으면 화면에 "모두 이용할 수 있어요"
+	 */
+	public List<SiteStatusNotice> findStatusNotices(List<CampSite> sites) {
+		LocalDate today = LocalDate.now();
+		List<SiteStatusNotice> notices = new ArrayList<>();
+		List<CampSite> planned = new ArrayList<>();
+
+		for (CampSite site : sites) {
+			if (!site.isOpenNow()) {
+				// 기간으로 막힌 사이트는 끝나는 날을, 끝나는 날이 없거나 예전 방식으로 꺼 둔 사이트는 "당분간"
+				String text = (site.isAvailable() && site.getClosedUntil() != null)
+						? koreanDate(site.getClosedUntil(), today) + "까지 이용 불가"
+						: "당분간 이용 불가";
+				notices.add(new SiteStatusNotice(site.getShortName(), true, text));
+			} else if (site.getClosedFrom() != null && site.getClosedFrom().isAfter(today)) {
+				planned.add(site);
+			}
+		}
+
+		planned.sort(Comparator.comparing(CampSite::getClosedFrom));
+		for (CampSite site : planned) {
+			String from = koreanDate(site.getClosedFrom(), today);
+			String text = (site.getClosedUntil() == null) ? from + "부터 이용 불가"
+					: from + " ~ " + koreanDate(site.getClosedUntil(), today) + " 이용 불가";
+			notices.add(new SiteStatusNotice(site.getShortName(), false, text));
+		}
+		return notices;
+	}
+
+	/** "11월 26일" (올해가 아니면 "2027년 3월 31일") */
+	private static String koreanDate(LocalDate day, LocalDate today) {
+		String monthDay = day.getMonthValue() + "월 " + day.getDayOfMonth() + "일";
+		return (day.getYear() == today.getYear()) ? monthDay : day.getYear() + "년 " + monthDay;
 	}
 
 	/** 사이트 종류 하나 (없으면 404 페이지) */

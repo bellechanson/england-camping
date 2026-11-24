@@ -36,6 +36,9 @@ public class HomeController {
 		model.addAttribute("sites", sites);
 		model.addAttribute("siteCount", sites.size());
 
+		// 요금표 아래 "사이트 이용 안내" (지금 불가 + 불가 예정)
+		model.addAttribute("siteNotices", siteGuideService.findStatusNotices(sites));
+
 		// 최근 공지 3개 (고정 공지 먼저). 없으면 메인에서 공지 칸을 숨김
 		model.addAttribute("recentNotices", noticeService.findRecent());
 

@@ -184,6 +184,81 @@ body {
 	text-decoration: line-through;
 }
 
+/* ===== 손님 화면: 사이트 이용 안내 목록 (요금표 아래) =====
+   번호 동그라미는 배치도와 같은 모양 (보통 = 주황 실선, 지금 불가 = 점선 + 줄) */
+.site-status-title {
+	margin: 1.5rem 0 0.5rem;
+	color: var(--brand);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+.site-status-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.site-status-list li,
+.site-status-ok {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0;
+	padding: 0.35rem 0;
+	font-size: 0.9rem;
+}
+
+.site-status-num {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.75rem;
+	height: 1.75rem;
+	border: 1.5px solid var(--brand);
+	border-radius: 50%;
+	background: #fffdf9;
+	color: color-mix(in oklch, var(--brand) 80%, #000);
+	font-size: 0.7rem;
+	font-weight: 600;
+}
+
+.site-status-num.is-closed {
+	border-style: dashed;
+	border-color: #b8ab97;
+	background: #faf6ef;
+	color: #b7ab99;
+	text-decoration: line-through;
+}
+
+/* 모두 이용 가능: 연초록 동그라미 + ✓ */
+.site-status-num.is-ok {
+	border: 0;
+	background: #e7efe3;
+	color: #1f5a2e;
+	font-size: 0.85rem;
+}
+
+/* "예정" 딱지 */
+.site-status-flag {
+	margin-left: 0.25rem;
+	padding: 0.05rem 0.45rem;
+	border-radius: 999px;
+	background: #f3e3c9;
+	color: #8a6116;
+	font-size: 0.7rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.site-status-note {
+	margin: 0.5rem 0 0;
+	color: var(--bs-fg-3);
+	font-size: 0.75rem;
+}
+
 
 /* 도로·계곡 이름: 오른쪽 정렬 + 가는 안내선 */
 .site-map .map-label.is-end {

@@ -249,7 +249,10 @@
 						<div class="spec-row"><span class="fg-3 fs-sm">사이트</span>
 							<span class="fs-sm" th:text="'전체 ' + ${siteCount} + '개'">전체 22개</span>
 						</div>
-						<p class="fs-xs fg-3 mt-4 mb-5">배치도에서 점선으로 표시된 사이트는 현재 이용할 수 없습니다.</p>
+						<!-- 사이트 이용 안내 (지금 불가 + 불가 예정, fragments/sites :: statusList) -->
+						<div class="mb-5">
+							<div th:replace="~{fragments/sites :: statusList}"></div>
+						</div>
 						<a class="btn-outline theme-secondary" th:href="@{/sites}">사이트 및 이용요금 자세히 보기</a>
 					</div>
 				</div>

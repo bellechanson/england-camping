@@ -1,10 +1,13 @@
 package com.englandcamping.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.englandcamping.domain.CampSite;
 import com.englandcamping.service.SiteGuideService;
 
 /**
@@ -32,8 +35,11 @@ public class PageController {
 	/** 사이트 · 요금 */
 	@GetMapping("/sites")
 	public String sites(Model model) {
+		List<CampSite> sites = siteGuideService.findAllSites();
 		model.addAttribute("types", siteGuideService.findAllTypes());
-		model.addAttribute("sites", siteGuideService.findAllSites());
+		model.addAttribute("sites", sites);
+		// 요금표 아래 "사이트 이용 안내" (지금 불가 + 불가 예정)
+		model.addAttribute("siteNotices", siteGuideService.findStatusNotices(sites));
 		return "pages/sites";
 	}
 

@@ -120,6 +120,30 @@
 		</g>
 	</svg>
 
+	<!-- ===== 손님용 "사이트 이용 안내" 목록 (메인·사이트 페이지 요금표 아래) =====
+	     쓰는 쪽 화면에 ${siteNotices}(SiteGuideService.findStatusNotices)와 ${sites}가 있어야 함
+	     번호 동그라미는 배치도와 같은 모양: 지금 불가 = 점선 + 줄, 예정 = 주황 실선 -->
+	<div th:fragment="statusList" class="site-status">
+		<p class="site-status-title">사이트 이용 안내</p>
+
+		<ul class="site-status-list" th:if="${!#lists.isEmpty(siteNotices)}">
+			<li th:each="n : ${siteNotices}">
+				<span class="site-status-num" th:classappend="${n.closedNow} ? 'is-closed'"
+					th:text="${n.shortName}">07</span>
+				<span><span th:text="${n.text}">11월 26일까지 이용 불가</span>
+					<span class="site-status-flag" th:unless="${n.closedNow}">예정</span></span>
+			</li>
+		</ul>
+
+		<!-- 막힌 사이트가 하나도 없을 때 -->
+		<p class="site-status-ok" th:if="${#lists.isEmpty(siteNotices)}">
+			<span class="site-status-num is-ok" aria-hidden="true">✓</span>
+			<span th:text="'지금은 ' + ${#lists.size(sites)} + '개 사이트 모두 이용할 수 있어요'">지금은 22개 사이트 모두 이용할 수
+				있어요</span>
+		</p>
+
+		<p class="site-status-note" th:if="${!#lists.isEmpty(siteNotices)}">배치도에서 점선으로 표시된 사이트는 지금 이용할 수 없습니다.</p>
+	</div>
 </body>
 
 </html>
