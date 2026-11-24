@@ -1084,6 +1084,44 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 	}
 }
 
+/* 오시는 길: 길찾기 버튼 두 개 반반
+   칸이 좁으면(버튼 하나가 9.5rem보다 좁아지면) 자동으로 위아래 한 줄씩 */
+.map-btns {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+	gap: 0.75rem;
+}
+
+.map-btns a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	white-space: nowrap;
+}
+
+.map-btns svg {
+	width: 1rem;
+	height: 1rem;
+	flex: none;
+}
+
+/* 회색 테두리 알약 (주황 알약 옆의 보조 버튼) — 마우스를 올리면 살짝 진해짐 */
+.pill-neutral {
+	border-radius: 999px;
+	color: inherit;
+	background: transparent;
+	border: 1px solid color-mix(in oklch, currentColor 25%, transparent);
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.pill-neutral:hover,
+.pill-neutral:focus-visible {
+	color: inherit;
+	background: color-mix(in oklch, currentColor 6%, transparent);
+	border-color: color-mix(in oklch, currentColor 45%, transparent);
+}
+
 /* ===== 메인 예약 바: 예약처 로고 + 아래 작은 이름 ===== */
 .reserve-logos {
 	display: flex;

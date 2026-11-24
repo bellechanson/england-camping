@@ -36,13 +36,23 @@
 						<div class="spec-row spec-row-long"><span class="fg-3 fs-sm">주차</span><span
 								class="fs-sm text-end" th:text="${settings['PARKING_INFO']}">주차 안내</span></div>
 
-						<div class="d-grid gap-3 mt-6">
+						<!-- 길찾기 버튼 두 개 반반 (칸이 좁으면 위아래로)
+								     카카오: 머리글 예약하기와 같은 투명 주황 알약 / 네이버: 회색 테두리 알약 -->
+						<div class="map-btns mt-6">
 							<!-- 카카오맵 길찾기: 도착지를 캠핑장 좌표로 -->
-							<a class="btn-solid theme-primary" target="_blank" rel="noopener"
-								th:href="|https://map.kakao.com/link/to/${settings['CAMP_NAME']},${settings['MAP_LAT']},${settings['MAP_LNG']}|">카카오맵
-								길찾기</a>
-							<a class="btn-outline theme-secondary" target="_blank" rel="noopener"
-								th:href="${settings['MAP_NAVER_URL']}">네이버 지도에서 보기</a>
+							<a class="btn-solid theme-primary header-book-btn" target="_blank" rel="noopener"
+								th:href="|https://map.kakao.com/link/to/${settings['CAMP_NAME']},${settings['MAP_LAT']},${settings['MAP_LNG']}|">
+								<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+									stroke-linejoin="round" aria-hidden="true">
+									<path d="M8 1.5 13.5 14 8 11 2.5 14z" />
+								</svg>카카오맵 길찾기</a>
+							<a class="btn-outline theme-secondary pill-neutral" target="_blank" rel="noopener"
+								th:href="${settings['MAP_NAVER_URL']}">
+								<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+									stroke-linejoin="round" aria-hidden="true">
+									<path d="M8 14.5s5-4.6 5-8.5a5 5 0 0 0-10 0c0 3.9 5 8.5 5 8.5z" />
+									<circle cx="8" cy="6" r="1.8" />
+								</svg>네이버 지도</a>
 						</div>
 					</div>
 
