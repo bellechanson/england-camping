@@ -38,7 +38,7 @@ public class SiteSetting {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	/** 값 바꾸기 (5단계 관리자 화면에서 사용) */
+	/** 값 바꾸기 (관리자 글/링크 설정, 띠 공지에서 사용) */
 	public void changeValue(String settingValue) {
 		this.settingValue = settingValue;
 		this.updatedAt = LocalDateTime.now();

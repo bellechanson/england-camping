@@ -83,8 +83,10 @@ public class GlobalModelAdvice {
 	}
 
 	/**
-	 * 사이트 기본 주소 (예: http://localhost:8044) 카톡·검색 미리보기의 사진 주소는 "http://..."부터 전부 적어야
-	 * 해서 필요 (배포 때 nginx 뒤에 두면 server.forward-headers-strategy 설정 필요 → 6단계)
+	 * 사이트 기본 주소 (PC: http://localhost:8044, 서버: https://englandcamp.com) 카톡·검색
+	 * 미리보기의 사진 주소는 "https://..."부터 전부 적어야 해서 필요. 서버는 nginx 뒤라서
+	 * application-prod.properties의 server.forward-headers-strategy=native 로 https
+	 * 주소를 받음
 	 */
 	@ModelAttribute("baseUrl")
 	public String baseUrl() {

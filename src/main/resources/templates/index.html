@@ -10,8 +10,7 @@
 
 	<header th:replace="~{fragments/layout :: header}"></header>
 
-	<!-- ===== 1. 첫 화면 =====
-     사진이 생기면(4단계) 여기에 <img class="hero-bg"> 를 넣는다. 지금은 갈색 그라데이션 -->
+	<!-- ===== 1. 첫 화면 ===== -->
 	<section class="stay">
 		<!-- 메인 큰 사진 (관리자 > 사진 관리에서 지정, 없으면 갈색 그라데이션) -->
 		<img class="hero-bg" th:if="${slotPhotos['HERO'] != null}" th:src="@{${slotPhotos['HERO'].url}}" alt=""
@@ -64,7 +63,7 @@
 	</div>
 
 	<!-- 스크롤을 내리면 위에 붙는 작은 바 (main.js가 보였다/숨겼다 함)
-	     메뉴도 같이 넣어서 메인 중간에서도 다른 페이지로 바로 이동 (넓은 화면에서만, 좁은 화면은 6단계) -->
+	메뉴도 같이 넣어서 메인 중간에서도 다른 페이지로 바로 이동 (넓은 화면은 가로 메뉴, 폰은 ≡ 서랍 메뉴) -->
 	<div class="book-dock" id="bookDock">
 		<div class="container-fluid px-0 d-flex align-items-center justify-content-between gap-4">
 			<a class="wordmark dock-name" th:href="@{/}" th:text="${settings['CAMP_NAME']}">잉글랜드 캠핑장</a>
@@ -352,7 +351,7 @@
 			</div>
 		</section>
 
-		<!-- ===== 6. 갤러리 (사진은 4단계부터) ===== -->
+		<!-- ===== 6. 갤러리 (갤러리 순서 앞에서 5장, 없으면 사진 자리 그대로) ===== -->
 		<section class="section bg-2" id="gallery">
 			<div class="container mb-6">
 				<div class="d-flex flex-wrap justify-content-between align-items-end gap-4">

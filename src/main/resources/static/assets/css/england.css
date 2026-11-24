@@ -17,7 +17,6 @@ body {
 	word-break: keep-all;
 }
 
-.display-serif,
 .stay-title,
 .room-name,
 .section-title,
@@ -94,10 +93,6 @@ body {
 	height: 100%;
 }
 
-/* 사이트·요금 페이지: 너무 커지지 않게 */
-.site-map-large {
-	max-width: 52rem;
-}
 
 /* --- 계곡: 연한 물색 띠 --- */
 .site-map .map-water {
@@ -412,10 +407,14 @@ body {
 	flex: none;
 }
 
-/* 공지 본문: 입력한 줄바꿈을 그대로 보여 줌 */
+/* 공지 본문: 입력한 줄바꿈을 그대로 보여 줌
+   본문 폭은 읽기 좋게 제한(왼쪽 정렬), 본문 아래 구분선 */
 .notice-content {
 	white-space: pre-line;
 	line-height: 1.8;
+	max-width: 46rem;
+	padding-bottom: 2.5rem;
+	border-bottom: 1px solid var(--bs-border-color);
 }
 
 /* 메인 최근 공지 칸 (위쪽만 여백, 아래는 바로 소개 섹션) */
@@ -524,10 +523,10 @@ body:has(.site-banner) .sub-head {
 	gap: 1rem;
 }
 
-/* 관리자: 사진 목록 카드 */
+/* 관리자: 사진 목록 카드 (글자 잘림 방지로 조금 넓게) */
 .photo-admin-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 	gap: 1rem;
 }
 
@@ -537,7 +536,7 @@ body:has(.site-banner) .sub-head {
 	border-radius: var(--bs-radius-4);
 }
 
-/* ===== 5단계: 설정 / 요금 / 사이트 관리 ===== */
+/* ===== 관리자: 설정 / 요금 / 사이트 관리 ===== */
 
 /* 입력 칸 아래 작은 도움말 */
 .field-hint {
@@ -547,9 +546,9 @@ body:has(.site-banner) .sub-head {
 	font-size: 0.85rem;
 }
 
-/* 사이트 관리: 이용 불가인 줄은 바탕을 살짝 어둡게 */
+/* 사이트 관리: 이용 불가인 줄을 눈에 띄게 */
 .admin-table tr.is-closed td {
-	background: var(--bs-bg-2);
+	background: #fbf0ea;
 }
 
 /* 사이트 관리: 메모 칸은 넓게 */
@@ -673,7 +672,7 @@ body:has(.site-banner) .sub-head {
 	color: var(--bs-primary-base);
 }
 
-/* 메뉴는 넓은 화면에서만 (좁은 화면은 6단계 모바일 때) */
+/* 메뉴는 넓은 화면에서만 (폰은 ≡ 버튼으로 서랍 메뉴) */
 @media (width >=992px) {
 	.dock-nav {
 		display: flex;
@@ -687,26 +686,13 @@ body:has(.site-banner) .sub-head {
 	color: var(--bs-fg-3);
 }
 
-/* 공지 상세: 본문 폭은 읽기 좋게 제한(왼쪽 정렬), 본문 아래 구분선 */
-.notice-content {
-	max-width: 46rem;
-	padding-bottom: 2.5rem;
-	border-bottom: 1px solid var(--bs-border-color);
-}
+
 
 .notice-nav {
 	max-width: 46rem;
 }
 
-/* 관리자 사진 관리: 카드 조금 넓게 (글자 잘림 방지) */
-.photo-admin-grid {
-	grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-}
 
-/* 관리자 사이트 관리: 이용 불가 줄을 더 눈에 띄게 */
-.admin-table tr.is-closed td {
-	background: #fbf0ea;
-}
 
 .closed-badge {
 	display: inline-block;

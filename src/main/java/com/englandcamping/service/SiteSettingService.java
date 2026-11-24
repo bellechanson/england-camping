@@ -67,7 +67,7 @@ public class SiteSettingService {
 	}
 
 	/**
-	 * 값 바꾸기 (DB에 없으면 새로 만듦) — 띠 공지, 5단계 관리자 화면에서 사용 클래스 전체는 readOnly라서 여기만 쓰기 가능한
+	 * 값 바꾸기 (DB에 없으면 새로 만듦) — 띠 공지, 관리자 글/링크 설정에서 사용. 클래스 전체는 readOnly라서 여기만 쓰기 가능한
 	 * 트랜잭션으로
 	 */
 	@Transactional
