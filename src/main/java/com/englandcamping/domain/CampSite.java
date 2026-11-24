@@ -1,5 +1,7 @@
 package com.englandcamping.domain;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,13 +33,23 @@ public class CampSite {
 	@JoinColumn(name = "site_type_id", nullable = false)
 	private SiteType siteType;
 
-	/** 지금 손님이 이용 가능한지 */
+	/**
+	 * 예전 방식의 켜기/끄기. 지금은 저장할 때 항상 true 이고, 이용 불가는 아래 기간(closedFrom~closedUntil)으로 정함
+	 */
 	@Column(nullable = false)
 	private boolean available;
 
 	/** 관리자 메모 (예: 장박 이용 중, 2027년 3월까지) */
 	@Column(length = 200)
 	private String note;
+
+	/** 이용 불가 기간 시작일 (비면 "지금부터"). 관리자 > 사이트 관리에서 정함 */
+	@Column(name = "closed_from")
+	private LocalDate closedFrom;
+
+	/** 이용 불가 기간 끝나는 날 (이날까지 불가). 비면 기간 없음 */
+	@Column(name = "closed_until")
+	private LocalDate closedUntil;
 
 	/** 화면에 보여 줄 순서 (작을수록 앞) */
 	@Column(nullable = false)
@@ -62,6 +74,34 @@ public class CampSite {
 		this.available = available;
 		this.note = note;
 		this.sortOrder = sortOrder;
+	}
+
+	/** 이용 불가 기간 바꾸기 (둘 다 null 이면 기간 없음) */
+	public void changeClosedPeriod(LocalDate closedFrom, LocalDate closedUntil) {
+		this.closedFrom = closedFrom;
+		this.closedUntil = closedUntil;
+	}
+
+	/**
+	 * 그날이 이용 불가 기간 안인지. 둘 다 비면 기간 없음 / 시작일만 있으면 그날부터 계속 / 끝나는 날만 있으면 그날까지 계속 (관리자
+	 * 화면 스크립트의 stateOf 와 같은 규칙)
+	 */
+	public boolean isClosedOn(LocalDate day) {
+		if (closedFrom == null && closedUntil == null) {
+			return false;
+		}
+		if (closedFrom != null && day.isBefore(closedFrom)) {
+			return false;
+		}
+		return closedUntil == null || !day.isAfter(closedUntil);
+	}
+
+	/**
+	 * 손님 화면용: 지금 실제로 이용 가능한지 = 켜져 있고 + 오늘이 불가 기간이 아님. 화면을 열 때마다 오늘 날짜로 판단 → 기간이 끝나면
+	 * 저절로 이용 가능 (밤에 따로 도는 작업 없음)
+	 */
+	public boolean isOpenNow() {
+		return available && !isClosedOn(LocalDate.now());
 	}
 
 	public Long getId() {
@@ -101,5 +141,13 @@ public class CampSite {
 
 	public int getSortOrder() {
 		return sortOrder;
+	}
+
+	public LocalDate getClosedFrom() {
+		return closedFrom;
+	}
+
+	public LocalDate getClosedUntil() {
+		return closedUntil;
 	}
 }

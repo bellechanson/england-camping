@@ -18,7 +18,4 @@ public interface CampSiteRepository extends JpaRepository<CampSite, Long> {
 	 */
 	@EntityGraph(attributePaths = "siteType")
 	List<CampSite> findAllByOrderBySortOrderAscIdAsc();
-
-	/** 이용 불가 사이트 수 (available = false 인 행 개수, DB에서 바로 셈) */
-	long countByAvailableFalse();
 }

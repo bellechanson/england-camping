@@ -74,7 +74,7 @@ public class AdminSiteController {
 	public String updateSites(@Valid @ModelAttribute("form") CampSiteForm form, BindingResult bindingResult,
 			Model model, RedirectAttributes redirect) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute("error", "메모는 200자 이내로 입력해 주세요. 빨간 글씨가 있는 줄을 확인해 주세요.");
+			model.addAttribute("error", "빨간 글씨가 있는 줄을 확인해 주세요. (메모 200자 이내, 시작일은 끝나는 날과 같거나 앞)");
 			return "admin/sites";
 		}
 		int changed = siteGuideService.updateSiteStatuses(form.getRows());

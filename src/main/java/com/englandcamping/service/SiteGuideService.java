@@ -1,5 +1,6 @@
 package com.englandcamping.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,9 +53,10 @@ public class SiteGuideService {
 		return campSiteRepository.count();
 	}
 
-	/** 이용 불가 사이트 수 (관리자 첫 화면) — 22개를 불러오지 않고 DB에서 바로 셈 */
+	/** 이용 불가 사이트 수 (관리자 첫 화면) — 끈 사이트 + 오늘이 불가 기간인 사이트 */
 	public long countClosedSites() {
-		return campSiteRepository.countByAvailableFalse();
+		return campSiteRepository.findAllByOrderBySortOrderAscIdAsc().stream().filter(site -> !site.isOpenNow())
+				.count();
 	}
 
 	/** 사이트 종류 하나 (없으면 404 페이지) */
@@ -73,7 +75,8 @@ public class SiteGuideService {
 	}
 
 	/**
-	 * 관리자: 사이트 이용 가능/불가 + 메모 한꺼번에 저장. 이름·종류·순서는 건드리지 않는다.
+	 * 관리자: 사이트 메모 + 이용 불가 기간 한꺼번에 저장. 이용 가능/불가는 기간으로만 정하므로 available 은 항상 true 로
+	 * 맞춘다 (예전에 꺼 둔 값도 여기서 정리). 이미 끝난 기간은 지운다. 이름·종류·순서는 건드리지 않는다.
 	 *
 	 * @return 실제로 바뀐 사이트 수 (안내 문구용)
 	 */
@@ -81,6 +84,7 @@ public class SiteGuideService {
 	public int updateSiteStatuses(List<CampSiteForm.Row> rows) {
 		Map<Long, CampSite> sites = campSiteRepository.findAllByOrderBySortOrderAscIdAsc().stream()
 				.collect(Collectors.toMap(CampSite::getId, Function.identity()));
+		LocalDate today = LocalDate.now();
 
 		int changed = 0;
 		for (CampSiteForm.Row row : rows) {
@@ -89,11 +93,26 @@ public class SiteGuideService {
 				continue; // 없는 번호가 들어오면 무시
 			}
 			String note = blankToNull(row.getNote());
+
+			// 화면에서 온 기간 (끝나는 날이 이미 지났으면 기간 없음)
+			LocalDate from = row.getClosedFrom();
+			LocalDate until = row.getClosedUntil();
+			if (until != null && until.isBefore(today)) {
+				from = null;
+				until = null;
+			}
+			// DB에 있는 기간도 끝난 건 없는 것으로 보고 비교 (끝난 기간만 남아 있다고 "바뀜"으로 세지 않게)
+			boolean savedExpired = site.getClosedUntil() != null && site.getClosedUntil().isBefore(today);
+			LocalDate savedFrom = savedExpired ? null : site.getClosedFrom();
+			LocalDate savedUntil = savedExpired ? null : site.getClosedUntil();
+
 			// 바뀐 게 없으면 건너뜀
-			if (site.isAvailable() == row.isAvailable() && Objects.equals(site.getNote(), note)) {
+			if (site.isAvailable() && Objects.equals(site.getNote(), note) && Objects.equals(savedFrom, from)
+					&& Objects.equals(savedUntil, until)) {
 				continue;
 			}
-			site.update(site.getName(), site.getSiteType(), row.isAvailable(), note, site.getSortOrder());
+			site.update(site.getName(), site.getSiteType(), true, note, site.getSortOrder());
+			site.changeClosedPeriod(from, until);
 			changed++;
 		}
 		return changed;

@@ -1,18 +1,23 @@
 package com.englandcamping.dto;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.englandcamping.domain.CampSite;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Size;
 
 /**
- * 사이트 관리 화면 = 사이트 22개를 한 번에 받는 폼. 저장하는 건 "이용 가능 여부"와 "메모"뿐. 이름·종류는 화면 표시용(저장 안
- * 함). 화면에서는 위치별로 묶어서 타일로 보여 줌 (getGroups)
+ * 사이트 관리 화면 = 사이트 22개를 한 번에 받는 폼. 저장하는 건 "메모"와 "이용 불가 기간"뿐. 이용 가능/불가는 기간으로만 정해짐
+ * (기간 안이면 불가, 끝나면 저절로 가능). 이름·종류는 화면 표시용(저장 안 함). 화면에서는 위치별로 묶어서 타일로 보여 줌
+ * (getGroups)
  */
 public class CampSiteForm {
 
@@ -24,20 +29,30 @@ public class CampSiteForm {
 			new Area("집 근처", List.of("F", "G", "H")), new Area("가운데", List.of("13", "14")),
 			new Area("산 쪽 (뒤로 산)", List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")));
 
-	/** @Valid: 줄마다 메모 글자 수 검사 */
+	/** @Valid: 줄마다 메모 글자 수·기간 검사 */
 	@Valid
 	private List<Row> rows = new ArrayList<>();
 
 	/** 화면 처음 열 때: DB 사이트 목록으로 채우기 */
 	public static CampSiteForm from(List<CampSite> sites) {
 		CampSiteForm form = new CampSiteForm();
+		LocalDate today = LocalDate.now();
 		for (CampSite site : sites) {
 			Row row = new Row();
 			row.setId(site.getId());
 			row.setName(site.getName());
 			row.setTypeName(site.getSiteType().getName());
-			row.setAvailable(site.isAvailable());
 			row.setNote(site.getNote());
+			// 이미 끝난 기간은 빈칸으로 (다음 저장 때 지워짐)
+			boolean expired = site.getClosedUntil() != null && site.getClosedUntil().isBefore(today);
+			if (!expired) {
+				row.setClosedFrom(site.getClosedFrom());
+				row.setClosedUntil(site.getClosedUntil());
+			}
+			// 예전 방식으로 꺼 둔 사이트(기간 없이 이용 불가) → "오늘부터 계속 불가"로 보여 줌. 저장하면 그대로 기간으로 바뀜
+			if (!site.isAvailable() && row.getClosedFrom() == null && row.getClosedUntil() == null) {
+				row.setClosedFrom(today);
+			}
 			form.getRows().add(row);
 		}
 		return form;
@@ -119,11 +134,22 @@ public class CampSiteForm {
 		/** 표시용 */
 		private String typeName;
 
-		/** 체크 안 하면 false (화면의 숨은 칸 _rows[n].available 이 같이 보내짐) */
-		private boolean available;
-
 		@Size(max = 200, message = "메모는 200자 이내로 입력해 주세요.")
 		private String note;
+
+		/** 이용 불가 시작일 (비면 "지금부터") */
+		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+		private LocalDate closedFrom;
+
+		/** 이용 불가 끝나는 날 (비면 "끝 없이 계속") */
+		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+		private LocalDate closedUntil;
+
+		/** 기간 검사: 둘 다 있으면 시작일이 끝나는 날과 같거나 앞이어야 함 */
+		@AssertTrue(message = "시작일이 끝나는 날보다 늦어요. 날짜를 확인해 주세요.")
+		public boolean isPeriodValid() {
+			return closedFrom == null || closedUntil == null || !closedFrom.isAfter(closedUntil);
+		}
 
 		/** 짧은 이름 ("01번 사이트" → "01") — 타일·메모 칸 이름, 위치 묶음 찾기 */
 		public String getShortName() {
@@ -154,20 +180,28 @@ public class CampSiteForm {
 			this.typeName = typeName;
 		}
 
-		public boolean isAvailable() {
-			return available;
-		}
-
-		public void setAvailable(boolean available) {
-			this.available = available;
-		}
-
 		public String getNote() {
 			return note;
 		}
 
 		public void setNote(String note) {
 			this.note = note;
+		}
+
+		public LocalDate getClosedFrom() {
+			return closedFrom;
+		}
+
+		public void setClosedFrom(LocalDate closedFrom) {
+			this.closedFrom = closedFrom;
+		}
+
+		public LocalDate getClosedUntil() {
+			return closedUntil;
+		}
+
+		public void setClosedUntil(LocalDate closedUntil) {
+			this.closedUntil = closedUntil;
 		}
 	}
 }

@@ -14,73 +14,99 @@
 			<section class="admin-card">
 				<form th:action="@{/admin/sites}" th:object="${form}" method="post" novalidate>
 
-					<!-- 저장 버튼은 맨 아래 하나만 (타일 바꾸고 → 메모 쓰고 → 저장) -->
+					<!-- 저장 버튼은 맨 아래 하나만 (타일 눌러 칸 열기 → 기간·메모 쓰기 → 저장) -->
 					<h1 class="fs-xl fw-semibold mb-2" th:text="'사이트 관리 (' + ${#lists.size(form.rows)} + '개)'">사이트
 						관리</h1>
 					<p class="fs-sm fg-3 mb-3">
-						사이트를 누르면 "이용 가능 ↔ 이용 불가"가 바뀝니다. 이용 불가 사이트는 홈페이지 배치도에 점선으로 보입니다.
+						사이트를 누르면 아래에 그 사이트 칸이 열립니다. "이용 불가 기간"을 넣으면 그 기간에만 이용 불가가 되고,
+						기간이 끝나면 저절로 이용 가능으로 돌아옵니다. 이용 불가 사이트는 홈페이지 배치도에 점선으로 보입니다.
 						바꾼 뒤 "전체 저장"을 눌러 주세요.
 					</p>
-					<!-- 요약 (아래 스크립트가 누를 때마다 다시 셈) -->
-					<p class="site-summary" id="siteSummary" aria-live="polite"
-						th:text="'이용 가능 ' + ${#lists.size(form.rows.?[available])} + ' · 이용 불가 ' + ${#lists.size(form.rows.?[!available])}">
-						이용 가능 19 · 이용 불가 3</p>
+					<!-- 요약 (아래 스크립트가 날짜를 보고 셈) -->
+					<p class="site-summary" id="siteSummary" aria-live="polite">&nbsp;</p>
 
 					<!-- ===== 위치별 타일 (묶음은 CampSiteForm.getGroups) =====
-					     타일 하나 = label 안에 숨은 체크박스 → 타일을 누르면 체크가 바뀜
-					     켜짐/꺼짐 모양은 CSS(:has)로, 스크립트 없이도 동작 -->
+					     타일 = 버튼: 누르면 아래 그 사이트 칸이 열리고 그쪽으로 이동 (켜고 끄는 스위치 아님)
+					     모양(이용 가능 / 이용 불가 / 예정)은 아래 스크립트가 날짜 칸을 보고 정함 → 날짜를 바꾸면 바로 바뀜 -->
 					<section class="site-area" th:each="g : *{groups}">
 						<h2 class="site-area-title"><span th:text="${g.label}">도로 근처</span><span class="fs-sm fg-3"
 								th:text="${#lists.size(g.indexes)} + '개'">5개</span></h2>
 						<div class="site-tiles">
-							<label class="site-tile" th:each="i : ${g.indexes}" th:with="row=${form.rows[i]}"
-								th:for="${'available-' + i}">
-								<!-- 저장할 때 어느 사이트인지 (이름·종류는 오류 때 다시 보여 주기용) -->
-								<input type="hidden" th:name="|rows[${i}].id|" th:value="${row.id}">
-								<input type="hidden" th:name="|rows[${i}].name|" th:value="${row.name}">
-								<input type="hidden" th:name="|rows[${i}].typeName|" th:value="${row.typeName}">
-								<!-- 이용 가능 체크 (눈에는 안 보이고 타일 전체가 버튼 역할) -->
-								<input type="checkbox" class="site-tile-check" value="true" th:id="${'available-' + i}"
-									th:name="|rows[${i}].available|" th:checked="${row.available}"
-									th:attr="data-index=${i}">
-								<!-- 체크를 끄면 체크박스 값이 아예 안 보내짐 → 이 숨은 칸(_로 시작)이 있으면 Spring이 false로 넣어 줌 -->
-								<input type="hidden" th:name="|_rows[${i}].available|" value="on">
-
+							<button type="button" class="site-tile" th:each="i : ${g.indexes}"
+								th:with="row=${form.rows[i]}" th:attr="data-index=${i},aria-controls=${'memo-' + i}">
 								<span class="site-tile-name" th:text="${row.shortName}">01</span>
-								<span class="site-tile-state is-on">이용 가능</span>
-								<span class="site-tile-state is-off">이용 불가</span>
+								<span class="site-tile-state">이용 가능</span>
+								<span class="site-tile-period"></span>
 								<!-- 메모가 있으면 오른쪽 위 작은 주황 점 -->
 								<span class="site-tile-memo" th:if="${!#strings.isEmpty(row.note)}" title="메모 있음">메모
 									있음</span>
-							</label>
+							</button>
 						</div>
 					</section>
 
-					<!-- ===== 메모 (관리자만 봄) =====
-					     22개 칸이 전부 폼 안에 있음 (숨겨도 같이 저장돼서 다른 메모가 지워지지 않음)
-					     처음엔 "이용 불가이거나 메모가 있는" 사이트만 보이고, 타일을 끄면 그 칸이 나타남 -->
+					<!-- ===== 사이트별 칸: 메모 + 이용 불가 기간 (관리자만 봄) =====
+					     22개 칸이 전부 폼 안에 있음 (숨겨도 같이 저장돼서 다른 칸 값이 지워지지 않음)
+					     처음엔 메모나 기간이 있는 사이트만 보이고, 타일을 누르면 그 칸이 열림 -->
 					<section class="site-memos">
-						<!-- 제목 줄: 왼쪽 "메모" / 오른쪽 펼치기·접기 버튼 (펼쳐도 버튼 위치가 안 바뀜) -->
 						<div class="site-memos-head">
-							<h2 class="site-area-title mb-0">메모<span class="fs-sm fg-3">관리자만 봅니다 · 이용 불가이거나 메모가
-									있는 사이트만 보여요</span></h2>
+							<h2 class="site-area-title mb-0">메모 · 이용 불가 기간<span class="fs-sm fg-3">관리자만 봅니다 · 메모나
+									기간이 있는 사이트만 보여요</span></h2>
 							<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral"
-								id="showAllMemos" aria-expanded="false" aria-controls="siteMemoList">전체 메모 펼치기
-								▾</button>
+								id="showAllMemos" aria-expanded="false" aria-controls="siteMemoList">전체 펼치기 ▾</button>
 						</div>
+						<p class="fs-sm fg-3 mb-3">시작일만 넣으면 그날부터 계속 불가, 끝나는 날만 넣으면 지금부터 그날까지 불가예요.</p>
 
-						<!-- 22개 칸이 전부 폼 안에 있음 (숨겨도 같이 저장돼서 다른 메모가 지워지지 않음)
-						 	     PC는 2열, 폰은 1열 -->
+						<!-- PC는 2열, 폰은 1열 -->
 						<div class="site-memo-list" id="siteMemoList">
-							<div class="site-memo-row" th:each="row, stat : *{rows}" th:attr="data-index=${stat.index}"
-								th:hidden="${row.available and #strings.isEmpty(row.note) and !#fields.hasErrors('rows[__${stat.index}__].note')}">
-								<label class="site-memo-name" th:for="${'note-' + stat.index}"
-									th:text="${row.shortName}">08</label>
+							<div class="site-memo-row" th:each="row, stat : *{rows}" th:id="${'memo-' + stat.index}"
+								th:attr="data-index=${stat.index}" th:hidden="${#strings.isEmpty(row.note) and row.closedFrom == null and row.closedUntil == null
+									and !#fields.hasErrors('rows[__${stat.index}__].note')
+									and !#fields.hasErrors('rows[__${stat.index}__].periodValid')}">
+								<!-- 저장할 때 어느 사이트인지 (이름·종류는 오류 때 다시 보여 주기용) -->
+								<input type="hidden" th:name="|rows[${stat.index}].id|" th:value="${row.id}">
+								<input type="hidden" th:name="|rows[${stat.index}].name|" th:value="${row.name}">
+								<input type="hidden" th:name="|rows[${stat.index}].typeName|"
+									th:value="${row.typeName}">
+
+								<!-- 카드 윗줄: 번호 + 지금 상태 (스크립트가 채움) -->
+								<div class="site-memo-head">
+									<label class="site-memo-name" th:for="${'note-' + stat.index}"
+										th:text="${row.shortName}">08</label>
+									<span class="site-memo-state"></span>
+									<!-- 닫기: 이 칸에서 바꾼 것을 처음 값으로 되돌리고 닫음 (저장 전 취소) -->
+									<button type="button" class="site-memo-close" data-action="close"
+										th:attr="aria-label=${row.shortName + ' 칸 닫기 (바꾼 것 취소)'}"
+										title="닫기 (바꾼 것 취소)">✕</button>
+								</div>
+
 								<input type="text" class="form-control" maxlength="200" th:id="${'note-' + stat.index}"
 									th:name="|rows[${stat.index}].note|" th:value="${row.note}"
-									placeholder="예) 장박 이용 중 (2027년 3월까지)">
+									placeholder="메모 (예: 장박 이용 중)">
 								<p class="field-error" th:if="${#fields.hasErrors('rows[__${stat.index}__].note')}"
 									th:errors="*{rows[__${stat.index}__].note}">오류</p>
+
+								<!-- 이용 불가 기간: 시작일 비움 = 지금부터, 끝나는 날 비움 = 계속 -->
+								<div class="site-memo-period">
+									<span class="fs-sm fg-3">이용 불가 기간</span>
+									<div class="site-memo-dates">
+										<input type="date" class="form-control"
+											th:name="|rows[${stat.index}].closedFrom|" th:value="${row.closedFrom}"
+											th:attr="aria-label=${row.shortName + ' 불가 시작일'}">
+										<span aria-hidden="true">~</span>
+										<input type="date" class="form-control"
+											th:name="|rows[${stat.index}].closedUntil|" th:value="${row.closedUntil}"
+											th:attr="aria-label=${row.shortName + ' 불가 끝나는 날'}">
+									</div>
+									<div class="site-memo-actions">
+										<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral"
+											data-action="now">지금부터 불가</button>
+										<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral"
+											data-action="clear">기간 지우기</button>
+									</div>
+								</div>
+								<p class="field-error"
+									th:if="${#fields.hasErrors('rows[__${stat.index}__].periodValid')}"
+									th:errors="*{rows[__${stat.index}__].periodValid}">오류</p>
 							</div>
 						</div>
 					</section>
@@ -95,47 +121,131 @@
 
 	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 
-	<!-- ===== 사이트 관리: 요약 숫자 + 꺼진 사이트 메모 칸 보이기 =====
-	     (켜짐/꺼짐 모양은 CSS가 처리, 여기서는 숫자와 메모 칸만) -->
+	<!-- ===== 사이트 관리: 날짜를 보고 타일·요약·칸 상태를 그림 =====
+	     규칙은 서버 CampSite.isClosedOn 과 같음 (저장 후 손님 배치도도 같은 결과) -->
 	<script>
 		(() => {
-			const checks = document.querySelectorAll('.site-tile-check');
 			const summary = document.getElementById('siteSummary');
 			const showAll = document.getElementById('showAllMemos');
-			const memoRow = (index) => document.querySelector('.site-memo-row[data-index="' + index + '"]');
+			const tiles = document.querySelectorAll('.site-tile');
+			const rows = document.querySelectorAll('.site-memo-row');
+			const opened = new Set(); // 타일을 눌러 연 칸 (비어 있어도 다시 숨기지 않음)
+			const dismissed = new Set(); // ✕로 닫은 칸 (타일을 다시 누르거나 전체 펼치기 전까지 숨김)
 			let showingAll = false;
 
-			function refresh() {
-				let on = 0;
-				checks.forEach((check) => {
-					if (check.checked) {
-						on++;
-					}
-					const row = memoRow(check.dataset.index);
-					if (!row || showingAll) {
-						return;
-					}
-					const input = row.querySelector('input');
-					// 꺼진 사이트 or 메모가 있는 사이트 → 보임, 켜져 있고 메모가 비었으면 숨김
-					row.hidden = check.checked && input.value.trim() === '';
-				});
-				summary.textContent = '이용 가능 ' + on + ' · 이용 불가 ' + (checks.length - on);
+			// 오늘 "2026-11-24" (날짜 칸 값과 같은 모양 → 글자 비교로 앞뒤를 알 수 있음)
+			const now = new Date();
+			const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-'
+				+ String(now.getDate()).padStart(2, '0');
+			const md = (value) => {
+				const parts = value.split('-');
+				return Number(parts[1]) + '/' + Number(parts[2]);
+			};
+
+			// 기간 → 지금 상태 + 글씨 (서버 CampSite.isClosedOn 과 같은 규칙)
+			function stateOf(from, until) {
+				if ((!from && !until) || (until && until < today)) {
+					return {closed: false, text: ''}; // 기간 없음 / 이미 끝남
+				}
+				if (!from || from <= today) {
+					return {closed: true, text: until ? md(until) + '까지 불가' : '계속 불가'};
+				}
+				return {closed: false, text: until ? md(from) + '~' + md(until) + ' 예정' : md(from) + '부터 불가 예정'};
 			}
 
-			checks.forEach((check) => check.addEventListener('change', refresh));
+			const field = (row, name) => row.querySelector('input[name$=".' + name + '"]');
 
-			// "전체 메모 펼치기" ↔ "접기"
-			// 펼치면 22칸 전부, 접으면 처음처럼 (이용 불가이거나 메모를 쓴 사이트만 남음)
+			function refresh() {
+				let closedCount = 0;
+				rows.forEach((row) => {
+					const index = row.dataset.index;
+					const from = field(row, 'closedFrom').value;
+					const until = field(row, 'closedUntil').value;
+					const note = field(row, 'note').value.trim();
+					const state = stateOf(from, until);
+					if (state.closed) {
+						closedCount++;
+					}
+
+					// 타일: 이용 불가 = 점선 + 갈색 글씨 / 예정 = 초록 + 회색 글씨
+					const tile = document.querySelector('.site-tile[data-index="' + index + '"]');
+					if (tile) {
+						tile.classList.toggle('is-closed', state.closed);
+						tile.querySelector('.site-tile-state').textContent = state.closed ? '' : '이용 가능';
+						tile.querySelector('.site-tile-period').textContent = state.text;
+					}
+
+					// 칸 윗줄 상태
+					const label = row.querySelector('.site-memo-state');
+					label.textContent = state.text || '이용 가능';
+					label.classList.toggle('is-now', state.closed);
+
+					// ✕로 닫은 칸은 숨김 / 메모·기간이 비었으면 숨김 (전체 펼치기 중이거나 타일로 연 칸은 그대로)
+					if (!showingAll) {
+						if (dismissed.has(index)) {
+							row.hidden = true;
+						} else if (!opened.has(index)) {
+							row.hidden = note === '' && from === '' && until === '';
+						}
+					}
+				});
+				summary.textContent = '지금 이용 가능 ' + (rows.length - closedCount) + ' · 이용 불가 ' + closedCount;
+			}
+
+			// 타일 누르기 → 그 사이트 칸 열고 그쪽으로 이동 + 테두리 잠깐 반짝
+			tiles.forEach((tile) => tile.addEventListener('click', () => {
+				const row = document.getElementById('memo-' + tile.dataset.index);
+				opened.add(tile.dataset.index);
+				dismissed.delete(tile.dataset.index);
+				row.hidden = false;
+				row.scrollIntoView({behavior: 'smooth', block: 'center'});
+				row.classList.remove('is-flash');
+				void row.offsetWidth; // 애니메이션 다시 시작
+				row.classList.add('is-flash');
+			}));
+
+			// 칸 안: 날짜·메모를 바꾸면 바로 다시 그림 + 버튼 세 개
+			rows.forEach((row) => {
+				row.querySelectorAll('input').forEach((input) => {
+					input.addEventListener('input', refresh);
+					input.addEventListener('change', refresh);
+				});
+				row.querySelector('[data-action="now"]').addEventListener('click', () => {
+					field(row, 'closedFrom').value = today;
+					refresh();
+				});
+				row.querySelector('[data-action="clear"]').addEventListener('click', () => {
+					field(row, 'closedFrom').value = '';
+					field(row, 'closedUntil').value = '';
+					refresh();
+				});
+				// ✕ 닫기: 이 칸에서 바꾼 것을 화면 처음 열었을 때 값으로 되돌리고 닫음
+				// (defaultValue = 처음 화면을 그릴 때 칸에 들어 있던 값 = 저장된 값)
+				row.querySelector('[data-action="close"]').addEventListener('click', () => {
+					row.querySelectorAll('input').forEach((input) => {
+						input.value = input.defaultValue;
+					});
+					opened.delete(row.dataset.index);
+					dismissed.add(row.dataset.index);
+					row.hidden = true;
+					refresh(); // 타일 모양·요약 숫자도 원래대로
+				});
+			});
+
+			// "전체 펼치기" ↔ "접기"
 			showAll.addEventListener('click', () => {
 				showingAll = !showingAll;
 				if (showingAll) {
-					document.querySelectorAll('.site-memo-row').forEach((row) => {
+					rows.forEach((row) => {
 						row.hidden = false;
 					});
+					dismissed.clear();
+				} else {
+					opened.clear();
 				}
-				showAll.textContent = showingAll ? '접기 ▴' : '전체 메모 펼치기 ▾';
+				showAll.textContent = showingAll ? '접기 ▴' : '전체 펼치기 ▾';
 				showAll.setAttribute('aria-expanded', String(showingAll));
-				refresh(); // 접을 때: 켜져 있고 메모가 빈 칸은 다시 숨김
+				refresh(); // 접을 때: 메모·기간이 빈 칸은 다시 숨김
 			});
 
 			refresh();
