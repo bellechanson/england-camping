@@ -24,6 +24,13 @@
 					</p>
 					<!-- 요약 (아래 스크립트가 날짜를 보고 셈) -->
 					<p class="site-summary" id="siteSummary" aria-live="polite">&nbsp;</p>
+					<!-- 색 설명 (타일·아래 칸 같은 규칙) -->
+					<p class="site-legend">
+						<span class="legend-open">이용 가능</span>
+						<span class="legend-planned">불가 예정</span>
+						<span class="legend-closed">지금 불가</span>
+						<span class="legend-dirty">저장 전</span>
+					</p>
 
 					<!-- ===== 위치별 타일 (묶음은 CampSiteForm.getGroups) =====
 					     타일 = 버튼: 누르면 아래 그 사이트 칸이 열리고 그쪽으로 이동 (켜고 끄는 스위치 아님)
@@ -73,6 +80,8 @@
 									<label class="site-memo-name" th:for="${'note-' + stat.index}"
 										th:text="${row.shortName}">08</label>
 									<span class="site-memo-state"></span>
+									<!-- 이번에 바꾼 칸 표시 (스크립트가 켜고 끔) -->
+									<span class="site-memo-dirty" hidden>저장 전</span>
 									<!-- 닫기: 이 칸에서 바꾼 것을 처음 값으로 되돌리고 닫음 (저장 전 취소) -->
 									<button type="button" class="site-memo-close" data-action="close"
 										th:attr="aria-label=${row.shortName + ' 칸 닫기 (바꾼 것 취소)'}"
@@ -163,22 +172,32 @@
 					const until = field(row, 'closedUntil').value;
 					const note = field(row, 'note').value.trim();
 					const state = stateOf(from, until);
+					const planned = !state.closed && state.text !== ''; // 앞으로 불가 예정
 					if (state.closed) {
 						closedCount++;
 					}
 
-					// 타일: 이용 불가 = 점선 + 갈색 글씨 / 예정 = 초록 + 회색 글씨
+					// 타일: 이용 가능 = 초록 / 불가 예정 = 노랑 / 지금 불가 = 회색 점선
 					const tile = document.querySelector('.site-tile[data-index="' + index + '"]');
 					if (tile) {
 						tile.classList.toggle('is-closed', state.closed);
+						tile.classList.toggle('is-planned', planned);
 						tile.querySelector('.site-tile-state').textContent = state.closed ? '' : '이용 가능';
 						tile.querySelector('.site-tile-period').textContent = state.text;
 					}
 
-					// 칸 윗줄 상태
+					// 아래 칸도 같은 색 + 윗줄 상태 글씨
+					row.classList.toggle('is-closed', state.closed);
+					row.classList.toggle('is-planned', planned);
 					const label = row.querySelector('.site-memo-state');
 					label.textContent = state.text || '이용 가능';
 					label.classList.toggle('is-now', state.closed);
+					label.classList.toggle('is-planned', planned);
+
+					// 저장 전 표시: 화면을 연 뒤 이 칸에서 바꾼 게 있으면 (defaultValue = 처음 값)
+					const dirty = [...row.querySelectorAll('input')].some((input) => input.value !== input.defaultValue);
+					row.classList.toggle('is-dirty', dirty);
+					row.querySelector('.site-memo-dirty').hidden = !dirty;
 
 					// ✕로 닫은 칸은 숨김 / 메모·기간이 비었으면 숨김 (전체 펼치기 중이거나 타일로 연 칸은 그대로)
 					if (!showingAll) {

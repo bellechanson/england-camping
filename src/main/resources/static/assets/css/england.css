@@ -1279,6 +1279,99 @@ a.np-link:focus-visible {
 	gap: 0.5rem;
 }
 
+/* ===== 상태 색 (타일·아래 칸 같은 규칙) =====
+   이용 가능 = 연초록 / 불가 예정 = 연노랑 / 지금 불가 = 회색 점선 / 저장 전 = 왼쪽 주황 줄 */
+.site-memo-row {
+	border-color: #cfe3cf;
+}
+
+.site-tile.is-planned,
+.site-memo-row.is-planned {
+	border-color: #ecd59a;
+	background: #fdf6e1;
+}
+
+.site-tile.is-planned:hover {
+	border-color: #d9b65e;
+}
+
+.site-tile.is-planned .site-tile-state,
+.site-tile.is-planned .site-tile-period,
+.site-memo-state.is-planned {
+	color: #8a6116;
+	font-weight: 600;
+}
+
+.site-memo-row.is-closed {
+	border-style: dashed;
+	border-color: var(--bs-border-color);
+	background: var(--bs-bg-2);
+}
+
+/* 저장 전: 카드 왼쪽 안쪽에 주황 세로줄 + 윗줄 딱지 */
+.site-memo-row.is-dirty {
+	box-shadow: inset 4px 0 0 var(--brand);
+}
+
+.site-memo-dirty {
+	padding: 0.05rem 0.45rem;
+	border-radius: 999px;
+	background: var(--brand);
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: 600;
+}
+
+.site-memo-dirty[hidden] {
+	display: none;
+}
+
+/* 색 설명 (범례): 작은 네모 + 글씨 */
+.site-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem 1rem;
+	margin: -1rem 0 1.5rem;
+	font-size: 0.8rem;
+	color: var(--bs-fg-3);
+}
+
+.site-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.site-legend span::before {
+	content: "";
+	width: 0.9rem;
+	height: 0.9rem;
+	border: 1px solid;
+	border-radius: 0.25rem;
+}
+
+.legend-open::before {
+	border-color: #cfe3cf;
+	background: #f1f8f0;
+}
+
+.legend-planned::before {
+	border-color: #ecd59a;
+	background: #fdf6e1;
+}
+
+.legend-closed::before {
+	border-style: dashed;
+	border-color: var(--bs-border-color);
+	background: var(--bs-bg-2);
+}
+
+.legend-dirty::before {
+	border-color: var(--brand);
+	background: var(--brand);
+	width: 0.3rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.site-memo-row.is-flash {
 		animation: none;
