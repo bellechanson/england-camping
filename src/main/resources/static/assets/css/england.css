@@ -692,7 +692,20 @@ body:has(.site-banner) .sub-head {
 	max-width: 46rem;
 }
 
-
+/* ===== 띄어쓰기 없이 길게 입력한 글 줄바꿈 =====
+   body의 word-break: keep-all 때문에 띄어쓰기 없는 긴 글(예: "테스트테스트…", 긴 주소)은
+   한 단어로 취급돼 화면 밖으로 넘침 → 관리자가 입력하는 글이 나오는 곳만
+   칸 끝에서 강제로 줄바꿈 (띄어쓰기 있는 보통 글은 지금처럼 단어 단위로)
+   min-width: 0 → 옆에 날짜가 있는 줄(flex)에서도 제목 칸이 줄어들 수 있게 */
+.notice-content,
+.sub-head h1,
+.notice-title,
+.notice-nav a,
+.site-banner,
+.admin-table td a {
+	overflow-wrap: anywhere;
+	min-width: 0;
+}
 
 .closed-badge {
 	display: inline-block;
