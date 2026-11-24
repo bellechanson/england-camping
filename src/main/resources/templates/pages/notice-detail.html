@@ -14,32 +14,57 @@
 	</div>
 
 	<main id="main">
-		<section class="section">
+		<!-- notice-detail-section: 아래 여백을 줄여서 이전/다음 글이 아래 선에 살짝 붙게 -->
+		<section class="section notice-detail-section">
 			<div class="container">
 
-				<!-- 본문: 관리자가 입력한 줄바꿈 그대로 (CSS white-space: pre-line) -->
-				<article class="notice-content fs-lg fg-2" th:text="${notice.content}">공지 내용</article>
+				<!-- 2단: 왼쪽 본문 / 오른쪽 최근 소식 (폰에서는 최근 소식이 아래로), 이전/다음 글은 맨 아래 가운데 -->
+				<div class="row g-7">
 
-				<!-- 이전 글 / 다음 글 -->
-				<nav class="notice-nav mt-7" aria-label="이전 글, 다음 글">
-					<div class="spec-row">
-						<span class="fg-3 fs-sm">다음 글</span>
-						<a class="fs-sm" th:if="${nextNotice != null}" th:href="@{/notice/{id}(id=${nextNotice.id})}"
-							th:text="${nextNotice.title}">다음 글</a>
-						<span class="fs-sm fg-3" th:if="${nextNotice == null}">다음 글이 없습니다</span>
+					<div class="lg:col-8">
+						<!-- 본문: 주황 세로선, 관리자가 입력한 줄바꿈 그대로 (CSS white-space: pre-line) -->
+						<article class="notice-content fs-lg fg-2" th:text="${notice.content}">공지 내용</article>
 					</div>
-					<div class="spec-row">
-						<span class="fg-3 fs-sm">이전 글</span>
-						<a class="fs-sm" th:if="${prevNotice != null}" th:href="@{/notice/{id}(id=${prevNotice.id})}"
-							th:text="${prevNotice.title}">이전 글</a>
-						<span class="fs-sm fg-3" th:if="${prevNotice == null}">이전 글이 없습니다</span>
-					</div>
-				</nav>
 
-				<div class="mt-6">
-					<a class="btn-outline theme-secondary" th:href="@{/notice}">목록으로</a>
+					<!-- 오른쪽: 최근 소식 3개 (지금 보는 글은 주황) + 모든 소식 보기 -->
+					<aside class="lg:col-4">
+						<div class="notice-recent">
+							<p class="nr-heading">최근 소식</p>
+							<ul class="nr-list">
+								<li th:each="r : ${recentNotices}">
+									<a class="nr-item" th:classappend="${r.id == notice.id} ? 'is-current'"
+										th:attr="aria-current=${r.id == notice.id} ? 'page' : null"
+										th:href="@{/notice/{id}(id=${r.id})}">
+										<span class="nr-date"
+											th:text="${#temporals.format(r.createdAt, 'MM.dd')}">11.24</span>
+										<span class="nr-title" th:text="${r.title}">제목</span>
+									</a>
+								</li>
+							</ul>
+							<a class="arrow-link mt-5" th:href="@{/notice}">모든 소식 보기<span class="arrow"
+									aria-hidden="true">→</span></a>
+						</div>
+					</aside>
+
 				</div>
 
+				<!-- 이전 글 / 다음 글: 맨 아래 가운데 작게
+				     글이 없는 쪽은 같은 자리에 흐린 안내, 마우스를 올리면 그 글 제목이 툴팁으로 -->
+				<nav class="notice-pager" aria-label="이전 글, 다음 글">
+					<a class="np-link" th:if="${prevNotice != null}" th:href="@{/notice/{id}(id=${prevNotice.id})}"
+						th:title="${prevNotice.title}">← 이전 글</a>
+					<!-- 이전 글이 없을 때: 글자는 그대로(위치 고정), 흐리게 + 툴팁 안내 -->
+					<span class="np-link is-empty" th:if="${prevNotice == null}" title="첫 게시물입니다" aria-disabled="true">←
+						이전 글</span>
+
+					<span class="np-sep" aria-hidden="true"></span>
+
+					<a class="np-link" th:if="${nextNotice != null}" th:href="@{/notice/{id}(id=${nextNotice.id})}"
+						th:title="${nextNotice.title}">다음 글 →</a>
+					<!-- 다음 글이 없을 때: 글자는 그대로(위치 고정), 흐리게 + 툴팁 안내 -->
+					<span class="np-link is-empty" th:if="${nextNotice == null}" title="마지막 게시물입니다"
+						aria-disabled="true">다음 글 →</span>
+				</nav>
 			</div>
 		</section>
 	</main>

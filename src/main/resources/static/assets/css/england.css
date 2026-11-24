@@ -407,14 +407,13 @@ body {
 	flex: none;
 }
 
-/* 공지 본문: 입력한 줄바꿈을 그대로 보여 줌
-   본문 폭은 읽기 좋게 제한(왼쪽 정렬), 본문 아래 구분선 */
+/* 공지 본문: 왼쪽 주황 세로선 + 입력한 줄바꿈 그대로, 읽기 좋은 폭으로 제한 */
 .notice-content {
-	white-space: pre-line;
-	line-height: 1.8;
 	max-width: 46rem;
-	padding-bottom: 2.5rem;
-	border-bottom: 1px solid var(--bs-border-color);
+	padding-left: 1.5rem;
+	border-left: 3px solid var(--brand);
+	white-space: pre-line;
+	line-height: 1.9;
 }
 
 /* 메인 최근 공지 칸 (위쪽만 여백, 아래는 바로 소개 섹션) */
@@ -686,11 +685,143 @@ body:has(.site-banner) .sub-head {
 	color: var(--bs-fg-3);
 }
 
-
-
-.notice-nav {
-	max-width: 46rem;
+/* ===== 공지 상세: 맨 아래 가운데 작은 이전 글 / 다음 글 =====
+   작은 글자 링크 두 개 + 가운데 짧은 세로선, 글이 없는 쪽은 흐린 안내 */
+/* 3칸: [왼쪽 글자] [세로선] [오른쪽 글자]
+      양쪽 칸 폭이 같아서(1fr) 세로선이 늘 정중앙 → 글자 길이가 달라도 위치가 안 흔들림 */
+.notice-pager {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 1.25rem;
+	font-size: 0.9rem;
 }
+
+/* 왼쪽(이전 글)은 세로선 쪽으로 붙이고, 오른쪽(다음 글)도 세로선 쪽으로 붙임 */
+.notice-pager> :first-child {
+	justify-self: end;
+}
+
+.notice-pager> :last-child {
+	justify-self: start;
+}
+
+.np-link {
+	padding: 0.35rem 0.2rem;
+	border-bottom: 1px solid transparent;
+	color: inherit;
+	text-decoration: none;
+	transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* 마우스를 올리면 주황 + 밑줄 */
+a.np-link:hover,
+a.np-link:focus-visible {
+	border-bottom-color: currentColor;
+	color: color-mix(in oklch, var(--brand) 85%, #000);
+}
+
+/* 글이 없는 쪽: 같은 글자, 아주 흐리게 (누를 수 없음, 마우스를 올리면 툴팁 안내) */
+.np-link.is-empty {
+	color: var(--bs-fg-3);
+	cursor: default;
+	opacity: 0.5;
+}
+
+/* 가운데 짧은 세로선 */
+.np-sep {
+	width: 1px;
+	height: 0.9rem;
+	background: var(--bs-border-color);
+}
+
+
+/* 공지 상세 칸: 아래 여백만 줄임 → 이전/다음 글이 아래 선에 살짝 붙음
+   (위 내용과는 충분히 띄움) */
+.notice-detail-section {
+	padding-bottom: 1.75rem;
+}
+
+.notice-detail-section .notice-pager {
+	margin-top: 5rem;
+}
+
+/* ===== 공지 상세: 오른쪽 최근 소식 =====
+   PC: 왼쪽 가는 세로선 / 폰·태블릿: 본문 아래, 위 가는 가로선 */
+.notice-recent {
+	display: flex;
+	flex-direction: column;
+	padding-left: 2rem;
+	border-left: 1px solid var(--bs-border-color);
+}
+
+.nr-heading {
+	margin-bottom: 0.5rem;
+	color: var(--bs-fg-3);
+	font-size: 0.8rem;
+	letter-spacing: 0.03em;
+}
+
+.nr-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* 한 줄 = 날짜 + 제목(한 줄, 넘치면 …) */
+.nr-item {
+	display: flex;
+	gap: 0.9rem;
+	min-width: 0;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid var(--bs-border-color);
+	color: inherit;
+	text-decoration: none;
+}
+
+.nr-date {
+	flex: none;
+	color: var(--bs-fg-3);
+	font-size: 0.875rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.nr-title {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	transition: color 0.2s ease;
+}
+
+.nr-item:hover .nr-title,
+.nr-item:focus-visible .nr-title {
+	color: color-mix(in oklch, var(--brand) 85%, #000);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* 지금 보고 있는 글: 주황 */
+.nr-item.is-current .nr-date,
+.nr-item.is-current .nr-title {
+	color: color-mix(in oklch, var(--brand) 85%, #000);
+	font-weight: 600;
+}
+
+/* "모든 소식 보기 →": 칸 폭만큼 늘어나지 않게 */
+.notice-recent .arrow-link {
+	align-self: flex-start;
+}
+
+/* 폰·태블릿: 최근 소식이 본문 아래로 → 세로선 대신 위 가로선 */
+@media (max-width: 991.98px) {
+	.notice-recent {
+		padding-top: 1.5rem;
+		padding-left: 0;
+		border-top: 1px solid var(--bs-border-color);
+		border-left: 0;
+	}
+}
+
 
 /* ===== 띄어쓰기 없이 길게 입력한 글 줄바꿈 =====
    body의 word-break: keep-all 때문에 띄어쓰기 없는 긴 글(예: "테스트테스트…", 긴 주소)은

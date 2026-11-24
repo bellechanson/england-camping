@@ -34,12 +34,14 @@ public class NoticeController {
 		return "pages/notice-list";
 	}
 
-	/** 상세 + 이전/다음 글 (없는 번호면 404) */
+	/** 상세 + 이전/다음 글 + 오른쪽 최근 소식 3개 (없는 번호면 404) */
 	@GetMapping("/{id}")
 	public String detail(@PathVariable Long id, Model model) {
 		model.addAttribute("notice", noticeService.get(id));
 		model.addAttribute("prevNotice", noticeService.findPrevious(id));
 		model.addAttribute("nextNotice", noticeService.findNext(id));
+		// 오른쪽 "최근 소식" (메인과 같은 3개, 고정 공지 먼저)
+		model.addAttribute("recentNotices", noticeService.findRecent());
 		return "pages/notice-detail";
 	}
 }
