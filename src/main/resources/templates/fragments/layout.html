@@ -241,7 +241,7 @@
      주소가 비어 있는 예약처는 GlobalModelAdvice 에서 빠지므로 여기에도 안 나옴. 누르면 새 창 -->
 <div th:fragment="reserveLogos" class="reserve-logos">
 	<a th:each="link : ${reserveLinks}" class="reserve-logo" th:href="${link.url}" target="_blank" rel="noopener"
-		th:title="${link.name} + ' 예약 (새 창)'">
+		th:title="${link.name} + ' 바로가기 (새 창)'">
 		<img th:if="${link.icon != null}" th:src="@{${link.icon}}" alt="" width="44" height="44">
 		<span th:text="${link.name}">네이버 예약</span>
 	</a>
