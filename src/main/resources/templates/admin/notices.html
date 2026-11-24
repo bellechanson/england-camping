@@ -13,13 +13,29 @@
 
 			<!-- ===== 띠 공지 ===== -->
 			<section class="admin-card mb-6">
-				<h2 class="fs-lg fw-semibold mb-2">띠 공지</h2>
+				<div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+					<h2 class="fs-lg fw-semibold mb-0">띠 공지</h2>
+					<!-- 지금 상태: banner(손님 화면에 실제로 보이는 글자)가 있으면 보이는 중 -->
+					<span class="pin-badge" th:if="${banner != null}">홈페이지에 보이는 중</span>
+					<span class="ended-badge"
+						th:if="${banner == null and bannerExpired and settings['BANNER_ENABLED'] == 'true'}">기간이
+						끝나 자동으로 숨겨짐</span>
+					<span class="cat-badge"
+						th:if="${banner == null and !(bannerExpired and settings['BANNER_ENABLED'] == 'true')}">꺼짐</span>
+				</div>
 				<p class="fs-sm fg-3 mb-4">켜 두면 홈페이지 맨 위에 얇은 안내 줄이 보입니다. (예: 이번 주말 개수대 공사)</p>
 				<form th:action="@{/admin/banner}" method="post" class="vstack gap-4">
 					<div class="form-field">
 						<label class="form-label" for="bannerText">내용 (100자 이내)</label>
 						<input type="text" class="form-control" id="bannerText" name="text" maxlength="100"
 							th:value="${settings['BANNER_TEXT']}">
+					</div>
+					<!-- 끝나는 날 (선택): 그날이 지나면 손님 화면에서 자동으로 사라짐 -->
+					<div class="form-field">
+						<label class="form-label" for="bannerEndDate">끝나는 날 (선택)</label>
+						<input type="date" class="form-control" id="bannerEndDate" name="endDate"
+							style="max-width:14rem" th:value="${settings['BANNER_END_DATE']}">
+						<p class="field-hint">비워 두면 끌 때까지 계속 보입니다. 날짜를 넣으면 그날까지만 보이고 다음 날부터 자동으로 사라집니다.</p>
 					</div>
 					<div class="form-field">
 						<!-- 체크하면 enabled=true, 안 하면 아예 안 보내져서 false -->
@@ -63,7 +79,12 @@
 								<div class="fs-sm fg-3 mt-1" th:if="${n.periodText != null}"
 									th:text="'기간 ' + ${n.periodText}">기간</div>
 							</td>
-							<td class="fs-sm fg-3" th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19
+							<!-- 작성일 + (고친 적 있으면) 마지막 수정일 -->
+							<td class="fs-sm fg-3">
+								<span th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19</span>
+								<span class="d-block fs-xs" th:if="${n.updatedAt != null}"
+									th:text="'수정 ' + ${#temporals.format(n.updatedAt, 'yyyy.MM.dd')}">수정
+									2026.11.24</span>
 							</td>
 							<td class="actions">
 								<a class="btn-outline theme-secondary btn-sm"

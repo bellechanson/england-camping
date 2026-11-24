@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.englandcamping.domain.NoticeCategory;
 import com.englandcamping.dto.NoticeForm;
 import com.englandcamping.service.NoticeService;
+import com.englandcamping.service.SiteSettingService;
 
 import jakarta.validation.Valid;
 
@@ -23,9 +24,11 @@ import jakarta.validation.Valid;
 public class AdminNoticeController {
 
 	private final NoticeService noticeService;
+	private final SiteSettingService siteSettingService;
 
-	public AdminNoticeController(NoticeService noticeService) {
+	public AdminNoticeController(NoticeService noticeService, SiteSettingService siteSettingService) {
 		this.noticeService = noticeService;
+		this.siteSettingService = siteSettingService;
 	}
 
 	/** 쓰기/수정 화면의 분류 고르기 칸 (안내 / 공사 / 휴장 / 이벤트) — 이 컨트롤러의 모든 화면에 자동으로 들어감 */
@@ -38,6 +41,8 @@ public class AdminNoticeController {
 	@GetMapping
 	public String list(@RequestParam(defaultValue = "0") int page, Model model) {
 		model.addAttribute("page", noticeService.findPage(page));
+		// 띠 공지 칸 상태 표시용: 켜 놨는데 기간이 끝나서 숨겨졌는지
+		model.addAttribute("bannerExpired", siteSettingService.isBannerExpired());
 		return "admin/notices";
 	}
 

@@ -44,6 +44,8 @@ public enum SettingKey {
 
 	// ===== 띠 공지 (메인 맨 위 얇은 안내, 관리자가 켜고 끔) =====
 	BANNER_ENABLED("띠 공지 켜기", "false"), BANNER_TEXT("띠 공지 내용", ""),
+	/** 띠 공지 끝나는 날 ("2026-11-28" 모양, 비우면 기간 없음) — 지나면 손님 화면에서 자동으로 숨김 */
+	BANNER_END_DATE("띠 공지 끝나는 날", ""),
 
 	// ===== 예약 링크 (비어 있으면 화면에서 "준비 중"으로 표시할 예정) =====
 	RESERVE_CAMFIT_URL("캠핏 예약 주소", "https://camfit.co.kr/camp/67d119ab902902001d592ba1"),

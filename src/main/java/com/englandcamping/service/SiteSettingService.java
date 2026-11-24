@@ -2,6 +2,8 @@ package com.englandcamping.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +66,35 @@ public class SiteSettingService {
 			return List.of();
 		}
 		return value.lines().map(String::strip).filter(line -> !line.isEmpty()).toList();
+	}
+
+	/** 띠 공지 끝나는 날 (비었거나 날짜 모양이 아니면 null) */
+	public LocalDate getBannerEndDate() {
+		String value = get(SettingKey.BANNER_END_DATE);
+		if (value == null || value.isBlank()) {
+			return null;
+		}
+		try {
+			return LocalDate.parse(value.strip()); // "2026-11-28"
+		} catch (DateTimeParseException e) {
+			return null; // 이상한 값이면 기간 없음으로 봄
+		}
+	}
+
+	/** 띠 공지 기간이 끝났는지 (끝나는 날 다음 날부터 true) */
+	public boolean isBannerExpired() {
+		LocalDate end = getBannerEndDate();
+		return end != null && end.isBefore(LocalDate.now());
+	}
+
+	/** 손님 화면 띠 공지 글자: 켜져 있고, 내용이 있고, 기간이 안 끝났을 때만. 아니면 null → 띠를 안 그림 */
+	public String getActiveBannerText() {
+		boolean enabled = "true".equals(get(SettingKey.BANNER_ENABLED));
+		String text = get(SettingKey.BANNER_TEXT);
+		if (!enabled || text == null || text.isBlank() || isBannerExpired()) {
+			return null;
+		}
+		return text.strip();
 	}
 
 	/**

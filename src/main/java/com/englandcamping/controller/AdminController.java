@@ -1,8 +1,10 @@
 package com.englandcamping.controller;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Objects;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,10 +50,12 @@ public class AdminController {
 		return "admin/login";
 	}
 
-	/** 띠 공지 저장 (켜기/끄기 + 내용) */
+	/** 띠 공지 저장 (켜기/끄기 + 내용 + 끝나는 날(선택)) */
 	@PostMapping("/banner")
 	public String updateBanner(@RequestParam(defaultValue = "false") boolean enabled,
-			@RequestParam(defaultValue = "") String text, RedirectAttributes redirect) {
+			@RequestParam(defaultValue = "") String text,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+			RedirectAttributes redirect) {
 		String trimmed = text.strip();
 
 		if (enabled && trimmed.isEmpty()) {
@@ -62,9 +66,15 @@ public class AdminController {
 			redirect.addFlashAttribute("error", "띠 공지는 " + BANNER_MAX_LENGTH + "자 이내로 입력해 주세요.");
 			return REDIRECT_NOTICES;
 		}
+		if (enabled && endDate != null && endDate.isBefore(LocalDate.now())) {
+			redirect.addFlashAttribute("error", "끝나는 날이 이미 지났습니다. 오늘이나 그 뒤로 골라 주세요.");
+			return REDIRECT_NOTICES;
+		}
 
 		siteSettingService.update(SettingKey.BANNER_TEXT, trimmed);
 		siteSettingService.update(SettingKey.BANNER_ENABLED, String.valueOf(enabled));
+		// 날짜 칸을 비우면 "" → 기간 없음
+		siteSettingService.update(SettingKey.BANNER_END_DATE, endDate == null ? "" : endDate.toString());
 		redirect.addFlashAttribute("message", enabled ? "띠 공지를 켰습니다." : "띠 공지를 저장했습니다. (꺼짐)");
 		return REDIRECT_NOTICES;
 	}
