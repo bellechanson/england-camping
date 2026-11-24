@@ -19,8 +19,8 @@
 						관리</h1>
 					<p class="fs-sm fg-3 mb-3">
 						사이트를 누르면 아래에 그 사이트 칸이 열립니다. "이용 불가 기간"을 넣으면 그 기간에만 이용 불가가 되고,
-						기간이 끝나면 저절로 이용 가능으로 돌아옵니다. 이용 불가 사이트는 홈페이지 배치도에 점선으로 보입니다.
-						바꾼 뒤 "전체 저장"을 눌러 주세요.
+						기간이 끝나면 저절로 이용 가능으로 돌아옵니다. 홈페이지에서는 배치도에 점선으로, 요금표 아래 "사이트 이용 안내"에
+						날짜와 함께 보입니다 (메모는 안 보임). 바꾼 뒤 "전체 저장"을 눌러 주세요.
 					</p>
 					<!-- 요약 (아래 스크립트가 날짜를 보고 셈) -->
 					<p class="site-summary" id="siteSummary" aria-live="polite">&nbsp;</p>
@@ -56,12 +56,13 @@
 					     처음엔 메모나 기간이 있는 사이트만 보이고, 타일을 누르면 그 칸이 열림 -->
 					<section class="site-memos">
 						<div class="site-memos-head">
-							<h2 class="site-area-title mb-0">메모 · 이용 불가 기간<span class="fs-sm fg-3">관리자만 봅니다 · 메모나
-									기간이 있는 사이트만 보여요</span></h2>
+							<h2 class="site-area-title mb-0">메모 · 이용 불가 기간<span class="fs-sm fg-3">메모는 관리자만 봐요 · 기간은
+									홈페이지에도 나와요</span></h2>
 							<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral"
 								id="showAllMemos" aria-expanded="false" aria-controls="siteMemoList">전체 펼치기 ▾</button>
 						</div>
-						<p class="fs-sm fg-3 mb-3">시작일만 넣으면 그날부터 계속 불가, 끝나는 날만 넣으면 지금부터 그날까지 불가예요.</p>
+						<p class="fs-sm fg-3 mb-3">메모나 기간이 있는 사이트만 보여요. 시작일만 넣으면 그날부터 계속 불가, 끝나는 날만 넣으면 지금부터
+							그날까지 불가예요.</p>
 
 						<!-- PC는 2열, 폰은 1열 -->
 						<div class="site-memo-list" id="siteMemoList">
@@ -109,8 +110,9 @@
 									<div class="site-memo-actions">
 										<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral"
 											data-action="now">지금부터 불가</button>
+										<!-- 메모 + 기간을 한 번에 비움 (저장하면 이 칸이 목록에서 사라짐) -->
 										<button type="button" class="btn-outline theme-secondary btn-sm pill-neutral"
-											data-action="clear">기간 지우기</button>
+											data-action="clear">모두 지우기</button>
 									</div>
 								</div>
 								<p class="field-error"
@@ -233,7 +235,9 @@
 					field(row, 'closedFrom').value = today;
 					refresh();
 				});
+				// 모두 지우기: 메모 + 기간을 한 번에 비움 (✕로 닫으면 취소됨)
 				row.querySelector('[data-action="clear"]').addEventListener('click', () => {
+					field(row, 'note').value = '';
 					field(row, 'closedFrom').value = '';
 					field(row, 'closedUntil').value = '';
 					refresh();
