@@ -838,89 +838,82 @@ a.np-link:focus-visible {
 	min-width: 0;
 }
 
-/* ===== 공지사항 목록 페이지: 카드형 =====
+/* ===== 공지사항 목록 페이지: 줄 목록 =====
+   상자 없이 가는 선, 세리프 날짜·제목 + 미리보기 한 줄 (공지 상세 페이지와 같은 결)
    (메인 최근 공지 칸은 예전 .notice-list / .notice-item 그대로) */
-.notice-cards {
-	display: grid;
-	/* 칸 폭 = 화면(container) 폭으로 고정
-   	   (없으면 grid가 미리보기 한 줄 길이만큼 카드를 늘려서 화면 밖으로 넘침) */
-	grid-template-columns: minmax(0, 1fr);
-	gap: 0.75rem;
+.notice-rows {
 	margin: 0;
 	padding: 0;
+	border-top: 1px solid var(--bs-border-color);
 	list-style: none;
 }
 
-.notice-card {
-	display: flex;
-	align-items: center;
-	gap: 1.25rem;
-	padding: 1.1rem 1.25rem;
-	border: 1px solid var(--bs-border-color);
-	border-radius: 1rem;
-	background: color-mix(in oklch, var(--bs-bg-body) 40%, #fff);
+/* 한 줄 = [날짜] [제목 + 미리보기] [→]
+   왼쪽 3px 선 자리는 평소엔 투명, 고정 공지만 주황 */
+.notice-row {
+	display: grid;
+	grid-template-columns: 7rem minmax(0, 1fr) auto;
+	align-items: baseline;
+	gap: 1.5rem;
+	padding: 1.35rem 1rem 1.35rem 1.25rem;
+	border-bottom: 1px solid var(--bs-border-color);
+	border-left: 3px solid transparent;
 	color: inherit;
 	text-decoration: none;
-	transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+	transition: background-color 0.2s ease;
 }
 
-/* 마우스를 올리면: 테두리 주황 + 살짝 떠오름 */
-.notice-card:hover,
-.notice-card:focus-visible {
-	border-color: color-mix(in oklch, var(--brand) 55%, transparent);
-	transform: translateY(-2px);
-	box-shadow: 0 6px 18px -10px rgba(59, 42, 20, 0.35);
+/* 마우스를 올리면 아주 연한 주황 바탕 */
+.notice-row:hover,
+.notice-row:focus-visible {
+	background: color-mix(in oklch, var(--brand) 5%, transparent);
 }
 
-/* 고정 공지: 연한 주황 바탕 */
-.notice-card.is-pinned {
-	background: color-mix(in oklch, var(--brand) 7%, var(--bs-bg-body));
-	border-color: color-mix(in oklch, var(--brand) 30%, transparent);
+/* 고정 공지: 왼쪽 주황 세로선 + 진한 "고정" 배지 */
+.notice-row.is-pinned {
+	border-left-color: var(--brand);
 }
 
-/* 왼쪽 날짜 칸: 위 "2026.11" 작게, 아래 "24" 크게(세리프) */
-.nc-date {
-	display: flex;
-	flex: none;
-	flex-direction: column;
-	width: 4.2rem;
-	padding-right: 1.1rem;
-	border-right: 1px solid var(--bs-border-color);
-	text-align: center;
+.notice-row.is-pinned .pin-badge {
+	background: var(--brand);
+	color: #fff;
 }
 
-.nc-ym {
+.nrw-date {
 	color: var(--bs-fg-3);
-	font-size: 0.75rem;
-}
-
-.nc-day {
 	font-family: var(--kor-serif);
-	font-size: 1.75rem;
-	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
 }
 
-/* 가운데: 제목 + 미리보기 (min-width: 0 → 길면 줄어들 수 있게) */
-.nc-body {
+.nrw-body {
 	display: flex;
-	flex: 1;
 	flex-direction: column;
-	gap: 0.25rem;
+	gap: 0.3rem;
 	min-width: 0;
 }
 
-.nc-title {
-	font-weight: 600;
+/* 제목: 세리프, 긴 글도 칸 안에서 줄바꿈 */
+.nrw-title {
+	font-family: var(--kor-serif);
+	font-size: 1.15rem;
 	overflow-wrap: anywhere;
+	transition: color 0.2s ease;
 }
 
-.nc-title .pin-badge,
-.nc-title .new-badge {
-	vertical-align: 0.1em;
+.notice-row:hover .nrw-title,
+.notice-row:focus-visible .nrw-title {
+	color: color-mix(in oklch, var(--brand) 85%, #000);
+}
+
+/* 배지는 세리프 말고 본문 글꼴로, 제목 글자와 높이 맞춤 */
+.nrw-title .pin-badge,
+.nrw-title .new-badge {
+	font-family: ui-sans-serif, system-ui, "Malgun Gothic", sans-serif;
+	vertical-align: 0.15em;
 }
 
 /* 미리보기: 한 줄, 넘치면 … */
-.nc-preview {
+.nrw-preview {
 	overflow: hidden;
 	color: var(--bs-fg-3);
 	font-size: 0.875rem;
@@ -928,22 +921,18 @@ a.np-link:focus-visible {
 	text-overflow: ellipsis;
 }
 
-.nc-arrow {
-	flex: none;
+/* →: 평소엔 숨김, 마우스를 올리면 나타남 */
+.nrw-arrow {
 	color: var(--brand);
-	transition: transform 0.2s ease;
+	opacity: 0;
+	transform: translateX(-4px);
+	transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.notice-card:hover .nc-arrow,
-.notice-card:focus-visible .nc-arrow {
-	transform: translateX(3px);
-}
-
-/* 고정 공지 카드 안의 "고정" 배지: 연한 주황 바탕에 묻히지 않게 진한 주황 + 흰 글씨
-   (메인 최근 공지·관리자 목록의 "고정" 배지는 그대로) */
-.notice-card.is-pinned .pin-badge {
-	background: var(--brand);
-	color: #fff;
+.notice-row:hover .nrw-arrow,
+.notice-row:focus-visible .nrw-arrow {
+	opacity: 1;
+	transform: none;
 }
 
 /* NEW: 주황 테두리 알약 (고정은 기존 .pin-badge) */
@@ -959,23 +948,19 @@ a.np-link:focus-visible {
 	letter-spacing: 0.03em;
 }
 
-/* 폰: 여백·날짜 칸 줄이고 화살표 숨김 */
+/* 폰: 날짜를 제목 위로, → 숨김 */
 @media (max-width: 575.98px) {
-	.notice-card {
-		gap: 0.9rem;
-		padding: 0.9rem 1rem;
+	.notice-row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.35rem;
+		padding: 1.1rem 0.75rem 1.1rem 0.9rem;
 	}
 
-	.nc-date {
-		width: 3.4rem;
-		padding-right: 0.8rem;
+	.nrw-date {
+		font-size: 0.85rem;
 	}
 
-	.nc-day {
-		font-size: 1.4rem;
-	}
-
-	.nc-arrow {
+	.nrw-arrow {
 		display: none;
 	}
 }
@@ -983,14 +968,10 @@ a.np-link:focus-visible {
 /* 동작 줄이기 설정이면 움직임 끔 */
 @media (prefers-reduced-motion: reduce) {
 
-	.notice-card,
-	.nc-arrow {
+	.notice-row,
+	.nrw-title,
+	.nrw-arrow {
 		transition: none;
-	}
-
-	.notice-card:hover,
-	.notice-card:focus-visible {
-		transform: none;
 	}
 }
 
