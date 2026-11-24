@@ -111,6 +111,19 @@
 	</div>
 </div>
 
+<!-- ===== 공지 배지 묶음: 고정 / 분류 / NEW / 종료 =====
+     공지 목록, 메인 최근 공지, 공지 상세, 관리자 목록에서 같이 씀 — noticeBadges(${공지})
+     - 고정: 고정이면서 기간이 안 끝났을 때만 (pinnedNow)
+     - NEW: 화면에 newSince 가 있을 때만 (관리자·상세는 없음 → 안 보임), 종료된 글은 안 붙임
+     - 분류 배지 색은 england.css 의 .cat-construction / .cat-closed / .cat-event -->
+<th:block th:fragment="noticeBadges(n)">
+	<span class="pin-badge" th:if="${n.pinnedNow}">고정</span><span class="cat-badge"
+		th:classappend="${'cat-' + #strings.toLowerCase(n.category.name())}"
+		th:text="${n.category.label}">안내</span><span class="new-badge"
+		th:if="${newSince != null and !n.ended and n.createdAt.isAfter(newSince)}">NEW</span><span class="ended-badge"
+		th:if="${n.ended}">종료</span>
+</th:block>
+
 <!-- ===== 3. 꼬리말 ===== -->
 <footer th:fragment="footer" class="site-footer section pb-6">
 	<!-- 관리자로 로그인한 상태에서만 보이는 바로가기 (왼쪽 아래 떠 있음, 손님에게는 안 보임) -->

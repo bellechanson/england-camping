@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.englandcamping.domain.NoticeCategory;
 import com.englandcamping.dto.NoticeForm;
 import com.englandcamping.service.NoticeService;
 
@@ -25,6 +26,12 @@ public class AdminNoticeController {
 
 	public AdminNoticeController(NoticeService noticeService) {
 		this.noticeService = noticeService;
+	}
+
+	/** 쓰기/수정 화면의 분류 고르기 칸 (안내 / 공사 / 휴장 / 이벤트) — 이 컨트롤러의 모든 화면에 자동으로 들어감 */
+	@ModelAttribute("noticeCategories")
+	public NoticeCategory[] noticeCategories() {
+		return NoticeCategory.values();
 	}
 
 	/** 목록 (+ 띠 공지 설정 칸) */
@@ -48,7 +55,7 @@ public class AdminNoticeController {
 		if (bindingResult.hasErrors()) {
 			return "admin/notice-form"; // 입력한 내용 그대로 + 오류 문구
 		}
-		noticeService.create(form.getTitle(), form.getContent(), form.isPinned());
+		noticeService.create(form);
 		redirect.addFlashAttribute("message", "공지를 등록했습니다.");
 		return "redirect:/admin/notices";
 	}
@@ -69,7 +76,7 @@ public class AdminNoticeController {
 			model.addAttribute("noticeId", id);
 			return "admin/notice-form";
 		}
-		noticeService.update(id, form.getTitle(), form.getContent(), form.isPinned());
+		noticeService.update(id, form);
 		redirect.addFlashAttribute("message", "공지를 수정했습니다.");
 		return "redirect:/admin/notices";
 	}

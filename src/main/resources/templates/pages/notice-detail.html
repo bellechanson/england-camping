@@ -23,6 +23,12 @@
 
 					<div class="lg:col-8">
 						<!-- 본문: 주황 세로선, 관리자가 입력한 줄바꿈 그대로 (CSS white-space: pre-line) -->
+						<!-- 분류 · 고정 · 종료 배지 + 게시 기간 (기간은 입력했을 때만) -->
+						<p class="notice-meta">
+							<th:block th:replace="~{fragments/layout :: noticeBadges(${notice})}"></th:block>
+							<span th:if="${notice.periodText != null}">기간 <strong
+									th:text="${notice.periodText}">2026.11.27 ~ 2026.11.28</strong></span>
+						</p>
 						<article class="notice-content fs-lg fg-2" th:text="${notice.content}">공지 내용</article>
 					</div>
 

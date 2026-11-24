@@ -42,7 +42,8 @@
 
 				<p class="fg-3 mb-0" th:if="${page.empty}">아직 공지가 없습니다. 오른쪽 위 "새 공지 쓰기"를 눌러 주세요.</p>
 
-				<table class="admin-table" th:unless="${page.empty}">
+				<!-- notice-admin-table: 폰에서는 한 공지를 두 줄로 (위: 제목, 아래: 작성일 + 수정/삭제) -->
+				<table class="admin-table notice-admin-table" th:unless="${page.empty}">
 					<thead>
 						<tr>
 							<th>제목</th>
@@ -53,10 +54,14 @@
 					<tbody>
 						<tr th:each="n : ${page.content}">
 							<td>
-								<span class="pin-badge" th:if="${n.pinned}">고정</span>
+								<!-- 고정 / 분류 / 종료 배지 (NEW는 관리자 화면엔 안 붙음) -->
+								<th:block th:replace="~{fragments/layout :: noticeBadges(${n})}"></th:block>
 								<!-- 손님이 보는 화면으로 (새 창) -->
 								<a th:href="@{/notice/{id}(id=${n.id})}" target="_blank" rel="noopener"
 									th:text="${n.title}">제목</a>
+								<!-- 게시 기간 (입력했을 때만) -->
+								<div class="fs-sm fg-3 mt-1" th:if="${n.periodText != null}"
+									th:text="'기간 ' + ${n.periodText}">기간</div>
 							</td>
 							<td class="fs-sm fg-3" th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.19
 							</td>

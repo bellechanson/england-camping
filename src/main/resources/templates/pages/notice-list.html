@@ -21,14 +21,16 @@
 				     고정 공지는 왼쪽 주황 세로선 (메인 최근 공지 칸도 같은 .notice-rows, 미리보기만 없음) -->
 				<ul class="notice-rows" th:unless="${page.empty}">
 					<li th:each="n : ${page.content}">
-						<a class="notice-row" th:classappend="${n.pinned} ? 'is-pinned'"
+						<a class="notice-row"
+							th:classappend="${n.pinnedNow} ? 'is-pinned' : (${n.ended} ? 'is-ended' : '')"
 							th:href="@{/notice/{id}(id=${n.id})}">
 							<span class="nrw-date"
 								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.24</span>
 							<span class="nrw-body">
-								<span class="nrw-title"><span class="pin-badge" th:if="${n.pinned}">고정</span><span
-										class="new-badge" th:if="${n.createdAt.isAfter(newSince)}">NEW</span><span
-										th:text="${n.title}">제목</span></span>
+								<span class="nrw-title">
+									<th:block th:replace="~{fragments/layout :: noticeBadges(${n})}"></th:block><span
+										th:text="${n.title}">제목</span>
+								</span>
 								<!-- 본문 앞부분만 (줄바꿈은 띄어쓰기로 보이고, 칸을 넘으면 … 으로 자름) -->
 								<span class="nrw-preview" th:if="${!#strings.isEmpty(n.content)}"
 									th:text="${#strings.abbreviate(n.content, 120)}">본문 미리보기</span>

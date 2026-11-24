@@ -877,7 +877,9 @@ a.np-link:focus-visible {
 
 /* 배지는 세리프 말고 본문 글꼴로, 제목 글자와 높이 맞춤 */
 .nrw-title .pin-badge,
-.nrw-title .new-badge {
+.nrw-title .cat-badge,
+.nrw-title .new-badge,
+.nrw-title .ended-badge {
 	font-family: ui-sans-serif, system-ui, "Malgun Gothic", sans-serif;
 	vertical-align: 0.15em;
 }
@@ -916,6 +918,124 @@ a.np-link:focus-visible {
 	font-size: 0.7rem;
 	font-weight: 600;
 	letter-spacing: 0.03em;
+}
+
+
+/* ===== 공지 분류 / 종료 배지 =====
+   분류: 안내는 회색, 공사·휴장은 연한 주황, 이벤트는 연한 초록 */
+.cat-badge {
+	display: inline-block;
+	margin-right: 0.4rem;
+	padding: 0.05rem 0.5rem;
+	border-radius: 999px;
+	background: var(--bs-bg-2);
+	color: var(--bs-fg-2);
+	font-size: 0.7rem;
+	font-weight: 600;
+}
+
+.cat-badge.cat-construction,
+.cat-badge.cat-closed {
+	background: color-mix(in oklch, var(--brand) 16%, transparent);
+	color: color-mix(in oklch, var(--brand) 70%, #000);
+}
+
+.cat-badge.cat-event {
+	background: color-mix(in oklch, #4f8a5b 16%, transparent);
+	color: #2f5e3a;
+}
+
+/* 종료: 흐린 테두리 알약 */
+.ended-badge {
+	display: inline-block;
+	margin-right: 0.4rem;
+	padding: 0.05rem 0.5rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: 999px;
+	color: var(--bs-fg-3);
+	font-size: 0.7rem;
+	font-weight: 600;
+}
+
+/* 기간이 끝난 공지: 제목 흐리게 */
+.notice-row.is-ended .nrw-title {
+	color: var(--bs-fg-3);
+}
+
+/* 공지 상세: 본문 위 분류·기간 줄 */
+.notice-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem;
+	margin-bottom: 1.25rem;
+	color: var(--bs-fg-3);
+	font-size: 0.9rem;
+}
+
+.notice-meta strong {
+	color: var(--bs-fg-2);
+	font-weight: 600;
+}
+
+/* 관리자 공지 쓰기: 시작일 ~ 끝나는 날 한 줄 */
+.date-range {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.date-range .form-control {
+	width: auto;
+}
+
+
+/* 관리자 공지 목록: 폰에서는 표 대신 공지 하나를 두 줄로
+   윗줄 = 배지 + 제목 + 기간 (폭 전체) / 아랫줄 = 작성일(왼쪽) + 수정·삭제(오른쪽)
+   PC는 그대로 표 3칸, 요금·사이트 관리 표는 영향 없음 */
+@media (max-width: 767.98px) {
+
+	.notice-admin-table,
+	.notice-admin-table tbody {
+		display: block;
+		width: 100%;
+	}
+
+	/* 칸 제목(제목/작성일) 줄은 숨김 — 날짜는 보면 알 수 있어서 */
+	.notice-admin-table thead {
+		display: none;
+	}
+
+	.notice-admin-table tr {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-areas:
+			"title title"
+			"date actions";
+		gap: 0.5rem 1rem;
+		padding-block: 0.9rem;
+		border-bottom: 1px solid var(--bs-border-color);
+	}
+
+	.notice-admin-table td {
+		display: block;
+		padding: 0;
+		border: 0;
+	}
+
+	.notice-admin-table td:nth-child(1) {
+		grid-area: title;
+	}
+
+	.notice-admin-table td:nth-child(2) {
+		grid-area: date;
+		align-self: center;
+	}
+
+	.notice-admin-table td.actions {
+		grid-area: actions;
+	}
 }
 
 /* 폰: 날짜를 제목 위로, → 숨김 */

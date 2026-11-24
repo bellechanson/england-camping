@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.englandcamping.domain.Notice;
+import com.englandcamping.dto.NoticeForm;
 import com.englandcamping.repository.NoticeRepository;
 
 /** 공지사항 (손님: 목록·상세 / 관리자: 쓰기·수정·삭제) */
@@ -28,15 +29,14 @@ public class NoticeService {
 		this.noticeRepository = noticeRepository;
 	}
 
-	/** 목록 (page는 0부터, 음수가 들어오면 0으로) */
+	/** 목록 (page는 0부터, 음수가 들어오면 0으로). 지금 고정인 공지 먼저 (기간 끝난 고정은 일반 순서로) */
 	public Page<Notice> findPage(int page) {
-		return noticeRepository
-				.findAllByOrderByPinnedDescCreatedAtDescIdDesc(PageRequest.of(Math.max(page, 0), PAGE_SIZE));
+		return noticeRepository.findPinnedFirst(LocalDate.now(), PageRequest.of(Math.max(page, 0), PAGE_SIZE));
 	}
 
-	/** 메인용 최근 3개 (고정 공지 먼저) */
+	/** 메인·상세용 최근 3개 (목록과 같은 순서) */
 	public List<Notice> findRecent() {
-		return noticeRepository.findTop3ByOrderByPinnedDescCreatedAtDescIdDesc();
+		return noticeRepository.findPinnedFirst(LocalDate.now(), PageRequest.of(0, 3)).getContent();
 	}
 
 	/** NEW 표시 기간: 쓴 날 포함 3일 (예: 24일에 쓴 글 → 24·25·26일 동안 NEW) */
@@ -69,13 +69,15 @@ public class NoticeService {
 	}
 
 	@Transactional
-	public Notice create(String title, String content, boolean pinned) {
-		return noticeRepository.save(new Notice(title.strip(), content.strip(), pinned));
+	public Notice create(NoticeForm form) {
+		return noticeRepository.save(new Notice(form.getTitle().strip(), form.getContent().strip(), form.isPinned(),
+				form.getCategory(), form.getStartDate(), form.getEndDate()));
 	}
 
 	@Transactional
-	public void update(Long id, String title, String content, boolean pinned) {
-		get(id).update(title.strip(), content.strip(), pinned);
+	public void update(Long id, NoticeForm form) {
+		get(id).update(form.getTitle().strip(), form.getContent().strip(), form.isPinned(), form.getCategory(),
+				form.getStartDate(), form.getEndDate());
 	}
 
 	@Transactional

@@ -102,14 +102,16 @@
 				     한 줄 = 날짜(세리프) / 제목(고정·NEW 배지) / 마우스 올리면 → , 고정 공지는 왼쪽 주황 세로선 -->
 				<ul class="notice-rows">
 					<li th:each="n : ${recentNotices}">
-						<a class="notice-row" th:classappend="${n.pinned} ? 'is-pinned'"
+						<a class="notice-row"
+							th:classappend="${n.pinnedNow} ? 'is-pinned' : (${n.ended} ? 'is-ended' : '')"
 							th:href="@{/notice/{id}(id=${n.id})}">
 							<span class="nrw-date"
 								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.24</span>
 							<span class="nrw-body">
-								<span class="nrw-title"><span class="pin-badge" th:if="${n.pinned}">고정</span><span
-										class="new-badge" th:if="${n.createdAt.isAfter(newSince)}">NEW</span><span
-										th:text="${n.title}">제목</span></span>
+								<span class="nrw-title">
+									<th:block th:replace="~{fragments/layout :: noticeBadges(${n})}"></th:block><span
+										th:text="${n.title}">제목</span>
+								</span>
 							</span>
 							<span class="nrw-arrow" aria-hidden="true">→</span>
 						</a>

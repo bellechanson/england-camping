@@ -16,6 +16,16 @@
 				<form th:action="${noticeId == null} ? @{/admin/notices} : @{/admin/notices/{id}(id=${noticeId})}"
 					th:object="${form}" method="post" class="vstack gap-5" novalidate>
 
+					<!-- 분류: 목록·상세에 작은 배지로 보임 (처음엔 "안내") -->
+					<div class="form-field">
+						<label class="form-label" for="category">분류</label>
+						<select class="form-control" th:field="*{category}" style="max-width:14rem">
+							<option th:each="c : ${noticeCategories}" th:value="${c}" th:text="${c.label}">안내</option>
+						</select>
+						<p class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">분류 오류
+						</p>
+					</div>
+
 					<div class="form-field">
 						<label class="form-label" for="title">제목</label>
 						<input type="text" class="form-control" th:field="*{title}" maxlength="100"
@@ -30,12 +40,26 @@
 						<p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">내용 오류</p>
 					</div>
 
+					<!-- 게시 기간 (둘 다 비워도 됨): 손님 화면 본문 위에 "기간 ..."으로 보임
+					     끝나는 날이 지나면 고정이 자동으로 풀리고 "종료" 표시 -->
+					<div class="form-field">
+						<span class="form-label">게시 기간 (선택)</span>
+						<div class="date-range">
+							<input type="date" class="form-control" th:field="*{startDate}" aria-label="시작일">
+							<span class="fg-3">~</span>
+							<input type="date" class="form-control" th:field="*{endDate}" aria-label="끝나는 날">
+						</div>
+						<p class="field-hint">비워 두면 기간 없이 계속 보입니다. 끝나는 날이 지나면 상단 고정이 자동으로 풀리고 "종료" 표시가 붙습니다.</p>
+						<p class="field-error" th:if="${#fields.hasErrors('periodValid')}" th:errors="*{periodValid}">
+							기간 오류</p>
+					</div>
+
 					<div class="form-field">
 						<div class="switch">
 							<input type="checkbox" id="pinned" name="pinned" value="true" role="switch" switch
 								th:checked="*{pinned}">
 						</div>
-						<label for="pinned">상단 고정 (목록 맨 위, 메인에도 먼저 보임)</label>
+						<label for="pinned">상단 고정 (목록 맨 위, 메인에도 먼저 보임 · 게시 기간이 끝나면 자동 해제)</label>
 					</div>
 
 					<div class="d-flex flex-wrap gap-3">
