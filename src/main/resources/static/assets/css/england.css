@@ -629,15 +629,6 @@ body:has(.site-banner) .sub-head {
 	font-size: 0.9rem;
 }
 
-
-/* 관리자 첫 화면 카드가 버튼일 때 (비밀번호 변경 팝업): 링크 카드와 같은 모양 */
-button.admin-tile {
-	width: 100%;
-	font: inherit;
-	text-align: left;
-	cursor: pointer;
-}
-
 /* 카드 안 주의 문구 (예: 메인 큰 사진 없음) */
 .admin-tile-warn {
 	color: #b42318;
