@@ -181,7 +181,7 @@
 		     chatbotEnabled: API 키가 있을 때만 (GlobalModelAdvice). 동작은 /assets/js/chatbot.js
 		     chatbotSleeping: 관리자가 꺼 둔 상태 → is-sleeping: 자는 얼굴 + Zzz, 창에는 이용 불가 안내만 (질문 칸 없음)
 		     data-phone: 오류 안내에 쓸 캠핑장 전화번호
-		     영국이 = 주황 텐트 + 꼭대기 영국 깃발. 평소 표정(mascot-normal) ↔ 마우스 올리면 웃는 표정(mascot-happy) + 흔들흔들 (england.css)
+		     영국이 그림은 이 파일 아래 mascot 조각 하나로 버튼·창 윗부분에서 같이 씀
 		     주의: 이 안에서 <header>, <footer> 태그를 쓰면 안 됨 (~{fragments/layout :: header/footer} 로 가져갈 때 같이 복사됨) -->
 	<div class="chatbot" id="chatbot" th:if="${chatbotEnabled}" th:classappend="${chatbotSleeping ? 'is-sleeping' : ''}"
 		th:attr="data-phone=${settings['PHONE']}">
@@ -190,41 +190,7 @@
 		<button type="button" class="chat-launcher" id="chatLauncher" aria-controls="chatPanel" aria-expanded="false"
 			th:attr="aria-label=${chatbotSleeping ? '영국이는 자는 중이에요' : '영국이에게 물어보기'},title=${chatbotSleeping ? '영국이는 자는 중이에요' : '영국이에게 물어보기'}">
 			<span class="chat-mascot" aria-hidden="true">
-				<svg viewBox="6 2 88 90">
-					<g class="mascot-body">
-						<!-- 깃대 + 영국 깃발 -->
-						<line x1="50" y1="6" x2="50" y2="24" stroke="#7a4a12" stroke-width="2.5"
-							stroke-linecap="round" />
-						<rect x="50" y="6" width="18" height="11" rx="1.5" fill="#1f3a8a" />
-						<path d="M50 11.5h18M59 6v11" stroke="#fff" stroke-width="3.4" />
-						<path d="M50 11.5h18M59 6v11" stroke="#c8102e" stroke-width="1.6" />
-						<!-- 텐트 몸통 + 문 + 볼 -->
-						<path d="M50 22 L88 86 H12 Z" fill="#E08A35" stroke="#a85f1c" stroke-width="2.5"
-							stroke-linejoin="round" />
-						<path d="M50 66 L41 86 H59 Z" fill="#7a4a12" />
-						<circle cx="36" cy="60" r="3.5" fill="#f3a7a0" opacity=".8" />
-						<circle cx="64" cy="60" r="3.5" fill="#f3a7a0" opacity=".8" />
-						<!-- 평소 표정 -->
-						<g class="mascot-normal" th:unless="${chatbotSleeping}">
-							<circle cx="42" cy="53" r="3.2" fill="#3a2410" />
-							<circle cx="58" cy="53" r="3.2" fill="#3a2410" />
-							<path d="M46 59 Q50 62.5 54 59" stroke="#3a2410" stroke-width="2" fill="none"
-								stroke-linecap="round" />
-						</g>
-						<!-- 웃는 표정 (마우스 올리면) -->
-						<g class="mascot-happy" th:unless="${chatbotSleeping}">
-							<path d="M38 54 Q42 49 46 54M54 54 Q58 49 62 54" stroke="#3a2410" stroke-width="2.4"
-								fill="none" stroke-linecap="round" />
-							<path d="M45 58 Q50 66 55 58 Z" fill="#3a2410" />
-						</g>
-						<!-- 자는 표정 (관리자가 끈 상태): 감은 눈 + 작게 벌린 입 -->
-						<g class="mascot-sleep" th:if="${chatbotSleeping}">
-							<path d="M38 52 Q42 56 46 52M54 52 Q58 56 62 52" stroke="#3a2410" stroke-width="2.4"
-								fill="none" stroke-linecap="round" />
-							<ellipse cx="50" cy="60.5" rx="2.2" ry="1.8" fill="#3a2410" />
-						</g>
-					</g>
-				</svg>
+				<svg th:replace="~{fragments/layout :: mascot(${chatbotSleeping ? 'sleep' : 'live'})}"></svg>
 			</span>
 			<!-- 머리 위 Zzz (자는 중일 때만, 하나씩 떠올랐다 사라짐) -->
 			<span class="chat-zzz" aria-hidden="true"
@@ -236,28 +202,7 @@
 			<div class="chat-head">
 				<!-- 윗부분 동그라미: 영국이 (깨어 있으면 웃는 얼굴, 자는 중이면 자는 얼굴) -->
 				<span class="chat-avatar" aria-hidden="true">
-					<svg viewBox="6 2 88 90">
-						<line x1="50" y1="6" x2="50" y2="24" stroke="#7a4a12" stroke-width="2.5"
-							stroke-linecap="round" />
-						<rect x="50" y="6" width="18" height="11" rx="1.5" fill="#1f3a8a" />
-						<path d="M50 11.5h18M59 6v11" stroke="#fff" stroke-width="3.4" />
-						<path d="M50 11.5h18M59 6v11" stroke="#c8102e" stroke-width="1.6" />
-						<path d="M50 22 L88 86 H12 Z" fill="#E08A35" stroke="#a85f1c" stroke-width="2.5"
-							stroke-linejoin="round" />
-						<path d="M50 66 L41 86 H59 Z" fill="#7a4a12" />
-						<circle cx="36" cy="60" r="3.5" fill="#f3a7a0" opacity=".8" />
-						<circle cx="64" cy="60" r="3.5" fill="#f3a7a0" opacity=".8" />
-						<g th:unless="${chatbotSleeping}">
-							<path d="M38 54 Q42 49 46 54M54 54 Q58 49 62 54" stroke="#3a2410" stroke-width="2.4"
-								fill="none" stroke-linecap="round" />
-							<path d="M45 58 Q50 66 55 58 Z" fill="#3a2410" />
-						</g>
-						<g th:if="${chatbotSleeping}">
-							<path d="M38 52 Q42 56 46 52M54 52 Q58 56 62 52" stroke="#3a2410" stroke-width="2.4"
-								fill="none" stroke-linecap="round" />
-							<ellipse cx="50" cy="60.5" rx="2.2" ry="1.8" fill="#3a2410" />
-						</g>
-					</svg>
+					<svg th:replace="~{fragments/layout :: mascot(${chatbotSleeping ? 'sleep' : 'happy'})}"></svg>
 				</span>
 				<div>
 					<p class="chat-title">영국이</p>
@@ -307,6 +252,44 @@
 		<script th:src="@{/assets/js/chatbot.js}" defer></script>
 	</div>
 </footer>
+
+
+<!-- ===== 영국이 그림 (주황 텐트 + 꼭대기 영국 깃발) — 위 챗봇의 버튼·창 윗부분에서 같이 씀 =====
+     faces: 'live'  = 평소 얼굴 ↔ 마우스 올리면 웃는 얼굴 + 흔들흔들 (영국이 버튼, england.css)
+            'happy' = 웃는 얼굴만 (창 윗부분 동그라미)
+            'sleep' = 자는 얼굴 (관리자가 꺼 둔 상태) -->
+<svg th:fragment="mascot(faces)" viewBox="6 2 88 90">
+	<g class="mascot-body">
+		<!-- 깃대 + 영국 깃발 -->
+		<line x1="50" y1="6" x2="50" y2="24" stroke="#7a4a12" stroke-width="2.5" stroke-linecap="round" />
+		<rect x="50" y="6" width="18" height="11" rx="1.5" fill="#1f3a8a" />
+		<path d="M50 11.5h18M59 6v11" stroke="#fff" stroke-width="3.4" />
+		<path d="M50 11.5h18M59 6v11" stroke="#c8102e" stroke-width="1.6" />
+		<!-- 텐트 몸통 + 문 + 볼 -->
+		<path d="M50 22 L88 86 H12 Z" fill="#E08A35" stroke="#a85f1c" stroke-width="2.5" stroke-linejoin="round" />
+		<path d="M50 66 L41 86 H59 Z" fill="#7a4a12" />
+		<circle cx="36" cy="60" r="3.5" fill="#f3a7a0" opacity=".8" />
+		<circle cx="64" cy="60" r="3.5" fill="#f3a7a0" opacity=".8" />
+		<!-- 평소 얼굴 -->
+		<g class="mascot-normal" th:if="${faces == 'live'}">
+			<circle cx="42" cy="53" r="3.2" fill="#3a2410" />
+			<circle cx="58" cy="53" r="3.2" fill="#3a2410" />
+			<path d="M46 59 Q50 62.5 54 59" stroke="#3a2410" stroke-width="2" fill="none" stroke-linecap="round" />
+		</g>
+		<!-- 웃는 얼굴 ('live'에서는 mascot-happy: 평소엔 숨어 있다가 마우스 올리면 보임) -->
+		<g th:if="${faces == 'live' or faces == 'happy'}" th:class="${faces == 'live' ? 'mascot-happy' : null}">
+			<path d="M38 54 Q42 49 46 54M54 54 Q58 49 62 54" stroke="#3a2410" stroke-width="2.4" fill="none"
+				stroke-linecap="round" />
+			<path d="M45 58 Q50 66 55 58 Z" fill="#3a2410" />
+		</g>
+		<!-- 자는 얼굴: 감은 눈 + 작게 벌린 입 -->
+		<g th:if="${faces == 'sleep'}">
+			<path d="M38 52 Q42 56 46 52M54 52 Q58 56 62 52" stroke="#3a2410" stroke-width="2.4" fill="none"
+				stroke-linecap="round" />
+			<ellipse cx="50" cy="60.5" rx="2.2" ry="1.8" fill="#3a2410" />
+		</g>
+	</g>
+</svg>
 
 <!-- ===== 4. 스크립트 (템플릿 main.js 그대로) ===== -->
 <th:block th:fragment="scripts">

@@ -2144,7 +2144,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 }
 
 /* ===== AI 챗봇 (손님 화면 오른쪽 아래, fragments/layout.html 꼬리말 + chatbot.js) =====
-   B안: 글자 있는 알약 버튼 + 주황 윗부분 창. 색은 홈페이지 주황(--brand)
+   영국이 캐릭터 버튼(글자 없음) + 주황 윗부분 창. 색은 홈페이지 주황(--brand)
    z-index: 관리자 바(1050)와 Bootstrap 팝업(1055) 사이 → 팝업이 뜨면 팝업이 위 */
 
 /* 여는 버튼 */
@@ -2161,7 +2161,12 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 	background: none;
 	/* 회사 메심이처럼 캐릭터만 (바탕·글자 없음) */
 	cursor: pointer;
+	touch-action: none;
+	/* 폰에서 영국이를 잡고 움직일 때 화면이 같이 스크롤되지 않게 */
+	user-select: none;
+	-webkit-user-select: none;
 }
+
 
 .chat-launcher:focus-visible {
 	outline: 3px solid color-mix(in oklch, var(--brand) 40%, #fff);
@@ -2212,7 +2217,6 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 	height: 2.25rem;
 	border-radius: 50%;
 	background: #fff;
-	color: var(--brand);
 }
 
 .chat-title {
@@ -2454,12 +2458,14 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 /* ===== 챗봇 캐릭터 "영국이" (주황 텐트 + 영국 깃발) =====
    평소 표정 ↔ 마우스 올리면(폰은 누르는 동안) 웃는 표정 + 좌우로 살짝 흔들흔들 */
 
-/* 버튼 왼쪽 흰 동그라미 안의 영국이 */
+/* 영국이 버튼 그림 */
 .chat-mascot {
 	display: grid;
 	place-items: center;
 	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 28%));
 	/* 사진 위에서도 잘 보이게 그림자만 */
+	transform-origin: 50% 100%;
+	/* 쿵 떨어져 납작해질 때 발(아래)을 기준으로 */
 }
 
 .chat-mascot svg {
@@ -2526,14 +2532,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 }
 
 /* ===== 영국이 끌기 (chatbot.js) =====
-   끄는 동안: 웃는 얼굴 + 그림자 크게(들린 느낌) / 놓으면 JS가 제자리로 되돌림 */
-.chat-launcher {
-	touch-action: none;
-	/* 폰에서 영국이를 잡고 움직일 때 화면이 같이 스크롤되지 않게 */
-	user-select: none;
-	-webkit-user-select: none;
-}
-
+끄는 동안: 웃는 얼굴 + 그림자 크게(들린 느낌) / 놓으면 JS가 제자리로 되돌림 */
 .chat-launcher.is-dragging {
 	z-index: 1060;
 	/* 끄는 동안은 다른 것보다 위에 */
@@ -2555,10 +2554,6 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 /* ===== 영국이 떨어지기·걷기 (chatbot.js) =====
    is-landing: 바닥에 쿵 → 납작해졌다가 펴짐 (튕겨 오르지 않음)
    is-walking: 바닥을 걸어올 때 → 평소보다 빠르게 좌우로 뒤뚱뒤뚱 */
-.chat-mascot {
-	transform-origin: 50% 100%;
-	/* 납작해질 때 발(아래)을 기준으로 */
-}
 
 .chat-launcher.is-landing .chat-mascot {
 	animation: mascot-land 0.32s ease-out;
@@ -2588,7 +2583,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 
 
 /* ===== 영국이 자는 중 (관리자 > AI 챗봇에서 끈 상태, #chatbot.is-sleeping) =====
-   자는 얼굴(layout.html의 mascot-sleep) + 숨 쉬듯 천천히 오르락내리락 + 머리 위 Zzz
+   자는 얼굴(layout.html의 mascot 조각, faces='sleep') + 숨 쉬듯 천천히 오르락내리락 + 머리 위 Zzz
    마우스를 올려도 웃거나 흔들지 않음. 잡고 던지면 걸어올 때만 뒤뚱뒤뚱 (잠결에 걷기) */
 .chat-zzz {
 	position: absolute;

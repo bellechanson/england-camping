@@ -2,7 +2,6 @@ package com.englandcamping.controller;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,13 +24,8 @@ import com.englandcamping.service.SiteSettingService;
 @RequestMapping("/admin/chatbot")
 public class AdminChatbotController {
 
-	/** 추가 안내 최대 글자 수 (너무 길면 지시서가 커져서 답이 느려짐) */
-	private static final int EXTRA_INFO_MAX_LENGTH = 2000;
-
 	/** "오후 5시" 모양 */
 	private static final DateTimeFormatter RESET_FORMAT = DateTimeFormatter.ofPattern("a h시", Locale.KOREAN);
-
-	private static final String REDIRECT_PAGE = "redirect:/admin/chatbot";
 
 	private final SiteSettingService siteSettingService;
 	private final ChatRateLimiter limiter;
@@ -55,26 +49,25 @@ public class AdminChatbotController {
 		model.addAttribute("usedPercent", limit <= 0 ? 100 : Math.min(100, used * 100 / limit));
 		model.addAttribute("perUserLimit", limiter.getDailyLimitPerUser());
 		model.addAttribute("resetTime", limiter.getNextResetKst().format(RESET_FORMAT));
-		model.addAttribute("extraMax", EXTRA_INFO_MAX_LENGTH);
+		model.addAttribute("extraMax", SettingKey.CHATBOT_EXTRA_INFO.getMaxLength());
 		return "admin/chatbot";
 	}
 
-	/** 저장 (깨우기/재우기 + 추가 안내) */
+	/**
+	 * 저장 (깨우기/재우기 + 추가 안내). 추가 안내 정리·글자 수 검사는 글/링크 설정과 같은 규칙 (SiteSettingService)
+	 */
 	@PostMapping
 	public String save(@RequestParam(defaultValue = "false") boolean enabled,
 			@RequestParam(defaultValue = "") String extraInfo, RedirectAttributes redirect) {
-		// 줄 바꿈 통일 + 줄마다 앞뒤 공백 정리
-		String cleaned = extraInfo.replace("\r\n", "\n").replace('\r', '\n').lines().map(String::strip)
-				.collect(Collectors.joining("\n")).strip();
-		if (cleaned.length() > EXTRA_INFO_MAX_LENGTH) {
-			redirect.addFlashAttribute("error", "추가 안내는 " + EXTRA_INFO_MAX_LENGTH + "자 이내로 적어 주세요.");
-			return REDIRECT_PAGE;
+		try {
+			siteSettingService.updateOne(SettingKey.CHATBOT_EXTRA_INFO, extraInfo);
+		} catch (IllegalArgumentException e) {
+			redirect.addFlashAttribute("error", e.getMessage());
+			return "redirect:/admin/chatbot";
 		}
-
-		siteSettingService.update(SettingKey.CHATBOT_EXTRA_INFO, cleaned);
 		siteSettingService.update(SettingKey.CHATBOT_ENABLED, String.valueOf(enabled));
 		redirect.addFlashAttribute("message",
 				enabled ? "저장했습니다. 영국이가 깨어 있어요." : "저장했습니다. 영국이를 재웠어요. (홈페이지에서 자는 모습으로 보여요)");
-		return REDIRECT_PAGE;
+		return "redirect:/admin/chatbot";
 	}
 }

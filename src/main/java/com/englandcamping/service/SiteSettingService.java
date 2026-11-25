@@ -135,6 +135,18 @@ public class SiteSettingService {
 		cleaned.forEach(this::update);
 	}
 
+	/**
+	 * 항목 하나만 정리·검사해서 저장 (관리자 AI 챗봇 화면의 추가 안내). 글/링크 설정과 같은 규칙
+	 *
+	 * @throws IllegalArgumentException 검사에 걸리면 (메시지를 그대로 화면 안내 띠에 보여 줌)
+	 */
+	@Transactional
+	public void updateOne(SettingKey key, String raw) {
+		String value = clean(key, raw);
+		validate(key, value);
+		update(key, value);
+	}
+
 	/** 입력값 정리: 줄 바꿈 통일, 앞뒤 공백 제거 */
 	private static String clean(SettingKey key, String raw) {
 		// Windows 브라우저는 줄 바꿈을 \r\n 으로 보냄 → \n 하나로 통일

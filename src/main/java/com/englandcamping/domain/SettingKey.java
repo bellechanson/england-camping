@@ -83,7 +83,7 @@ public enum SettingKey {
 
 	/** 줄 바꿈이 의미 있는 항목 (문단 목록, 규칙 목록) → 큰 입력 칸, 줄 바꿈 그대로 저장 */
 	public boolean isMultiline() {
-		return this == INTRO_BODY || this == RULES;
+		return this == INTRO_BODY || this == RULES || this == CHATBOT_EXTRA_INFO;
 	}
 
 	/** 한 문단짜리 긴 글 → 입력 칸은 3줄짜리로 보여 주지만, 줄 바꿈은 띄어쓰기로 바꿔 저장 */
@@ -102,6 +102,9 @@ public enum SettingKey {
 
 	/** 최대 글자 수 */
 	public int getMaxLength() {
+		if (this == CHATBOT_EXTRA_INFO) {
+			return 2000; // 너무 길면 영국이 지시서가 커져서 답이 느려짐
+		}
 		if (isUrl()) {
 			return 500;
 		}

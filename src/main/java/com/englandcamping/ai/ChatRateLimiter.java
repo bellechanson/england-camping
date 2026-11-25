@@ -75,7 +75,7 @@ public class ChatRateLimiter {
 		total.set(dailyTotalLimit);
 	}
 
-	/** 오늘(구글 기준) 챗봇이 쓴 질문 수 — 관리자 화면용 (6단계) */
+	/** 오늘(구글 기준) 챗봇이 쓴 질문 수 — 관리자 화면용 */
 	public synchronized int getTodayTotal() {
 		resetIfNewDay();
 		return total.get();
