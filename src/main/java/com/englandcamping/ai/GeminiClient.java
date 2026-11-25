@@ -59,40 +59,6 @@ public class GeminiClient {
 		return !apiKey.isEmpty();
 	}
 
-	/** 쓰는 모델 ID */
-	public String getModel() {
-		return model;
-	}
-
-	/**
-	 * 이 키로 "글 만들기(generateContent)"가 되는 모델 ID 목록. 예: models/gemini-3.5-flash-lite →
-	 * "gemini-3.5-flash-lite" 로 앞부분을 떼고 돌려줌
-	 */
-	public List<String> listModels() {
-		Map<String, Object> response = restClient.get().uri("/models?pageSize=200").retrieve().body(JSON_MAP);
-
-		List<String> ids = new ArrayList<>();
-		if (response != null && response.get("models") instanceof List<?> models) {
-			for (Object item : models) {
-				if (item instanceof Map<?, ?> m && m.get("supportedGenerationMethods") instanceof List<?> methods
-						&& methods.contains("generateContent")) {
-					ids.add(String.valueOf(m.get("name")).replaceFirst("^models/", ""));
-				}
-			}
-		}
-		return ids;
-	}
-
-	/** 질문 하나 (지시서 없이) — 시험 화면용 */
-	public String ask(String message) {
-		return generate(null, List.of(Turn.user(message)));
-	}
-
-	/** 업무 지시서 + 질문 하나 — 시험 화면용 */
-	public String ask(String systemPrompt, String message) {
-		return generate(systemPrompt, List.of(Turn.user(message)));
-	}
-
 	/**
 	 * 대화 보내고 답 받기 (챗봇이 쓰는 것)
 	 * 
