@@ -50,7 +50,42 @@
 							</button>
 						</div>
 					</section>
+					<!-- ===== 예약처 나누기 (사이트마다 한 곳) =====
+					     줄마다 사이트 버튼 22개. 한 줄에서 누르면 그 예약처로 바뀌고, 다른 줄에서는 저절로 빠짐
+					     어느 줄에도 없으면 PHONE (홈페이지에 "전화 문의")
+					     값은 아래 숨은 칸에 들어감 → 메모 칸 밖이라 ✕(칸 닫기)를 눌러도 안 바뀜 -->
+					<section class="site-channels">
+						<h2 class="site-area-title mb-1">예약처<span class="fs-sm fg-3">사이트마다 한 곳만 · 홈페이지 배치도에 색으로
+								나와요</span></h2>
+						<p class="fs-sm fg-3 mb-3">한 줄에서 사이트를 누르면 다른 줄에서는 저절로 빠져요. 같은 걸 한 번 더 누르면 빠져요.</p>
 
+						<!-- 저장용 값 (사이트마다 하나: NAVER_CAMFIT / THANKQ / PHONE) -->
+						<input type="hidden" class="channel-value" th:each="row, stat : *{rows}"
+							th:name="|rows[${stat.index}].reserveChannel|" th:value="${row.reserveChannel}"
+							th:attr="data-index=${stat.index}">
+
+						<!-- 줄 = 예약처 (전화 문의는 줄이 없음) -->
+						<div class="channel-line" th:each="ch : ${T(com.englandcamping.domain.ReserveChannel).values()}"
+							th:if="${ch.name() != 'PHONE'}" th:attr="data-channel=${ch.name()}"
+							th:classappend="${'is-' + #strings.toLowerCase(ch.name())}">
+							<p class="channel-line-title">
+								<span class="channel-dot" aria-hidden="true"></span>
+								<span th:text="${ch.label} + '에서 받는 사이트'">땡큐캠핑에서 받는 사이트</span>
+								<span class="channel-count fs-sm fg-3"></span>
+							</p>
+							<!-- 사이트 순서는 위 타일과 같음 (위치 묶음 순서) -->
+							<div class="channel-chips">
+								<th:block th:each="g : *{groups}">
+									<button type="button" class="channel-chip" th:each="i : ${g.indexes}"
+										th:attr="data-index=${i},aria-pressed=${form.rows[i].reserveChannel == ch}"
+										th:text="${form.rows[i].shortName}">A</button>
+								</th:block>
+							</div>
+						</div>
+
+						<!-- 어느 줄에도 없는 사이트 (스크립트가 채움, 없으면 숨김) -->
+						<p class="fs-sm fg-3 mt-3 mb-0" id="channelPhone" hidden></p>
+					</section>
 					<!-- ===== 사이트별 칸: 메모 + 이용 불가 기간 (관리자만 봄) =====
 					     22개 칸이 전부 폼 안에 있음 (숨겨도 같이 저장돼서 다른 칸 값이 지워지지 않음)
 					     처음엔 메모나 기간이 있는 사이트만 보이고, 타일을 누르면 그 칸이 열림 -->
@@ -269,6 +304,56 @@
 				showAll.textContent = showingAll ? '접기 ▴' : '전체 펼치기 ▾';
 				showAll.setAttribute('aria-expanded', String(showingAll));
 				refresh(); // 접을 때: 메모·기간이 빈 칸은 다시 숨김
+			});
+
+			refresh();
+		})();
+	</script>
+	<!-- ===== 예약처 나누기: 버튼 누르기 + 개수·저장 전 표시 ===== -->
+	<script>
+		(() => {
+			const values = document.querySelectorAll('.channel-value');
+			const lines = document.querySelectorAll('.channel-line');
+			const phone = document.getElementById('channelPhone');
+			const valueOf = (index) => document.querySelector('.channel-value[data-index="' + index + '"]');
+
+			// 화면 처음 열었을 때 값 (저장 전 표시용). 숨은 칸은 defaultValue 가 같이 바뀌어서 따로 기억
+			values.forEach((input) => {
+				input.dataset.saved = input.value;
+			});
+
+			function refresh() {
+				lines.forEach((line) => {
+					const channel = line.dataset.channel;
+					let count = 0;
+					line.querySelectorAll('.channel-chip').forEach((chip) => {
+						const input = valueOf(chip.dataset.index);
+						const on = input.value === channel;
+						if (on) {
+							count++;
+						}
+						chip.setAttribute('aria-pressed', String(on));
+						// 저장 전: 처음 값과 달라진 사이트는 주황 테두리 (두 줄 모두)
+						chip.classList.toggle('is-dirty', input.value !== input.dataset.saved);
+					});
+					line.querySelector('.channel-count').textContent = count + '개';
+				});
+
+				// 어느 줄에도 없는 사이트 → "전화 문의" 안내
+				const names = [...lines[0].querySelectorAll('.channel-chip')]
+					.filter((chip) => valueOf(chip.dataset.index).value === 'PHONE')
+					.map((chip) => chip.textContent.trim());
+				phone.hidden = names.length === 0;
+				phone.textContent = '어느 줄에도 없는 사이트 (홈페이지에 "전화 문의"로 나와요): ' + names.join(', ');
+			}
+
+			// 누르기: 이 줄의 예약처로 바꿈 / 이미 이 줄이면 빼기(전화 문의)
+			lines.forEach((line) => {
+				line.querySelectorAll('.channel-chip').forEach((chip) => chip.addEventListener('click', () => {
+					const input = valueOf(chip.dataset.index);
+					input.value = input.value === line.dataset.channel ? 'PHONE' : line.dataset.channel;
+					refresh();
+				}));
 			});
 
 			refresh();

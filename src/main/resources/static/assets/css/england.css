@@ -8,6 +8,10 @@
 :root {
 	/* 제목용 세리프: 한글은 Noto Serif KR, 없으면 기본 세리프 */
 	--kor-serif: "Noto Serif KR", ui-serif, Georgia, serif;
+	/* 예약처 색 (로고에서 뽑음). 관리자 예약처 버튼 + 손님 배치도에서 같이 씀
+	   네이버·캠핏 = 네이버(#00BF19)와 캠핏(#62D278)의 중간, 땡큐캠핑 = 로고 주황 */
+	--ch-naver: #31C848;
+	--ch-thankq: #F27226;
 }
 
 body {
@@ -2010,4 +2014,88 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 	@view-transition {
 		navigation: none;
 	}
+}
+
+/* ===== 관리자 사이트 관리: 예약처 나누기 (두 줄 버튼) =====
+   누른 사이트 = 예약처 색으로 채움 + ✓, 안 누른 사이트 = 흰 바탕 연한 글씨
+   저장 전(처음 값과 다름) = 주황 테두리 링 (위 "저장 전" 범례와 같은 색) */
+.site-channels {
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--bs-border-color);
+}
+
+/* 줄마다 색 정하기 */
+.channel-line.is-naver_camfit {
+	--ch-color: var(--ch-naver);
+}
+
+.channel-line.is-thankq {
+	--ch-color: var(--ch-thankq);
+}
+
+.channel-line+.channel-line {
+	margin-top: 1.25rem;
+}
+
+/* 줄 제목: 색 동그라미 + 이름 + 개수 */
+.channel-line-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.6rem;
+	font-weight: 600;
+}
+
+.channel-dot {
+	flex: none;
+	width: 0.85rem;
+	height: 0.85rem;
+	border-radius: 50%;
+	background: var(--ch-color);
+}
+
+/* 버튼 칸: 폭에 맞춰 자동 (PC 한 줄에 많이, 폰은 5~6개씩) */
+.channel-chips {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
+	gap: 0.4rem;
+}
+
+.channel-chip {
+	padding: 0.45rem 0.2rem;
+	border: 1px solid var(--bs-border-color);
+	border-radius: 0.6rem;
+	background: var(--bs-bg-body);
+	color: var(--bs-fg-2);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.channel-chip:hover {
+	border-color: var(--ch-color);
+}
+
+.channel-chip:focus-visible {
+	outline: 2px solid var(--brand);
+	outline-offset: 2px;
+}
+
+/* 이 줄의 예약처로 된 사이트 */
+.channel-chip[aria-pressed="true"] {
+	border-color: var(--ch-color);
+	background: var(--ch-color);
+	color: #fff;
+}
+
+.channel-chip[aria-pressed="true"]::before {
+	content: "✓ ";
+}
+
+/* 저장 전 */
+.channel-chip.is-dirty {
+	box-shadow: 0 0 0 2px var(--bs-bg-body), 0 0 0 4px var(--brand);
 }

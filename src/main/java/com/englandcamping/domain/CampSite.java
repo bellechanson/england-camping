@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -51,6 +53,14 @@ public class CampSite {
 	@Column(name = "closed_until")
 	private LocalDate closedUntil;
 
+	/**
+	 * 어느 예약처에서 받는 사이트인지. 칸이 새로 생겨 비어 있는(null) 옛 데이터는 "네이버·캠핏"으로 봄
+	 * (getReserveChannel 참고)
+	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "reserve_channel", length = 20)
+	private ReserveChannel reserveChannel;
+
 	/** 화면에 보여 줄 순서 (작을수록 앞) */
 	@Column(nullable = false)
 	private int sortOrder;
@@ -80,6 +90,16 @@ public class CampSite {
 	public void changeClosedPeriod(LocalDate closedFrom, LocalDate closedUntil) {
 		this.closedFrom = closedFrom;
 		this.closedUntil = closedUntil;
+	}
+
+	/** 예약처 바꾸기 (관리자 > 사이트 관리) */
+	public void changeReserveChannel(ReserveChannel reserveChannel) {
+		this.reserveChannel = reserveChannel;
+	}
+
+	/** 예약처. 아직 정한 적 없으면(null) 네이버·캠핏 */
+	public ReserveChannel getReserveChannel() {
+		return reserveChannel == null ? ReserveChannel.NAVER_CAMFIT : reserveChannel;
 	}
 
 	/**

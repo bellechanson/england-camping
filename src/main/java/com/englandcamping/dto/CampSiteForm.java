@@ -9,6 +9,7 @@ import java.util.Set;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.englandcamping.domain.CampSite;
+import com.englandcamping.domain.ReserveChannel;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
@@ -43,6 +44,7 @@ public class CampSiteForm {
 			row.setName(site.getName());
 			row.setTypeName(site.getSiteType().getName());
 			row.setNote(site.getNote());
+			row.setReserveChannel(site.getReserveChannel());
 			// 이미 끝난 기간은 빈칸으로 (다음 저장 때 지워짐)
 			boolean expired = site.getClosedUntil() != null && site.getClosedUntil().isBefore(today);
 			if (!expired) {
@@ -144,6 +146,17 @@ public class CampSiteForm {
 		/** 이용 불가 끝나는 날 (비면 "끝 없이 계속") */
 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 		private LocalDate closedUntil;
+
+		/** 예약처 (화면의 두 줄 버튼에서 고른 값. 어느 줄에도 없으면 PHONE) */
+		private ReserveChannel reserveChannel;
+
+		public ReserveChannel getReserveChannel() {
+			return reserveChannel;
+		}
+
+		public void setReserveChannel(ReserveChannel reserveChannel) {
+			this.reserveChannel = reserveChannel;
+		}
 
 		/** 기간 검사: 둘 다 있으면 시작일이 끝나는 날과 같거나 앞이어야 함 */
 		@AssertTrue(message = "시작일이 끝나는 날보다 늦어요. 날짜를 확인해 주세요.")

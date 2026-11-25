@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.englandcamping.domain.CampSite;
+import com.englandcamping.domain.ReserveChannel;
 import com.englandcamping.domain.SiteType;
 import com.englandcamping.dto.CampSiteForm;
 import com.englandcamping.dto.SiteStatusNotice;
@@ -146,13 +147,18 @@ public class SiteGuideService {
 			LocalDate savedFrom = savedExpired ? null : site.getClosedFrom();
 			LocalDate savedUntil = savedExpired ? null : site.getClosedUntil();
 
+			// 예약처: 화면에서 안 왔으면(null) 원래 값 그대로
+			ReserveChannel channel = row.getReserveChannel() != null ? row.getReserveChannel()
+					: site.getReserveChannel();
+
 			// 바뀐 게 없으면 건너뜀
 			if (site.isAvailable() && Objects.equals(site.getNote(), note) && Objects.equals(savedFrom, from)
-					&& Objects.equals(savedUntil, until)) {
+					&& Objects.equals(savedUntil, until) && site.getReserveChannel() == channel) {
 				continue;
 			}
 			site.update(site.getName(), site.getSiteType(), true, note, site.getSortOrder());
 			site.changeClosedPeriod(from, until);
+			site.changeReserveChannel(channel);
 			changed++;
 		}
 		return changed;
