@@ -2125,3 +2125,20 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 .channel-chip.is-dirty {
 	box-shadow: 0 0 0 2px var(--bs-bg-body), 0 0 0 4px var(--brand);
 }
+
+/* 메인 소개 숫자 줄: 글자 모양 때문에 안쪽으로 밀려 보이는 큰 글씨를 눈으로 맞춤 (예: '무료'의 ㅁ) */
+.stat-nudge {
+	margin-left: -0.12em;
+}
+
+/* 메인 소개 숫자 줄 (폰): 2칸씩 2줄 → 숫자 글자를 조금 작게(28px → 22px), 칸 사이도 좁게
+   ('성인 2 · 소인 2'가 반 칸에 들어가게. 폭 360px 폰까지 확인) */
+@media (max-width: 767.98px) {
+	.about-stats {
+		--bs-gutter-x: 1rem;
+	}
+
+	.about-stats .fs-2xl {
+		font-size: 1.4rem;
+	}
+}
