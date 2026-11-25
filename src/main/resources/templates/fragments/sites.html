@@ -4,16 +4,17 @@
   사이트 배치도 조각 (메인, 사이트·요금 페이지에서 같이 씀) — 건축 배치도처럼 절제된 스타일
   - 캠핑장 안내도를 보고 직접 그린 그림. 사이트를 옮기거나 늘리면 동그라미 좌표(cx, cy)를 고쳐야 함
   - 왼쪽부터 캠핑장 → 입구(E와 F 사이) → 도로 → 계곡
-  - 이용 불가 사이트(관리자 > 사이트 관리에서 끈 사이트 + 오늘이 불가 기간인 사이트)는 점선 동그라미 + 회색 번호
+  - 동그라미 색 = 예약처 (관리자 > 사이트 관리 > 예약처): 네이버·캠핏 초록 / 땡큐캠핑 주황 / 전화 문의 흰 바탕
+  - 이용 불가 사이트(오늘이 불가 기간인 사이트)는 예약처와 상관없이 점선 동그라미 + 회색 번호
+  - 왼쪽 위 빈자리에 색 설명(범례). 전화 문의 줄은 그런 사이트가 있을 때만 나옴
   - 쓰는 쪽 화면에 ${sites} (사이트 목록)가 있어야 함
   - 색·굵기는 england.css 의 .site-map 부분에서 바꿈
 -->
 
 <body>
 
-	<!-- closed = 이용 불가 사이트의 짧은 이름 목록 (예: ['08']) -->
-	<svg th:fragment="map" class="site-map" viewBox="0 0 560 565" role="img" aria-label="잉글랜드 캠핑장 사이트 배치도"
-		th:with="closed=${sites.?[!openNow].![shortName]}">
+	<!-- 사이트 모양(색·점선)은 사이트마다 CampSite.getMapClass 로 정함 (아래 사이트 부분) -->
+	<svg th:fragment="map" class="site-map" viewBox="0 0 560 565" role="img" aria-label="잉글랜드 캠핑장 사이트 배치도">
 
 		<!-- 계곡 (맨 오른쪽) -->
 		<path class="map-water" d="M 562 0 C 548 120 538 250 540 390 L 540 565" />
@@ -51,71 +52,84 @@
 			<text class="map-label" y="20">N</text>
 		</g>
 
-		<!-- 사이트 (동그라미 가운데 = 위치, 이용 불가면 is-closed → 점선 + 회색) -->
-		<g class="map-site" th:classappend="${#lists.contains(closed, '01')} ? 'is-closed'">
+		<!-- 색 설명 (왼쪽 위 빈자리) -->
+		<g class="map-legend">
+			<circle class="is-naver" cx="18" cy="20" r="6" /><text x="30" y="20" dy=".35em">네이버·캠핏 예약</text>
+			<circle class="is-thankq" cx="18" cy="40" r="6" /><text x="30" y="40" dy=".35em">땡큐캠핑 예약</text>
+			<circle class="is-closed" cx="18" cy="60" r="6" /><text x="30" y="60" dy=".35em">지금 이용 불가</text>
+			<!-- 전화 문의 사이트가 있을 때만 -->
+			<g th:if="${!#lists.isEmpty(sites.?[reserveChannel.name() == 'PHONE'])}">
+				<circle class="is-phone" cx="18" cy="80" r="6" /><text x="30" y="80" dy=".35em">전화 문의</text>
+			</g>
+		</g>
+
+		<!-- 사이트 (동그라미 가운데 = 위치)
+		     site = 이 번호의 사이트, 모양은 CampSite.getMapClass:
+		     지금 불가 = is-closed(점선 + 회색) / 땡큐캠핑 = is-thankq(주황) / 전화 문의 = is-phone(흰 바탕) / 네이버·캠핏 = 기본(초록) -->
+		<g class="map-site" th:with="site=${sites.^[shortName == '01']}" th:classappend="${site?.mapClass}">
 			<circle cx="65" cy="330" r="14" /><text x="65" y="330" dy=".36em">01</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '02')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '02']}" th:classappend="${site?.mapClass}">
 			<circle cx="65" cy="280" r="14" /><text x="65" y="280" dy=".36em">02</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '03')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '03']}" th:classappend="${site?.mapClass}">
 			<circle cx="85" cy="235" r="14" /><text x="85" y="235" dy=".36em">03</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '04')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '04']}" th:classappend="${site?.mapClass}">
 			<circle cx="120" cy="202" r="14" /><text x="120" y="202" dy=".36em">04</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '05')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '05']}" th:classappend="${site?.mapClass}">
 			<circle cx="150" cy="175" r="14" /><text x="150" y="175" dy=".36em">05</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '06')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '06']}" th:classappend="${site?.mapClass}">
 			<circle cx="185" cy="150" r="14" /><text x="185" y="150" dy=".36em">06</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '07')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '07']}" th:classappend="${site?.mapClass}">
 			<circle cx="225" cy="130" r="14" /><text x="225" y="130" dy=".36em">07</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '08')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '08']}" th:classappend="${site?.mapClass}">
 			<circle cx="258" cy="108" r="14" /><text x="258" y="108" dy=".36em">08</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '09')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '09']}" th:classappend="${site?.mapClass}">
 			<circle cx="290" cy="87" r="14" /><text x="290" y="87" dy=".36em">09</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '10')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '10']}" th:classappend="${site?.mapClass}">
 			<circle cx="330" cy="52" r="14" /><text x="330" y="52" dy=".36em">10</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '11')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '11']}" th:classappend="${site?.mapClass}">
 			<circle cx="370" cy="87" r="14" /><text x="370" y="87" dy=".36em">11</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '12')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '12']}" th:classappend="${site?.mapClass}">
 			<circle cx="397" cy="128" r="14" /><text x="397" y="128" dy=".36em">12</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '13')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '13']}" th:classappend="${site?.mapClass}">
 			<circle cx="282" cy="195" r="14" /><text x="282" y="195" dy=".36em">13</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, '14')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == '14']}" th:classappend="${site?.mapClass}">
 			<circle cx="318" cy="225" r="14" /><text x="318" y="225" dy=".36em">14</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'A')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'A']}" th:classappend="${site?.mapClass}">
 			<circle cx="437" cy="165" r="14" /><text x="437" y="165" dy=".36em">A</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'B')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'B']}" th:classappend="${site?.mapClass}">
 			<circle cx="427" cy="210" r="14" /><text x="427" y="210" dy=".36em">B</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'C')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'C']}" th:classappend="${site?.mapClass}">
 			<circle cx="420" cy="250" r="14" /><text x="420" y="250" dy=".36em">C</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'D')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'D']}" th:classappend="${site?.mapClass}">
 			<circle cx="417" cy="295" r="14" /><text x="417" y="295" dy=".36em">D</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'E')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'E']}" th:classappend="${site?.mapClass}">
 			<circle cx="415" cy="340" r="14" /><text x="415" y="340" dy=".36em">E</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'F')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'F']}" th:classappend="${site?.mapClass}">
 			<circle cx="325" cy="410" r="14" /><text x="325" y="410" dy=".36em">F</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'G')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'G']}" th:classappend="${site?.mapClass}">
 			<circle cx="295" cy="448" r="14" /><text x="295" y="448" dy=".36em">G</text>
 		</g>
-		<g class="map-site" th:classappend="${#lists.contains(closed, 'H')} ? 'is-closed'">
+		<g class="map-site" th:with="site=${sites.^[shortName == 'H']}" th:classappend="${site?.mapClass}">
 			<circle cx="263" cy="477" r="14" /><text x="263" y="477" dy=".36em">H</text>
 		</g>
 	</svg>

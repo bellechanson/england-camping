@@ -162,30 +162,56 @@ body {
 	fill: #8f7d64;
 }
 
-/* --- 사이트: 속이 빈 동그라미 + 황토색 번호 --- */
-.site-map .map-site circle {
-	fill: #fffdf9;
-	stroke: var(--brand);
+/* --- 사이트 동그라미 + 색 설명(왼쪽 위) 동그라미: 같은 색 규칙을 같이 씀 ---
+   기본 = 네이버·캠핏 초록, is-thankq = 땡큐캠핑 주황, is-phone = 전화 문의(흰 바탕), is-closed = 이용 불가(점선)
+   어떤 모양인지는 CampSite.getMapClass 가 정함. 색 값은 맨 위 :root 의 --ch-naver, --ch-thankq */
+.site-map .map-site circle,
+.site-map .map-legend .is-naver {
+	fill: var(--ch-naver);
+	stroke: var(--ch-naver);
 	stroke-width: 1.6;
 }
 
+.site-map .map-site.is-thankq circle,
+.site-map .map-legend .is-thankq {
+	fill: var(--ch-thankq);
+	stroke: var(--ch-thankq);
+}
+
+.site-map .map-site.is-phone circle,
+.site-map .map-legend .is-phone {
+	fill: #fffdf9;
+	stroke: var(--brand);
+}
+
+.site-map .map-site.is-closed circle,
+.site-map .map-legend .is-closed {
+	fill: #faf6ef;
+	stroke: #b7ab99;
+	stroke-dasharray: 3 2.5;
+}
+
+/* 사이트 번호: 색 동그라미 위 흰 글씨 */
 .site-map .map-site text {
 	font-size: 11px;
-	font-weight: 600;
-	fill: color-mix(in oklch, var(--brand) 80%, #000);
+	font-weight: 700;
+	fill: #fff;
 	text-anchor: middle;
 }
 
-/* 이용 불가: 점선 동그라미 + 회색 줄 그은 번호 (관리자 > 사이트 관리에서 끈 사이트) */
-.site-map .map-site.is-closed circle {
-	fill: #f1ebe0;
-	fill: #faf6ef;
-	stroke-dasharray: 3 2.5;
+.site-map .map-site.is-phone text {
+	fill: color-mix(in oklch, var(--brand) 80%, #000);
 }
 
 .site-map .map-site.is-closed text {
 	fill: #b7ab99;
 	text-decoration: line-through;
+}
+
+/* 색 설명 글씨 */
+.site-map .map-legend text {
+	font-size: 11px;
+	fill: #7d6f5c;
 }
 
 /* ===== 손님 화면: 사이트 이용 안내 목록 (요금표 아래) =====

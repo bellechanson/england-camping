@@ -124,6 +124,21 @@ public class CampSite {
 		return available && !isClosedOn(LocalDate.now());
 	}
 
+	/**
+	 * 손님 배치도 동그라미 모양 (fragments/sites.html 의 class 이름). 지금 이용 불가면 예약처와 상관없이
+	 * is-closed(점선), 아니면 예약처 색. 네이버·캠핏은 기본 모양이라 빈 글자
+	 */
+	public String getMapClass() {
+		if (!isOpenNow()) {
+			return "is-closed";
+		}
+		return switch (getReserveChannel()) {
+		case THANKQ -> "is-thankq";
+		case PHONE -> "is-phone";
+		case NAVER_CAMFIT -> "";
+		};
+	}
+
 	public Long getId() {
 		return id;
 	}
