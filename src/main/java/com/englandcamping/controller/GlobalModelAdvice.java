@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.englandcamping.ai.GeminiClient;
 import com.englandcamping.domain.Photo;
 import com.englandcamping.domain.SettingKey;
 import com.englandcamping.dto.ReserveLink;
@@ -29,10 +30,13 @@ public class GlobalModelAdvice {
 
 	private final SiteSettingService siteSettingService;
 	private final PhotoService photoService;
+	private final GeminiClient geminiClient;
 
-	public GlobalModelAdvice(SiteSettingService siteSettingService, PhotoService photoService) {
+	public GlobalModelAdvice(SiteSettingService siteSettingService, PhotoService photoService,
+			GeminiClient geminiClient) {
 		this.siteSettingService = siteSettingService;
 		this.photoService = photoService;
+		this.geminiClient = geminiClient;
 	}
 
 	/** 글/링크 전체 → 화면에서 ${settings['CAMP_NAME']} */
@@ -107,6 +111,15 @@ public class GlobalModelAdvice {
 	public boolean adminLoggedIn() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		return auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+	}
+
+	/**
+	 * 손님 화면 오른쪽 아래 AI 챗봇을 보여 줄지. 지금은 API 키가 있을 때만 (키가 없으면 버튼 자체가 안 생김). 6단계에서 관리자
+	 * 켜기/끄기를 더함
+	 */
+	@ModelAttribute("chatbotEnabled")
+	public boolean chatbotEnabled() {
+		return geminiClient.hasKey();
 	}
 
 	/** 예약 주소가 있는 것만 버튼으로 (icon = 로고 그림 주소) */

@@ -38,6 +38,9 @@ public class SecurityConfig {
 				.requestMatchers("/admin/login").permitAll().requestMatchers("/admin/**").authenticated() // 관리자 화면
 				.anyRequest().permitAll()) // 그 외 전부 공개
 
+				// 챗봇 창구는 CSRF 토큰 없이 받음 (로그인과 상관없고 아무것도 바꾸지 않는 질문 창구. 남용은 하루 횟수 제한으로 막음)
+				.csrf(csrf -> csrf.ignoringRequestMatchers("/api/chat"))
+
 				.formLogin(form -> form.loginPage("/admin/login") // 로그인 화면 주소 (GET)
 						.loginProcessingUrl("/admin/login") // 로그인 처리 주소 (POST)
 						.defaultSuccessUrl("/admin", true) // 성공하면 관리자 첫 화면
