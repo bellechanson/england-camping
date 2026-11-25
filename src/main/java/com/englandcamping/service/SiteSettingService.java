@@ -87,6 +87,11 @@ public class SiteSettingService {
 		return end != null && end.isBefore(LocalDate.now());
 	}
 
+	/** AI 챗봇(영국이)이 깨어 있는지 — 관리자가 끄면 false (자는 모습 + 이용 불가 안내) */
+	public boolean isChatbotAwake() {
+		return "true".equals(get(SettingKey.CHATBOT_ENABLED));
+	}
+
 	/** 손님 화면 띠 공지 글자: 켜져 있고, 내용이 있고, 기간이 안 끝났을 때만. 아니면 null → 띠를 안 그림 */
 	public String getActiveBannerText() {
 		boolean enabled = "true".equals(get(SettingKey.BANNER_ENABLED));

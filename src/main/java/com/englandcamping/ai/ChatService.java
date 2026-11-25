@@ -58,8 +58,9 @@ public class ChatService {
 		if (message.length() > maxMessageLength) {
 			return ChatResponse.fail("질문은 " + maxMessageLength + "자 이내로 적어 주세요.", -1);
 		}
-		if (!gemini.hasKey()) {
-			return ChatResponse.fail("지금은 상담 도우미가 준비 중이에요. 전화(" + phone + ")로 문의해 주세요.", -1);
+		// 키가 없거나, 관리자가 꺼 둔 상태(영국이 자는 중)면 구글에 묻지 않음
+		if (!gemini.hasKey() || !settings.isChatbotAwake()) {
+			return ChatResponse.fail("지금은 영국이를 이용할 수 없습니다. 궁금한 점은 전화(" + phone + ")로 문의해 주세요.", -1);
 		}
 
 		// ② 하루 횟수 (구글에 묻기 전에 셈 → 장난으로 계속 보내도 한도 이상은 구글로 안 감)

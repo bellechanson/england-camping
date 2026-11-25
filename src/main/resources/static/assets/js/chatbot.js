@@ -5,6 +5,8 @@
  *   → 다른 페이지로 넘어가도 대화가 이어서 보임
  * - 답은 textContent 로만 넣음 (HTML로 해석하지 않음 → 이상한 글이 와도 화면이 깨지거나 스크립트가 실행되지 않음)
  * - 영국이 버튼: 누르면 창 열기 / 잡아서 끌거나 던지면 → 쿵 떨어져서 바닥을 걸어 제자리로
+ * - 관리자가 끄면 (#chatbot.is-sleeping) 영국이는 자는 모습 + Zzz.
+ *   눌러도 "지금은 이용할 수 없어요" 안내만 보이고 질문 칸이 없음. 잡고 던지기는 그대로 됨
  */
 (() => {
     const root = document.getElementById('chatbot');
@@ -19,9 +21,9 @@
     const chips = document.getElementById('chatChips');
     const form = document.getElementById('chatForm');
     const input = document.getElementById('chatInput');
-    const sendBtn = form.querySelector('.chat-send');
     const remainEl = document.getElementById('chatRemain');
     const phone = root.dataset.phone || '';
+    const sleeping = root.classList.contains('is-sleeping'); // 관리자가 끈 상태 (자는 중)
 
     const STORE_KEY = 'englandChat'; // sessionStorage 이름
     const HISTORY_SEND = 6;          // 서버로 보낼 앞 대화 수 (application.properties 의 chatbot.history-size 와 같게)
@@ -41,7 +43,7 @@
         return div;
     }
 
-    // ===== 대화 저장/불러오기 (실패해도 챗봇은 동작) =====
+    // ===== 대화 저장 (실패해도 챗봇은 동작) =====
     function save() {
         try {
             sessionStorage.setItem(STORE_KEY, JSON.stringify(history.slice(-20)));
@@ -50,27 +52,14 @@
         }
     }
 
-    try {
-        const saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || '[]');
-        if (Array.isArray(saved)) {
-            history = saved.filter((m) => m && (m.role === 'user' || m.role === 'model') && typeof m.text === 'string');
-        }
-    } catch (e) {
-        history = [];
-    }
-    history.forEach((m) => addBubble(m.role === 'user' ? 'is-user' : 'is-bot', m.text));
-    if (history.length > 0) {
-        chips.hidden = true; // 이미 대화했으면 빠른 질문은 숨김
-    }
-
     // ===== 열기 / 닫기 =====
     function open() {
         panel.hidden = false;
         root.classList.add('is-open');
         launcher.setAttribute('aria-expanded', 'true');
         body.scrollTop = body.scrollHeight;
-        if (canHover) {
-            input.focus(); // 폰에서는 키보드가 갑자기 올라오지 않게 PC만
+        if (canHover && input) {
+            input.focus(); // 폰에서는 키보드가 갑자기 올라오지 않게 PC만 (자는 중이면 입력 칸 없음)
         }
     }
 
@@ -273,6 +262,27 @@
             close();
         }
     });
+
+    // ===== 여기부터는 질문 주고받기 → 자는 중이면 필요 없음 (안내 글만 보임) =====
+    if (sleeping) {
+        return;
+    }
+
+    const sendBtn = form.querySelector('.chat-send');
+
+    // 이 탭에서 하던 대화 불러오기
+    try {
+        const saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || '[]');
+        if (Array.isArray(saved)) {
+            history = saved.filter((m) => m && (m.role === 'user' || m.role === 'model') && typeof m.text === 'string');
+        }
+    } catch (e) {
+        history = [];
+    }
+    history.forEach((m) => addBubble(m.role === 'user' ? 'is-user' : 'is-bot', m.text));
+    if (history.length > 0) {
+        chips.hidden = true; // 이미 대화했으면 빠른 질문은 숨김
+    }
 
     // ===== 남은 질문 수 (5번 이하일 때만) =====
     function showRemain(n) {

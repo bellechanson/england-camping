@@ -114,12 +114,20 @@ public class GlobalModelAdvice {
 	}
 
 	/**
-	 * 손님 화면 오른쪽 아래 AI 챗봇을 보여 줄지. 지금은 API 키가 있을 때만 (키가 없으면 버튼 자체가 안 생김). 6단계에서 관리자
-	 * 켜기/끄기를 더함
+	 * 손님 화면 오른쪽 아래 AI 챗봇(영국이)을 보여 줄지. API 키가 있을 때만 (키가 없으면 영국이 자체가 안 생김)
 	 */
 	@ModelAttribute("chatbotEnabled")
 	public boolean chatbotEnabled() {
 		return geminiClient.hasKey();
+	}
+
+	/**
+	 * 관리자가 챗봇을 꺼 둔 상태인지 → 영국이가 사라지지 않고 "자는 모습 + Zzz"로 바뀜, 눌러도 이용 불가 안내만 (관리자 > AI
+	 * 챗봇)
+	 */
+	@ModelAttribute("chatbotSleeping")
+	public boolean chatbotSleeping() {
+		return !siteSettingService.isChatbotAwake();
 	}
 
 	/** 예약 주소가 있는 것만 버튼으로 (icon = 로고 그림 주소) */

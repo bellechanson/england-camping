@@ -47,6 +47,12 @@ public enum SettingKey {
 	/** 띠 공지 끝나는 날 ("2026-11-28" 모양, 비우면 기간 없음) — 지나면 손님 화면에서 자동으로 숨김 */
 	BANNER_END_DATE("띠 공지 끝나는 날", ""),
 
+	// ===== AI 챗봇 "영국이" (관리자 > AI 챗봇 화면에서 깨우고 재움) =====
+	/** "true" = 깨어 있음(질문 받음), "false" = 자는 중(자는 모습 + 이용 불가 안내) */
+	CHATBOT_ENABLED("AI 챗봇 켜기", "true"),
+	/** 캠지기가 챗봇에게만 따로 알려 주는 내용 (한 줄에 하나씩, 비워도 됨) */
+	CHATBOT_EXTRA_INFO("챗봇 추가 안내", ""),
+
 	// ===== 예약 링크 (비어 있으면 화면에서 "준비 중"으로 표시할 예정) =====
 	RESERVE_CAMFIT_URL("캠핏 예약 주소", "https://camfit.co.kr/camp/67d119ab902902001d592ba1"),
 	RESERVE_THANKYOU_URL("땡큐캠핑 예약 주소", "https://m.thankqcamping.com/resv/view.hbb?cseq=14423"),

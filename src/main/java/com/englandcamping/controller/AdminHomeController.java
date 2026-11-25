@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.englandcamping.ai.ChatRateLimiter;
 import com.englandcamping.service.NoticeService;
 import com.englandcamping.service.PhotoService;
 import com.englandcamping.service.SiteGuideService;
@@ -18,12 +19,14 @@ public class AdminHomeController {
 	private final NoticeService noticeService;
 	private final PhotoService photoService;
 	private final SiteGuideService siteGuideService;
+	private final ChatRateLimiter chatLimiter;
 
 	public AdminHomeController(NoticeService noticeService, PhotoService photoService,
-			SiteGuideService siteGuideService) {
+			SiteGuideService siteGuideService, ChatRateLimiter chatLimiter) {
 		this.noticeService = noticeService;
 		this.photoService = photoService;
 		this.siteGuideService = siteGuideService;
+		this.chatLimiter = chatLimiter;
 	}
 
 	@GetMapping("/admin")
@@ -34,6 +37,9 @@ public class AdminHomeController {
 		model.addAttribute("closedSiteCount", siteGuideService.countClosedSites());
 		// 요금 카드에 평소 1박 요금을 보여 주려고 (없으면 null)
 		model.addAttribute("mainType", siteGuideService.findMainType());
+		// AI 챗봇 카드: 오늘 질문 수 (깨어 있는지는 settings['CHATBOT_ENABLED'])
+		model.addAttribute("chatToday", chatLimiter.getTodayTotal());
+		model.addAttribute("chatLimit", chatLimiter.getDailyTotalLimit());
 		return "admin/home";
 	}
 }

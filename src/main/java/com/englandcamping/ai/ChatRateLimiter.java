@@ -2,6 +2,7 @@ package com.englandcamping.ai;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,6 +79,12 @@ public class ChatRateLimiter {
 	public synchronized int getTodayTotal() {
 		resetIfNewDay();
 		return total.get();
+	}
+
+	/** 다음에 0으로 돌아가는 시각 (한국 시간) — 관리자 화면 안내용. 겨울 오후 5시 / 여름 오후 4시 */
+	public ZonedDateTime getNextResetKst() {
+		return LocalDate.now(GOOGLE_ZONE).plusDays(1).atStartOfDay(GOOGLE_ZONE)
+				.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
 	}
 
 	public int getDailyTotalLimit() {

@@ -138,6 +138,13 @@ public class CampInfoPromptBuilder {
 		// ===== 주차 =====
 		p.append("\n## 주차\n").append(settings.get(SettingKey.PARKING_INFO)).append('\n');
 
+		// ===== 캠지기 추가 안내 (관리자 > AI 챗봇 화면에서 적은 내용, 비었으면 안 넣음) =====
+		List<String> extra = settings.getLines(SettingKey.CHATBOT_EXTRA_INFO);
+		if (!extra.isEmpty()) {
+			p.append("\n## 캠지기 추가 안내\n");
+			extra.forEach(line -> p.append("- ").append(line).append('\n'));
+		}
+
 		// ===== 공지 =====
 		p.append("\n## 공지사항 (진행 중이거나 예정인 것, 최근 순)\n");
 		String banner = settings.getActiveBannerText();

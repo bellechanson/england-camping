@@ -2585,3 +2585,157 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 		/* 흔들흔들(1.1초)보다 빠르게 = 걸음 */
 	}
 }
+
+
+/* ===== 영국이 자는 중 (관리자 > AI 챗봇에서 끈 상태, #chatbot.is-sleeping) =====
+   자는 얼굴(layout.html의 mascot-sleep) + 숨 쉬듯 천천히 오르락내리락 + 머리 위 Zzz
+   마우스를 올려도 웃거나 흔들지 않음. 잡고 던지면 걸어올 때만 뒤뚱뒤뚱 (잠결에 걷기) */
+.chat-zzz {
+	position: absolute;
+	top: -0.9rem;
+	right: -0.5rem;
+	width: 1.6rem;
+	height: 1.6rem;
+	pointer-events: none;
+	/* Zzz가 클릭을 가로채지 않게 */
+}
+
+.chat-zzz span {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	color: #1f3a8a;
+	/* 깃발 파란색 */
+	font-weight: 800;
+	line-height: 1;
+	text-shadow: 0 0 3px #fff, 0 0 3px #fff;
+	/* 사진 위에서도 보이게 흰 테두리 */
+	opacity: 0;
+}
+
+.chat-zzz span:nth-child(1) {
+	font-size: 0.7rem;
+}
+
+.chat-zzz span:nth-child(2) {
+	font-size: 0.85rem;
+}
+
+.chat-zzz span:nth-child(3) {
+	font-size: 1.05rem;
+}
+
+/* 끄는 동안·떨어지는 동안은 Zzz 숨김 */
+.chat-launcher.is-dragging .chat-zzz,
+.chat-launcher.is-landing .chat-zzz {
+	display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	/* 숨 쉬기 (흔들흔들 대신) */
+	.chatbot.is-sleeping .chat-launcher .mascot-body {
+		animation: mascot-breathe 3s ease-in-out infinite;
+	}
+
+	/* 던진 뒤 걸어올 때는 뒤뚱뒤뚱 */
+	.chatbot.is-sleeping .chat-launcher.is-walking .mascot-body {
+		animation: mascot-sway 0.45s ease-in-out infinite;
+	}
+
+	/* z → z → Z 하나씩 오른쪽 위로 떠오르며 사라짐 */
+	.chat-zzz span {
+		animation: zzz-float 3s ease-in infinite;
+	}
+
+	.chat-zzz span:nth-child(2) {
+		animation-delay: 1s;
+	}
+
+	.chat-zzz span:nth-child(3) {
+		animation-delay: 2s;
+	}
+}
+
+/* "움직임 줄이기"를 켠 사람: Zzz를 계단처럼 고정해서 보여 줌 */
+@media (prefers-reduced-motion: reduce) {
+	.chat-zzz span {
+		opacity: 1;
+	}
+
+	.chat-zzz span:nth-child(2) {
+		transform: translate(0.4rem, -0.5rem);
+	}
+
+	.chat-zzz span:nth-child(3) {
+		transform: translate(0.85rem, -1.1rem);
+	}
+}
+
+@keyframes mascot-breathe {
+
+	0%,
+	100% {
+		transform: scale(1, 1);
+	}
+
+	50% {
+		transform: scale(1.03, 0.96);
+	}
+}
+
+@keyframes zzz-float {
+	0% {
+		opacity: 0;
+		transform: translate(0, 0);
+	}
+
+	20% {
+		opacity: 1;
+	}
+
+	75% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate(0.9rem, -1.4rem);
+	}
+}
+
+/* ===== 관리자 > AI 챗봇: 오늘 질문 수 ===== */
+.chat-usage-num {
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.chat-usage-num small {
+	font-size: 1rem;
+	font-weight: 400;
+	color: var(--bs-fg-3);
+}
+
+/* 질문 수 막대 (다 쓰면 빨간색) */
+.chat-usage-bar {
+	height: 0.625rem;
+	border-radius: 999px;
+	background: var(--bs-border-color);
+	overflow: hidden;
+}
+
+.chat-usage-bar>span {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: var(--bs-primary-base);
+}
+
+.chat-usage-bar.is-full>span {
+	background: #b42318;
+}
+
+.chat-usage-warn {
+	color: #b42318;
+}

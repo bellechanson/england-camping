@@ -47,6 +47,13 @@
 					<span class="admin-tile-desc"
 						th:text="${'전체 ' + siteCount + '개 · 이용 불가 ' + closedSiteCount + '개'}">전체 22개 · 이용 불가 1개</span>
 				</a>
+
+				<a class="admin-tile" th:href="@{/admin/chatbot}">
+					<span class="admin-tile-title">AI 챗봇</span>
+					<span class="admin-tile-desc"
+						th:text="${(settings['CHATBOT_ENABLED'] == 'true' ? '깨어 있음' : '자는 중') + ' · 오늘 질문 ' + chatToday + ' / ' + chatLimit + '번'}">깨어
+						있음 · 오늘 질문 0 / 500번</span>
+				</a>
 			</div>
 		</div>
 	</main>
