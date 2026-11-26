@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.englandcamping.domain.CampSite;
-import com.englandcamping.domain.PhotoSlot;
 import com.englandcamping.service.NoticeService;
 import com.englandcamping.service.PhotoService;
 import com.englandcamping.service.SiteGuideService;
@@ -48,8 +47,8 @@ public class HomeController {
 		// 갤러리 칸: 갤러리 순서 앞에서 5장 (없으면 사진 자리 그대로)
 		model.addAttribute("galleryPreview", photoService.findPreview());
 
-		// 메인 큰 사진: 폰에서 보일 부분 (CSS object-position 값, 예: "100% 50%")
-		model.addAttribute("heroFocus", photoService.findFocusX(PhotoSlot.HERO) + "% 50%");
+		// 메인 큰 사진 1~4 (사진 있는 자리만, 순서대로). 2장 이상이면 메인에서 5초마다 바뀜
+		model.addAttribute("heroSlides", photoService.findHeroSlides());
 
 		return "index"; // templates/index.html
 	}

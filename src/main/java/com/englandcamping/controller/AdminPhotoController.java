@@ -37,7 +37,7 @@ public class AdminPhotoController {
 		model.addAttribute("photos", photoService.findAll());
 		model.addAttribute("categories", PhotoCategory.values());
 		model.addAttribute("slots", PhotoSlot.values());
-		model.addAttribute("heroFocusX", photoService.findFocusX(PhotoSlot.HERO));
+		model.addAttribute("heroSlides", photoService.findHeroSlides()); // 메인 큰 사진 1~4: 폰 위치 정하기
 		return "admin/photos";
 	}
 

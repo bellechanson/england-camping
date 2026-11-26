@@ -3,6 +3,7 @@ package com.englandcamping.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +23,7 @@ import com.englandcamping.domain.Photo;
 import com.englandcamping.domain.PhotoCategory;
 import com.englandcamping.domain.PhotoSlot;
 import com.englandcamping.domain.PhotoSlotAssignment;
+import com.englandcamping.dto.HeroSlide;
 import com.englandcamping.repository.PhotoRepository;
 import com.englandcamping.repository.PhotoSlotAssignmentRepository;
 import com.englandcamping.storage.PhotoImageProcessor;
@@ -96,6 +98,28 @@ public class PhotoService {
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * 메인 큰 사진 1~4 → 순서대로, 사진이 들어 있는 자리만 (비운 자리는 건너뜀) 메인 첫 화면(돌아가기)과 관리자 "폰에서 보일
+	 * 부분"이 같이 씀
+	 */
+	public List<HeroSlide> findHeroSlides() {
+		Map<PhotoSlot, PhotoSlotAssignment> bySlot = new EnumMap<>(PhotoSlot.class);
+		for (PhotoSlotAssignment assignment : slotRepository.findAllWithPhotoBy()) {
+			if (assignment.getPhoto() != null) {
+				bySlot.put(assignment.getSlot(), assignment);
+			}
+		}
+		List<HeroSlide> slides = new ArrayList<>();
+		for (PhotoSlot slot : PhotoSlot.HEROES) {
+			PhotoSlotAssignment assignment = bySlot.get(slot);
+			if (assignment != null) {
+				Photo photo = assignment.getPhoto();
+				slides.add(new HeroSlide(slot, photo.getUrl(), photo.getThumbUrl(), assignment.getFocusX()));
+			}
+		}
+		return slides;
 	}
 
 	// ===== 사진 파일 처리 (갤러리 + 사이트 사진 같이 씀) =====

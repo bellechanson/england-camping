@@ -2850,3 +2850,75 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 		background: rgba(0, 0, 0, 0.22);
 	}
 }
+
+
+/* ===== 메인 큰 사진 1~4: 5초마다 천천히 줌 + 스며들기 (index.html 스크립트와 같이) =====
+   - 지금 사진(is-active)은 z-index 1 로 위에 올라와서 스며듦
+   - 글자 쪽을 어둡게 하는 막(.stay::after, z-index 1)은 HTML 순서상 더 뒤라 계속 사진 위에 있음
+   - 바로 전 사진(is-prev)은 새 사진이 다 스며들 때까지 밑에 그대로 깔림 → 중간에 갈색 바탕이 안 비침 */
+.stay>.hero-bg.hero-slide {
+	opacity: 0;
+	transition: opacity 1.5s ease;
+}
+
+.stay>.hero-bg.hero-slide.is-active {
+	opacity: 1;
+	z-index: 1;
+}
+
+.stay>.hero-bg.hero-slide.is-prev {
+	opacity: 1;
+	z-index: 0;
+	transition: none;
+}
+
+/* 천천히 8% 커짐: 보여 주는 5초 + 스며드는 1.5초 동안 */
+.stay>.hero-bg.hero-slide.is-zoom {
+	animation: hero-zoom 6.5s linear forwards;
+}
+
+@keyframes hero-zoom {
+	from {
+		transform: scale(1);
+	}
+
+	to {
+		transform: scale(1.08);
+	}
+}
+
+/* 화면 움직임 줄이기를 켠 손님: 움직임 없음 */
+@media (prefers-reduced-motion: reduce) {
+	.stay>.hero-bg.hero-slide {
+		transition: none;
+	}
+
+	.stay>.hero-bg.hero-slide.is-zoom {
+		animation: none;
+	}
+}
+
+/* 관리자 사진 관리: 메인 큰 사진 1~4 "폰에서 보일 부분" (PC는 2칸, 폰은 1칸) */
+.focus-editors {
+	margin-top: 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--bs-border-color);
+}
+
+.focus-grid {
+	display: grid;
+	gap: 2rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+	.focus-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* 칸마다 있던 위 선·여백은 바깥(.focus-editors)으로 옮김 */
+.focus-grid .focus-editor {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: 0;
+}
