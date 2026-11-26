@@ -30,7 +30,8 @@ import com.englandcamping.storage.PhotoStorage;
 
 /**
  * 사진: 올리기 / 삭제 / 분류·설명 / 순서 / 자리 지정 / 조회 실패하면 IllegalArgumentException (메시지를 화면
- * 안내 띠에 그대로 보여 줄 예정)
+ * 안내 띠에 그대로 보여 줄 예정). 사진 파일 처리(saveImage, deleteFiles...)는 사이트
+ * 사진(SitePhotoService)도 같이 씀
  */
 @Service
 @Transactional(readOnly = true)
@@ -40,6 +41,10 @@ public class PhotoService {
 	private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png");
 	/** 설명 최대 글자 수 */
 	public static final int CAPTION_MAX_LENGTH = 100;
+
+	/** 저장한 사진 파일 한 벌 (큰 사진 + 미리보기 이름, 큰 사진 크기) */
+	public record SavedImage(String fileName, String thumbName, int width, int height) {
+	}
 
 	private final PhotoRepository photoRepository;
 	private final PhotoSlotAssignmentRepository slotRepository;
@@ -93,6 +98,72 @@ public class PhotoService {
 		return map;
 	}
 
+	// ===== 사진 파일 처리 (갤러리 + 사이트 사진 같이 씀) =====
+
+	/**
+	 * 사진 파일 하나 → 확장자 검사 → 회전·줄이기(PhotoImageProcessor) → 무작위 이름으로 큰 사진 + 미리보기 저장. 원래
+	 * 파일 이름은 쓰지 않음. 미리보기 저장이 실패하면 방금 저장한 큰 사진도 지움
+	 */
+	public SavedImage saveImage(MultipartFile file) {
+		String originalName = file.getOriginalFilename();
+		checkExtension(originalName);
+
+		ProcessedImage image;
+		try {
+			image = imageProcessor.process(file.getBytes());
+		} catch (IOException e) {
+			throw new IllegalArgumentException("'" + originalName + "' 파일은 사진으로 읽을 수 없습니다. (JPG, PNG만 가능)");
+		}
+
+		String base = UUID.randomUUID().toString();
+		String fileName = base + ".jpg";
+		String thumbName = base + "_thumb.jpg";
+		try {
+			photoStorage.save(fileName, image.main());
+		} catch (IOException e) {
+			throw new IllegalStateException("사진 파일을 저장하지 못했습니다.", e);
+		}
+		try {
+			photoStorage.save(thumbName, image.thumb());
+		} catch (IOException e) {
+			photoStorage.delete(fileName);
+			throw new IllegalStateException("사진 파일을 저장하지 못했습니다.", e);
+		}
+		return new SavedImage(fileName, thumbName, image.width(), image.height());
+	}
+
+	/** 파일 바로 지우기 (null 은 건너뜀). 저장 중 실패했을 때 정리용 */
+	public void deleteFilesNow(String... fileNames) {
+		for (String name : fileNames) {
+			if (name != null) {
+				photoStorage.delete(name);
+			}
+		}
+	}
+
+	/**
+	 * DB 저장이 끝난 "다음에" 파일 지우기 (null 은 건너뜀). DB가 실패했는데 파일만 사라지는 일이 없게. @Transactional
+	 * 메서드 안에서 불러야 함
+	 */
+	public void deleteFilesAfterCommit(String... fileNames) {
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				deleteFilesNow(fileNames);
+			}
+		});
+	}
+
+	private void checkExtension(String fileName) {
+		String ext = "";
+		if (fileName != null && fileName.lastIndexOf('.') >= 0) {
+			ext = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
+		}
+		if (!ALLOWED_EXTENSIONS.contains(ext)) {
+			throw new IllegalArgumentException("'" + fileName + "' 은(는) 올릴 수 없는 형식입니다. (JPG, PNG만 가능)");
+		}
+	}
+
 	// ===== 올리기 =====
 
 	/**
@@ -113,46 +184,17 @@ public class PhotoService {
 		List<String> savedFiles = new ArrayList<>();
 		try {
 			for (MultipartFile file : realFiles) {
-				String originalName = file.getOriginalFilename();
-				checkExtension(originalName);
-
-				ProcessedImage image;
-				try {
-					image = imageProcessor.process(file.getBytes());
-				} catch (IOException e) {
-					throw new IllegalArgumentException("'" + originalName + "' 파일은 사진으로 읽을 수 없습니다. (JPG, PNG만 가능)");
-				}
-
-				// 저장 이름은 무작위 (원래 파일 이름은 쓰지 않음)
-				String base = UUID.randomUUID().toString();
-				String fileName = base + ".jpg";
-				String thumbName = base + "_thumb.jpg";
-				try {
-					photoStorage.save(fileName, image.main());
-					savedFiles.add(fileName);
-					photoStorage.save(thumbName, image.thumb());
-					savedFiles.add(thumbName);
-				} catch (IOException e) {
-					throw new IllegalStateException("사진 파일을 저장하지 못했습니다.", e);
-				}
-
-				photoRepository.save(new Photo(fileName, thumbName, category, image.width(), image.height(), ++order));
+				SavedImage saved = saveImage(file);
+				savedFiles.add(saved.fileName());
+				savedFiles.add(saved.thumbName());
+				photoRepository.save(new Photo(saved.fileName(), saved.thumbName(), category, saved.width(),
+						saved.height(), ++order));
 			}
 		} catch (RuntimeException e) {
-			savedFiles.forEach(photoStorage::delete); // 이번에 저장한 파일 정리
+			deleteFilesNow(savedFiles.toArray(String[]::new)); // 이번에 저장한 파일 정리
 			throw e; // → DB도 자동으로 되돌려짐
 		}
 		return realFiles.size();
-	}
-
-	private void checkExtension(String fileName) {
-		String ext = "";
-		if (fileName != null && fileName.lastIndexOf('.') >= 0) {
-			ext = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
-		}
-		if (!ALLOWED_EXTENSIONS.contains(ext)) {
-			throw new IllegalArgumentException("'" + fileName + "' 은(는) 올릴 수 없는 형식입니다. (JPG, PNG만 가능)");
-		}
 	}
 
 	// ===== 수정 / 순서 / 삭제 =====
@@ -207,14 +249,7 @@ public class PhotoService {
 
 		slotRepository.deleteByPhoto(photo);
 		photoRepository.delete(photo);
-
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-			@Override
-			public void afterCommit() {
-				photoStorage.delete(fileName);
-				photoStorage.delete(thumbName);
-			}
-		});
+		deleteFilesAfterCommit(fileName, thumbName);
 	}
 
 	// ===== 자리 지정 =====

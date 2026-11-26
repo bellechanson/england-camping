@@ -61,6 +61,17 @@ public class CampSite {
 	@Column(name = "reserve_channel", length = 20)
 	private ReserveChannel reserveChannel;
 
+	/**
+	 * 사이트 사진 (손님 배치도에서 동그라미를 누르면 보임, 사이트당 1장). DB에는 파일 이름만, 실제 파일은 사진 저장 폴더. 없으면
+	 * null. 관리자 > 사이트 사진에서 올림
+	 */
+	@Column(name = "photo_file", length = 60)
+	private String photoFile;
+
+	/** 사이트 사진 미리보기 파일 이름 (관리자 화면 타일용) */
+	@Column(name = "photo_thumb", length = 60)
+	private String photoThumb;
+
 	/** 화면에 보여 줄 순서 (작을수록 앞) */
 	@Column(nullable = false)
 	private int sortOrder;
@@ -95,6 +106,35 @@ public class CampSite {
 	/** 예약처 바꾸기 (관리자 > 사이트 관리) */
 	public void changeReserveChannel(ReserveChannel reserveChannel) {
 		this.reserveChannel = reserveChannel;
+	}
+
+	/** 사이트 사진 바꾸기 (둘 다 null 이면 사진 없음) */
+	public void changePhoto(String photoFile, String photoThumb) {
+		this.photoFile = photoFile;
+		this.photoThumb = photoThumb;
+	}
+
+	/** 사이트 사진이 있는지 */
+	public boolean hasPhoto() {
+		return photoFile != null;
+	}
+
+	/** 사이트 사진 주소 (없으면 null) */
+	public String getPhotoUrl() {
+		return photoFile == null ? null : "/uploads/" + photoFile;
+	}
+
+	/** 사이트 사진 미리보기 주소 (없으면 null) */
+	public String getPhotoThumbUrl() {
+		return photoThumb == null ? null : "/uploads/" + photoThumb;
+	}
+
+	public String getPhotoFile() {
+		return photoFile;
+	}
+
+	public String getPhotoThumb() {
+		return photoThumb;
 	}
 
 	/** 예약처. 아직 정한 적 없으면(null) 네이버·캠핏 */

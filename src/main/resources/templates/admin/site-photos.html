@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/admin :: head('사이트 사진')}"></head>
+
+<body>
+
+	<header th:replace="~{fragments/admin :: header}"></header>
+
+	<main class="admin-main">
+		<div class="container">
+			<div th:replace="~{fragments/admin :: flash}"></div>
+
+			<section class="admin-card">
+				<h1 class="fs-xl fw-semibold mb-2">사이트 사진</h1>
+				<p class="fs-sm fg-3 mb-2">손님이 홈페이지 배치도에서 사이트 동그라미를 누르면 이 사진이 크게 보입니다. 사이트마다 1장입니다.</p>
+				<p class="fs-sm fg-3 mb-4">"사진 올리기"를 누르고 사진을 고르면 바로 올라갑니다. 이미 사진이 있으면 새 사진으로 바뀝니다.
+					(JPG, PNG / 20MB까지)</p>
+				<p class="fw-semibold mb-5"
+					th:text="'사진 있는 사이트 ' + ${#lists.size(sites.?[hasPhoto()])} + ' / ' + ${#lists.size(sites)}">사진 있는
+					사이트</p>
+
+				<!-- 위치별 묶음 (사이트 관리 화면과 같은 순서). g.indexes = sites 안의 번호 -->
+				<section class="mb-6" th:each="g : ${groups}">
+					<h2 class="site-area-title" th:text="${g.label}">도로 근처</h2>
+					<div class="site-photo-grid">
+						<div class="site-photo-item" th:each="i : ${g.indexes}" th:with="s=${sites[i]}"
+							th:id="${'site-' + s.id}">
+							<div class="ph ph-4x3 rounded-3 mb-2">
+								<img th:if="${s.hasPhoto()}" th:src="@{${s.photoThumbUrl}}" th:alt="${s.name}">
+								<span class="ph-label" th:unless="${s.hasPhoto()}">사진 없음</span>
+							</div>
+							<p class="fw-semibold mb-2" th:text="${s.name}">01번 사이트</p>
+
+							<div class="site-photo-actions">
+								<!-- 올리기: 버튼(label)을 누르면 사진 고르는 창 → 고르면 바로 보냄 -->
+								<form th:action="@{/admin/site-photos/{id}(id=${s.id})}" method="post"
+									enctype="multipart/form-data">
+									<label class="btn-solid theme-primary btn-sm site-photo-pick">
+										<span th:text="${s.hasPhoto()} ? '사진 바꾸기' : '사진 올리기'">사진 올리기</span>
+										<input type="file" name="file" class="site-photo-file"
+											accept="image/jpeg,image/png"
+											onchange="if (this.files.length) { this.previousElementSibling.textContent = '올리는 중…'; this.closest('label').classList.add('is-busy'); this.form.submit(); }">
+									</label>
+								</form>
+								<!-- 지우기: 확인 창을 거쳐서 -->
+								<button type="button" class="btn-text btn-sm" th:if="${s.hasPhoto()}"
+									data-bs-toggle="dialog"
+									th:attr="data-bs-target=${'#site-photo-delete-' + s.id}">지우기</button>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+
+			<!-- ===== 지우기 확인 창 (사진 있는 사이트마다 하나씩) ===== -->
+			<dialog class="dialog" th:each="s : ${sites}" th:if="${s.hasPhoto()}"
+				th:id="${'site-photo-delete-' + s.id}">
+				<div class="dialog-header">
+					<h5 class="dialog-title" th:text="${s.name + ' 사진 지우기'}">사진 지우기</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="닫기"></button>
+				</div>
+				<div class="dialog-body">
+					<div class="ph ph-4x3 rounded-3 mb-4"><img th:src="@{${s.photoThumbUrl}}" alt=""></div>
+					<p class="mb-0">이 사진을 지울까요? 홈페이지 배치도에서 이 사이트를 누르면 "사진 준비 중"으로 보입니다. 지우면 되돌릴 수 없습니다.</p>
+				</div>
+				<div class="dialog-footer">
+					<button type="button" class="btn-text" data-bs-dismiss="dialog">취소</button>
+					<form th:action="@{/admin/site-photos/{id}/delete(id=${s.id})}" method="post">
+						<button type="submit" class="btn-solid theme-primary">지우기</button>
+					</form>
+				</div>
+			</dialog>
+
+		</div>
+	</main>
+
+	<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+
+</html>

@@ -8,15 +8,18 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * 사진이 너무 커서(한 장 20MB / 한 번에 200MB 초과) 받기 전에 막힌 경우 오류 화면 대신 사진 관리 화면으로 돌아가서 빨간
- * 안내 띠로 알려 줌 (컨트롤러에 들어가기 전에 생기는 오류라 여기 따로 둠)
+ * 사진이 너무 커서(한 장 20MB / 한 번에 200MB 초과) 받기 전에 막힌 경우 오류 화면 대신 올리던 화면(사진 관리 / 사이트
+ * 사진)으로 돌아가서 빨간 안내 띠로 알려 줌 (컨트롤러에 들어가기 전에 생기는 오류라 여기 따로 둠)
  */
 @ControllerAdvice
 public class UploadErrorAdvice {
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	public String tooLarge(HttpServletRequest request) {
-		RequestContextUtils.getOutputFlashMap(request).put("error", "사진이 너무 큽니다. 한 장은 20MB, 한 번에 200MB까지 올릴 수 있습니다.");
-		return "redirect:/admin/photos";
+		boolean sitePhoto = request.getRequestURI().startsWith(request.getContextPath() + "/admin/site-photos");
+		String message = sitePhoto ? "사진이 너무 큽니다. 한 장에 20MB까지 올릴 수 있습니다."
+				: "사진이 너무 큽니다. 한 장은 20MB, 한 번에 200MB까지 올릴 수 있습니다.";
+		RequestContextUtils.getOutputFlashMap(request).put("error", message);
+		return sitePhoto ? "redirect:/admin/site-photos" : "redirect:/admin/photos";
 	}
 }

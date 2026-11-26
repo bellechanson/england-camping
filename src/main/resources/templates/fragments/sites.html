@@ -57,6 +57,8 @@
 			<circle class="is-naver" cx="18" cy="20" r="6" /><text x="30" y="20" dy=".35em">네이버·캠핏 예약</text>
 			<circle class="is-thankq" cx="18" cy="40" r="6" /><text x="30" y="40" dy=".35em">땡큐캠핑 예약</text>
 			<circle class="is-closed" cx="18" cy="60" r="6" /><text x="30" y="60" dy=".35em">지금 이용 불가</text>
+			<!-- 누르면 사진 창이 열린다는 안내 (아래 popup 조각) -->
+			<text class="map-hint" x="12" y="104" dy=".35em">번호를 누르면 사진이 보여요</text>
 			<!-- 전화 문의 사이트가 있을 때만 -->
 			<g th:if="${!#lists.isEmpty(sites.?[reserveChannel.name() == 'PHONE'])}">
 				<circle class="is-phone" cx="18" cy="80" r="6" /><text x="30" y="80" dy=".35em">전화 문의</text>
@@ -158,6 +160,142 @@
 
 		<p class="site-status-note" th:if="${!#lists.isEmpty(siteNotices)}">배치도에서 점선으로 표시된 사이트는 지금 이용할 수 없습니다.</p>
 	</div>
+	<!-- ===== 손님용 사이트 사진 창 (배치도 동그라미를 누르면 열림, 11-26) =====
+	     쓰는 쪽 화면에 ${sites}, ${siteNotices}, ${reserveLinks}, ${settings} 가 있어야 함 (메인, 사이트·요금 페이지)
+	     - 사이트 정보는 아래 숨은 목록(#siteData, #siteNoticeData)에 넣어 두고, 스크립트가 누른 번호로 찾아서 창에 채움
+	     - 예약 로고: 네이버·캠핏 사이트 = 네이버·캠핏 로고 / 땡큐캠핑 사이트 = 땡큐캠핑 로고 / 전화 문의 사이트 = 전화 버튼만
+	       (로고 이름은 GlobalModelAdvice.reserveLinks 의 "땡큐캠핑"으로 나눔)
+	     - 지금 이용 불가인 사이트는 예약 로고를 숨기고 안내 문구 + 전화 버튼만
+	     - 사진은 관리자 > 사이트 사진에서 올림. 없으면 "사진 준비 중" -->
+	<th:block th:fragment="popup">
+		<dialog class="dialog dialog-lg site-popup" id="sitePopup" aria-labelledby="sitePopupTitle">
+			<div class="dialog-header">
+				<h5 class="dialog-title" id="sitePopupTitle">사이트</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="닫기"></button>
+			</div>
+			<div class="dialog-body">
+				<div class="ph ph-4x3 rounded-3 site-popup-photo">
+					<img id="sitePopupImg" alt="" hidden>
+					<span class="ph-label" id="sitePopupEmpty">사진 준비 중</span>
+				</div>
+				<p class="site-popup-notice" id="sitePopupNotice" hidden></p>
+				<p class="site-popup-channel" id="sitePopupChannel"></p>
+				<div class="site-popup-actions">
+					<!-- 네이버·캠핏 사이트일 때 -->
+					<div class="reserve-logos" data-channel="NAVER_CAMFIT" hidden>
+						<a th:each="link : ${reserveLinks}" th:if="${link.name != '땡큐캠핑'}" class="reserve-logo"
+							th:href="${link.url}" target="_blank" rel="noopener"
+							th:title="${link.name} + ' 바로가기 (새 창)'">
+							<img th:if="${link.icon != null}" th:src="@{${link.icon}}" alt="" width="44" height="44">
+							<span th:text="${link.name}">네이버 예약</span>
+						</a>
+					</div>
+					<!-- 땡큐캠핑 사이트일 때 -->
+					<div class="reserve-logos" data-channel="THANKQ" hidden>
+						<a th:each="link : ${reserveLinks}" th:if="${link.name == '땡큐캠핑'}" class="reserve-logo"
+							th:href="${link.url}" target="_blank" rel="noopener"
+							th:title="${link.name} + ' 바로가기 (새 창)'">
+							<img th:if="${link.icon != null}" th:src="@{${link.icon}}" alt="" width="44" height="44">
+							<span th:text="${link.name}">땡큐캠핑</span>
+						</a>
+					</div>
+					<!-- 전화는 늘 보임 -->
+					<a class="btn-outline theme-secondary btn-sm" th:href="'tel:' + ${settings['PHONE']}"
+						th:text="'전화 문의 ' + ${settings['PHONE']}">전화 문의</a>
+				</div>
+			</div>
+		</dialog>
+
+		<!-- 스크립트가 창을 열 때 누르는 숨은 버튼 (갤러리 창과 같은 방식으로 열려고) -->
+		<button type="button" id="sitePopupOpen" data-bs-toggle="dialog" data-bs-target="#sitePopup" hidden></button>
+
+		<!-- 사이트 정보 (화면에는 안 보임) -->
+		<ul id="siteData" hidden>
+			<li th:each="s : ${sites}"
+				th:attr="data-short=${s.shortName}, data-name=${s.name}, data-photo=${s.hasPhoto()} ? @{${s.photoUrl}} : '', data-channel=${s.reserveChannel.name()}, data-label=${s.reserveChannel.label}, data-open=${s.openNow}">
+			</li>
+		</ul>
+		<ul id="siteNoticeData" hidden>
+			<li th:each="n : ${siteNotices}" th:attr="data-short=${n.shortName}, data-text=${n.text}"></li>
+		</ul>
+
+		<script>
+			(() => {
+				const popup = document.getElementById('sitePopup');
+				if (!popup) {
+					return;
+				}
+				const opener = document.getElementById('sitePopupOpen');
+				const title = document.getElementById('sitePopupTitle');
+				const img = document.getElementById('sitePopupImg');
+				const empty = document.getElementById('sitePopupEmpty');
+				const notice = document.getElementById('sitePopupNotice');
+				const channel = document.getElementById('sitePopupChannel');
+				const logoGroups = popup.querySelectorAll('.reserve-logos[data-channel]');
+
+				// 짧은 이름("01", "A") → 사이트 정보 / 이용 안내 문구
+				const sites = {};
+				document.querySelectorAll('#siteData li').forEach((li) => {sites[li.dataset.short] = li.dataset;});
+				const notices = {};
+				document.querySelectorAll('#siteNoticeData li').forEach((li) => {notices[li.dataset.short] = li.dataset.text;});
+
+				// 창에 채우고 열기 (글자는 textContent 로만 넣음)
+				function show(shortName) {
+					const s = sites[shortName];
+					if (!s) {
+						return;
+					}
+					const isOpen = s.open === 'true';
+					title.textContent = s.name;
+
+					if (s.photo) {
+						img.src = s.photo;
+						img.alt = s.name + ' 사진';
+						img.hidden = false;
+						empty.hidden = true;
+					} else {
+						img.removeAttribute('src');
+						img.hidden = true;
+						empty.hidden = false;
+					}
+
+					const text = notices[shortName];
+					notice.textContent = text || '';
+					notice.hidden = !text;
+					notice.classList.toggle('is-closed', !isOpen);
+
+					if (!isOpen) {
+						channel.textContent = '지금은 예약할 수 없는 사이트예요. 궁금한 점은 전화로 문의해 주세요.';
+					} else if (s.channel === 'PHONE') {
+						channel.textContent = '이 사이트는 전화로 문의해 주세요.';
+					} else {
+						channel.textContent = '이 사이트는 ' + s.label + '에서 예약할 수 있어요.';
+					}
+					logoGroups.forEach((g) => {g.hidden = !isOpen || g.dataset.channel !== s.channel;});
+
+					opener.click();
+				}
+
+				// 배치도 동그라미마다: 누르면(또는 Enter) 창 열기
+				document.querySelectorAll('.site-map .map-site').forEach((g) => {
+					const shortName = (g.querySelector('text')?.textContent || '').trim();
+					if (!sites[shortName]) {
+						return;
+					}
+					g.setAttribute('role', 'button');
+					g.setAttribute('tabindex', '0');
+					g.setAttribute('aria-label', sites[shortName].name + ' 사진 보기');
+					g.addEventListener('click', () => show(shortName));
+					g.addEventListener('keydown', (e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							show(shortName);
+						}
+					});
+				});
+			})();
+		</script>
+	</th:block>
 </body>
 
 </html>

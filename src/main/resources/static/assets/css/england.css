@@ -2734,3 +2734,108 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 .chat-usage-warn {
 	color: #b42318;
 }
+
+/* ===== 관리자 > 사이트 사진 (11-26) ===== */
+.site-photo-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: 1.25rem;
+}
+
+.site-photo-item {
+	scroll-margin-top: 6rem;
+	/* 올린 뒤 #site-번호 로 돌아올 때 머리글에 가리지 않게 */
+}
+
+.site-photo-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+/* 파일 고르기 칸은 숨기고, 감싼 버튼(label)을 누르면 열림 */
+.site-photo-pick {
+	position: relative;
+	cursor: pointer;
+	margin: 0;
+}
+
+.site-photo-file {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.site-photo-pick.is-busy {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* 폰: 두 칸씩 */
+@media (max-width: 575.98px) {
+	.site-photo-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+}
+
+/* ===== 손님 배치도: 동그라미를 누르면 사이트 사진 창 (11-26) ===== */
+.site-map .map-site {
+	cursor: pointer;
+}
+
+.site-map .map-site circle {
+	transition: transform 0.15s ease;
+	transform-box: fill-box;
+	transform-origin: center;
+}
+
+.site-map .map-site:hover circle,
+.site-map .map-site:focus-visible circle {
+	transform: scale(1.18);
+}
+
+.site-map .map-site:focus {
+	outline: none;
+}
+
+.site-map .map-site:focus-visible circle {
+	stroke: var(--brand);
+	stroke-width: 3;
+}
+
+/* 배치도 왼쪽 위 "번호를 누르면 사진이 보여요" */
+.site-map .map-legend .map-hint {
+	font-size: 10px;
+	fill: var(--brand);
+}
+
+.site-popup-photo {
+	margin-bottom: 1rem;
+}
+
+.site-popup-notice {
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+}
+
+.site-popup-notice.is-closed {
+	color: #b42318;
+}
+
+.site-popup-channel {
+	font-size: 0.9rem;
+	color: var(--fg-3, #7d6f5c);
+	margin-bottom: 0.75rem;
+}
+
+.site-popup-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem 1.25rem;
+}
