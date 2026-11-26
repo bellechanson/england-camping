@@ -2922,3 +2922,30 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 	padding-top: 0;
 	border-top: 0;
 }
+
+
+/* ===== 메인 사진이 너무 어두운 것 고치기 =====
+   템플릿 style.css 의 .stay::after 가 사진 위에 갈색 섞인 막을 두 겹 깔아서
+   (위 46%, 아래 82% → 화면 82% 높이까지) 사진 전체가 어둡고 탁해 보였음
+   → 원본 CSS는 그대로 두고 여기서 덮어씀
+   - 막 색: 갈색 → 검정 (초록 숲이 탁해지지 않게)
+   - PC: 위 막 없음(메뉴 띠가 대신함), 왼쪽 아래 글자 있는 곳만 둥글게 어둡게 + 예약 바 쪽 살짝
+   - 폰: 글자가 가로 전체라 아래쪽만 어둡게, 위는 캠핑장 이름·메뉴 버튼용으로 아주 옅게 */
+.stay::after {
+	background:
+		radial-gradient(ellipse 75% 70% at 0% 100%, rgb(0 0 0 / 60%) 0%, rgb(0 0 0 / 40%) 50%, transparent 100%),
+		linear-gradient(to top, rgb(0 0 0 / 30%) 0%, transparent 35%);
+}
+
+@media (max-width: 1023.98px) {
+	.stay::after {
+		background:
+			linear-gradient(to bottom, rgb(0 0 0 / 35%) 0%, transparent 18%),
+			linear-gradient(to top, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 40%) 35%, transparent 60%);
+	}
+}
+
+/* 제목·부제목에 아주 옅은 그림자: 밝은 사진에서도 글자가 읽히게 */
+.stay-inner {
+	text-shadow: 0 1px 14px rgb(0 0 0 / 35%);
+}
