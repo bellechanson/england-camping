@@ -2839,3 +2839,14 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 	align-items: center;
 	gap: 1rem 1.25rem;
 }
+
+
+/* ===== 메인 사진 위 머리글: 은은한 반투명 검은 띠 (PC만) =====
+   - 메인(사진 위)에서만 적용. 하위 페이지(.sub-head-page)는 밝은 바탕이라 그대로
+   - 1024px 이상 = 가로 메뉴가 보이는 너비. 폰·태블릿 서랍 메뉴 화면은 지금 그대로
+   - 머리글은 메인에서 스크롤하면 같이 올라가므로 사진 위에서만 보임 */
+@media (min-width: 1024px) {
+	body:not(.sub-head-page) .site-header {
+		background: rgba(0, 0, 0, 0.22);
+	}
+}
