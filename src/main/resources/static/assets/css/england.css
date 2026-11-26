@@ -74,126 +74,137 @@ body {
 	grid-row: span 2;
 }
 
-/* ===== 사이트 배치도 (fragments/sites.html) ===== */
-/* 지도 상자: 왼쪽 사이트 사진(.room-media .ph)과 같은 4:3 */
-.site-map-box {
-	display: grid;
-	place-items: center;
-	aspect-ratio: 4 / 3;
-	padding: 0.75rem;
-	background: color-mix(in oklch, var(--brand) 7%, var(--bs-bg-body));
+/* ===== 사이트 배치도 = 전경 사진 + 번호 동그라미 (fragments/sites.html 의 map) =====
+   - 사진(1440 x 1079) 위에 같은 크기의 SVG(.site-map)를 겹쳐서 동그라미를 올림
+   - 동그라미 색 = 예약처, 점선 = 지금 이용 불가 (CampSite.getMapClass). 색 값은 맨 위 :root 의 --ch-naver, --ch-thankq
+   - 폰(767px 이하)은 사진을 680px 로 크게 두고 상자 안에서 옆으로 밀어서 봄 */
+
+/* 색 설명 줄 (사진 위쪽) */
+.photo-map-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.35rem 1.1rem;
+	margin: 0 0 0.75rem;
+	font-size: 0.82rem;
+	color: var(--bs-fg-3, #7d6f5c);
 }
 
-/* 좁은 화면(위아래로 쌓일 때)은 정사각형 → 지도가 작아지지 않게 */
-@media (max-width: 991.98px) {
-	.site-map-box {
-		aspect-ratio: 1 / 1;
-	}
+.photo-map-legend .dot {
+	display: inline-block;
+	width: 0.75rem;
+	height: 0.75rem;
+	margin-right: 0.35rem;
+	border-radius: 50%;
+	vertical-align: -0.08rem;
 }
 
-.site-map {
+.photo-map-legend .dot.is-naver {
+	background: var(--ch-naver);
+}
+
+.photo-map-legend .dot.is-thankq {
+	background: var(--ch-thankq);
+}
+
+.photo-map-legend .dot.is-phone {
+	background: #fffdf9;
+	border: 2px solid var(--brand);
+}
+
+.photo-map-legend .dot.is-closed {
+	border: 2px dashed #9c8f7d;
+}
+
+.photo-map-legend .hint {
+	color: var(--brand);
+	font-weight: 600;
+}
+
+/* 사진 상자: 폰에서는 이 안에서 옆으로 밀림 */
+.photo-map-scroll {
+	overflow-x: auto;
+	border-radius: var(--bs-radius-4);
+	-webkit-overflow-scrolling: touch;
+}
+
+.photo-map {
+	position: relative;
+}
+
+.photo-map>img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* 사진 위에 딱 겹치는 그림판 */
+.photo-map>.site-map {
+	position: absolute;
+	inset: 0;
 	display: block;
 	width: 100%;
 	height: 100%;
 }
 
-
-/* --- 계곡: 연한 물색 띠 --- */
-.site-map .map-water {
-	fill: none;
-	stroke: #cfe3e8;
-	stroke-width: 18;
-	stroke-linecap: round;
+/* "옆으로 밀어서 보세요" 안내: 폰에서만 */
+.photo-map-swipe {
+	display: none;
+	margin: 0.5rem 0 0;
+	font-size: 0.8rem;
+	color: var(--bs-fg-3, #7d6f5c);
+	text-align: center;
 }
 
-/* --- 도로: 연한 띠 + 양쪽 가는 선 --- */
-.site-map .map-road {
-	fill: none;
-	stroke: #e4ddd1;
-	stroke-width: 16;
+@media (max-width: 767.98px) {
+	.photo-map {
+		width: 680px;
+	}
+
+	.photo-map-swipe {
+		display: block;
+	}
 }
 
-.site-map .map-road-edge {
-	fill: none;
-	stroke: #b8ab97;
-	stroke-width: 1;
+/* 이름표 (관리동·주택·입구·도로·계곡): 흰 알약 */
+.site-map .map-tag rect {
+	fill: rgb(255 255 255 / 90%);
 }
 
-/* --- 캠핑장 땅 + 경계선 --- */
-.site-map .map-ground {
-	fill: #faf6ef;
-}
-
-.site-map .map-fence {
-	fill: none;
-	stroke: #8f7d64;
-	stroke-width: 1.5;
-	stroke-linejoin: round;
-}
-
-/* --- 입구 길 --- */
-.site-map .map-lane {
-	fill: none;
-	stroke: #e4ddd1;
-	stroke-width: 10;
-	stroke-linecap: round;
-}
-
-/* --- 건물: 단순한 네모 --- */
-.site-map .map-bldg {
-	fill: #e6dccb;
-	stroke: #8f7d64;
-	stroke-width: 1.2;
-}
-
-/* --- 글씨: 작고 연하게, 자간 조금 --- */
-.site-map .map-label {
-	font-size: 11px;
-	fill: #7d6f5c;
+.site-map .map-tag text {
+	font-size: 22px;
+	font-weight: 700;
+	fill: #3c2d19;
 	text-anchor: middle;
-	letter-spacing: 0.08em;
 }
 
-.site-map .map-label.is-water {
-	fill: #5f8f9c;
-}
-
-.site-map .map-north path {
-	fill: #8f7d64;
-}
-
-/* --- 사이트 동그라미 + 색 설명(왼쪽 위) 동그라미: 같은 색 규칙을 같이 씀 ---
-   기본 = 네이버·캠핏 초록, is-thankq = 땡큐캠핑 주황, is-phone = 전화 문의(흰 바탕), is-closed = 이용 불가(점선)
-   어떤 모양인지는 CampSite.getMapClass 가 정함. 색 값은 맨 위 :root 의 --ch-naver, --ch-thankq */
-.site-map .map-site circle,
-.site-map .map-legend .is-naver {
+/* 사이트 동그라미: 흰 테두리 + 옅은 그림자 (사진 위에서 잘 보이게) */
+.site-map .map-site circle {
 	fill: var(--ch-naver);
-	stroke: var(--ch-naver);
-	stroke-width: 1.6;
+	stroke: #fff;
+	stroke-width: 4;
+	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 35%));
 }
 
-.site-map .map-site.is-thankq circle,
-.site-map .map-legend .is-thankq {
+.site-map .map-site.is-thankq circle {
 	fill: var(--ch-thankq);
-	stroke: var(--ch-thankq);
 }
 
-.site-map .map-site.is-phone circle,
-.site-map .map-legend .is-phone {
+.site-map .map-site.is-phone circle {
 	fill: #fffdf9;
 	stroke: var(--brand);
 }
 
-.site-map .map-site.is-closed circle,
-.site-map .map-legend .is-closed {
-	fill: #faf6ef;
-	stroke: #b7ab99;
-	stroke-dasharray: 3 2.5;
+.site-map .map-site.is-closed circle {
+	fill: rgb(255 255 255 / 75%);
+	stroke: #6f6253;
+	stroke-dasharray: 7 5;
+	filter: none;
 }
 
-/* 사이트 번호: 색 동그라미 위 흰 글씨 */
+/* 사이트 번호: 흰 글씨 */
 .site-map .map-site text {
-	font-size: 11px;
+	font-size: 24px;
 	font-weight: 700;
 	fill: #fff;
 	text-anchor: middle;
@@ -204,14 +215,8 @@ body {
 }
 
 .site-map .map-site.is-closed text {
-	fill: #b7ab99;
+	fill: #6f6253;
 	text-decoration: line-through;
-}
-
-/* 색 설명 글씨 */
-.site-map .map-legend text {
-	font-size: 11px;
-	fill: #7d6f5c;
 }
 
 /* ===== 손님 화면: 사이트 이용 안내 목록 (요금표 아래) =====
@@ -287,54 +292,6 @@ body {
 	margin: 0.5rem 0 0;
 	color: var(--bs-fg-3);
 	font-size: 0.75rem;
-}
-
-
-/* 도로·계곡 이름: 오른쪽 정렬 + 가는 안내선 */
-.site-map .map-label.is-end {
-	text-anchor: end;
-}
-
-.site-map .map-pointer {
-	stroke: #b8ab97;
-	stroke-width: 1;
-}
-
-.site-map .map-pointer.is-water {
-	stroke: #9fbfc8;
-}
-
-/* ===== 메인 사이트·요금 칸: [사진] [배치도] 탭 ===== */
-.media-tab-list {
-	display: inline-flex;
-	gap: 0.25rem;
-	margin-bottom: 0.75rem;
-	padding: 0.25rem;
-	border: 1px solid var(--bs-border-color);
-	border-radius: 999px;
-	background: var(--bs-bg-body);
-}
-
-.media-tab {
-	padding: 0.35rem 1.1rem;
-	border: 0;
-	border-radius: 999px;
-	background: transparent;
-	color: inherit;
-	font-size: 0.85rem;
-	cursor: pointer;
-}
-
-/* 지금 보고 있는 탭 */
-.media-tab.is-active {
-	background: var(--brand);
-	color: #fff;
-	font-weight: 600;
-}
-
-.media-tab:focus-visible {
-	outline: 2px solid var(--brand);
-	outline-offset: 2px;
 }
 
 /* ===== 꼬리말: 바로 위 섹션과 구분선 ===== */
@@ -2805,13 +2762,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 
 .site-map .map-site:focus-visible circle {
 	stroke: var(--brand);
-	stroke-width: 3;
-}
-
-/* 배치도 왼쪽 위 "번호를 누르면 사진이 보여요" */
-.site-map .map-legend .map-hint {
-	font-size: 10px;
-	fill: var(--brand);
+	stroke-width: 8;
 }
 
 .site-popup-photo {

@@ -310,23 +310,6 @@
 			narrow.addEventListener('change', apply); // 창 크기를 바꿀 때도 다시 맞춤
 		})();
 	</script>
-	<!-- [사진] [배치도] 같은 탭 바꾸기 (메인, 사이트·요금 페이지)
-	     data-media-tabs 안의 role="tab" 버튼을 누르면 aria-controls 로 연결된 칸만 보임 -->
-	<script>
-		document.querySelectorAll('[data-media-tabs]').forEach(function (box) {
-			const tabs = box.querySelectorAll('[role="tab"]');
-			tabs.forEach(function (tab) {
-				tab.addEventListener('click', function () {
-					tabs.forEach(function (t) {
-						const on = (t === tab);
-						t.classList.toggle('is-active', on);
-						t.setAttribute('aria-selected', on ? 'true' : 'false');
-						document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-					});
-				});
-			});
-		});
-	</script>
 	<!-- 예약하기 → 메인 예약 바로 서서히 이동 (화면 가운데에 멈춤)
 	     1) 메인에서 누르면: 바로 그 자리에서 서서히 내려감
 	     2) 다른 페이지에서 누르면: /#reserve 로 메인을 열고 → 맨 위에서 시작해서 서서히 내려감

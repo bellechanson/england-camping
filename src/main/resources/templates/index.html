@@ -197,35 +197,9 @@
 				<h2 class="section-title fs-4xl mb-7">넓게 배치한 사이트</h2>
 
 				<div class="row g-7 lg:align-items-center" th:if="${mainType != null}">
-					<!-- 왼쪽: [사진] [배치도] 탭 — 같은 4:3 자리에서 바뀜 -->
+					<!-- 왼쪽: 사진 배치도 (fragments/sites :: map) — 번호를 누르면 사이트 사진 창 -->
 					<div class="lg:col-7">
-						<div class="media-tabs" data-media-tabs>
-							<div class="media-tab-list" role="tablist" aria-label="사이트 사진과 배치도">
-								<button type="button" class="media-tab is-active" role="tab" id="siteTabPhoto"
-									aria-selected="true" aria-controls="sitePanelPhoto">사진</button>
-								<button type="button" class="media-tab" role="tab" id="siteTabMap" aria-selected="false"
-									aria-controls="sitePanelMap">배치도</button>
-							</div>
-							<div class="room-media mb-0">
-								<!-- 탭 1: 사이트 사진 + 가격 -->
-								<div id="sitePanelPhoto" role="tabpanel" aria-labelledby="siteTabPhoto">
-									<div class="ph" th:with="p=${slotPhotos['SITE']}">
-										<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '사이트 사진'}"
-											loading="lazy">
-										<span class="ph-label" th:if="${p == null}">사이트 사진</span>
-									</div>
-									<span class="room-price"
-										th:text="${mainType.normalPrice != null} ? '1박 ' + ${#numbers.formatInteger(mainType.normalPrice, 1, 'COMMA')} + '원~' : '전화 문의'">1박
-										50,000원~</span>
-								</div>
-								<!-- 탭 2: 배치도 (처음엔 숨김) -->
-								<div id="sitePanelMap" role="tabpanel" aria-labelledby="siteTabMap" hidden>
-									<div class="site-map-box">
-										<svg th:replace="~{fragments/sites :: map}"></svg>
-									</div>
-								</div>
-							</div>
-						</div>
+						<div th:replace="~{fragments/sites :: map}"></div>
 					</div>
 
 					<!-- 오른쪽: 사이트 설명 -->

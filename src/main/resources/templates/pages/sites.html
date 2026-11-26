@@ -18,37 +18,9 @@
 		<section class="section">
 			<div class="container">
 				<div class="row g-7 mb-7" th:each="type : ${types}">
-					<!-- 왼쪽: [사진] [배치도] 탭 (메인과 같은 모양, 탭 id 에 종류 번호를 붙여서 겹치지 않게) -->
+					<!-- 왼쪽: 사진 배치도 (메인과 같은 조각) — 번호를 누르면 사이트 사진 창 -->
 					<div class="lg:col-6">
-						<div class="media-tabs" data-media-tabs>
-							<div class="media-tab-list" role="tablist" aria-label="사이트 사진과 배치도">
-								<button type="button" class="media-tab is-active" role="tab" aria-selected="true"
-									th:id="'typeTabPhoto' + ${type.id}"
-									th:attr="aria-controls=${'typePanelPhoto' + type.id}">사진</button>
-								<button type="button" class="media-tab" role="tab" aria-selected="false"
-									th:id="'typeTabMap' + ${type.id}"
-									th:attr="aria-controls=${'typePanelMap' + type.id}">배치도</button>
-							</div>
-							<div class="room-media mb-0">
-								<!-- 탭 1: 사이트 대표 사진 (관리자 > 사진 관리 > 자리에 넣기) -->
-								<div role="tabpanel" th:id="'typePanelPhoto' + ${type.id}"
-									th:attr="aria-labelledby=${'typeTabPhoto' + type.id}">
-									<div class="ph" th:with="p=${slotPhotos['SITE']}">
-										<img th:if="${p != null}" th:src="@{${p.url}}"
-											th:alt="${p.caption ?: type.name + ' 사진'}" loading="lazy">
-										<span class="ph-label" th:if="${p == null}"
-											th:text="${type.name} + ' 사진'">사진</span>
-									</div>
-								</div>
-								<!-- 탭 2: 배치도 (처음엔 숨김, 이용 불가는 점선) -->
-								<div role="tabpanel" hidden th:id="'typePanelMap' + ${type.id}"
-									th:attr="aria-labelledby=${'typeTabMap' + type.id}">
-									<div class="site-map-box">
-										<svg th:replace="~{fragments/sites :: map}"></svg>
-									</div>
-								</div>
-							</div>
-						</div>
+						<div th:replace="~{fragments/sites :: map}"></div>
 					</div>
 					<!-- 오른쪽: 요금표 -->
 					<div class="lg:col-6">
