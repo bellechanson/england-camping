@@ -153,6 +153,7 @@
     }
 
     // 바닥을 따라 같은 속도로 뒤뚱뒤뚱 걸어서(CSS is-walking) 제자리 밑까지 → 한 걸음 올라가 제자리
+    // → 제자리에 다 올라가면 안내 알약 다시 보임 (is-away 빼기)
     function walkHome() {
         launcher.classList.add('is-walking');
         const seconds = Math.max(0.2, Math.abs(offset.x) / RETURN_SPEED); // 걸리는 시간 = 거리 ÷ 속도
@@ -162,6 +163,9 @@
             launcher.classList.remove('is-walking');
             launcher.style.transition = 'transform 0.25s ease-out';
             moveTo(0, 0); // 제자리로 한 걸음
+            restTimer = setTimeout(() => {
+                launcher.classList.remove('is-away'); // 도착 → 알약 다시 보임
+            }, 250); // 위 transition 0.25s 와 같게
         }, seconds * 1000);
     }
 
@@ -200,6 +204,7 @@
             drag.captured = true;
             launcher.setPointerCapture(e.pointerId); // 손이 버튼 밖으로 나가도 계속 따라오게
             launcher.classList.add('is-dragging');
+            launcher.classList.add('is-away'); // 제자리를 떠남 → 안내 알약 숨김
         }
         moveTo(e.clientX - drag.startX, e.clientY - drag.startY);
 

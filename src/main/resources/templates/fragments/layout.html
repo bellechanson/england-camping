@@ -195,6 +195,9 @@
 			<!-- 머리 위 Zzz (자는 중일 때만, 하나씩 떠올랐다 사라짐) -->
 			<span class="chat-zzz" aria-hidden="true"
 				th:if="${chatbotSleeping}"><span>z</span><span>z</span><span>Z</span></span>
+			<!-- 영국이 아래 안내 알약: 제자리에 있을 때만 보임 (잡고 끌거나 던지면 숨김 → chatbot.js 의 is-away) -->
+			<span class="chat-label" aria-hidden="true"
+				th:text="${chatbotSleeping ? '영국이는 쉬는 중이에요' : '영국이에게 물어보세요'}">영국이에게 물어보세요</span>
 		</button>
 
 		<!-- 채팅 창 (처음엔 숨김) -->

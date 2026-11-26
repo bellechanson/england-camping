@@ -2108,7 +2108,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 .chat-launcher {
 	position: fixed;
 	right: 1.25rem;
-	bottom: 1.25rem;
+	bottom: 2.9rem;
 	z-index: 1052;
 	display: grid;
 	place-items: center;
@@ -2398,7 +2398,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 
 	.chat-launcher {
 		right: 0.75rem;
-		bottom: 0.75rem;
+		bottom: 2.4rem;
 	}
 
 	.chat-mascot svg {
@@ -2408,7 +2408,7 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 
 	/* 관리자로 보는 중일 때: 왼쪽 아래 관리자 바와 안 겹치게 버튼을 위로 */
 	.admin-quickbar~.chatbot .chat-launcher {
-		bottom: 4.5rem;
+		bottom: 6.1rem;
 	}
 }
 
@@ -2899,4 +2899,37 @@ body:not(.sub-head-page) .site-header .header-book-btn:focus-visible {
 /* 제목·부제목에 아주 옅은 그림자: 밝은 사진에서도 글자가 읽히게 */
 .stay-inner {
 	text-shadow: 0 1px 14px rgb(0 0 0 / 35%);
+}
+
+
+/* ===== 영국이 아래 안내 알약 "영국이에게 물어보세요" (11-26, 아빠가 영국이를 못 알아봐서) =====
+   - 버튼 안에 있지만 absolute 라 버튼 크기(던지기·바닥 계산)에는 영향 없음
+   - 오른쪽 끝을 영국이 오른쪽 끝에 맞춤 (가운데 맞추면 화면 밖으로 삐져나감)
+   - 제자리를 떠나면(is-away: 끌기·떨어지기·걷기) 숨고, 돌아오면 다시 보임 */
+.chat-label {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 0.2rem;
+	padding: 0.2rem 0.65rem;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 94%);
+	box-shadow: 0 1px 4px rgb(0 0 0 / 22%);
+	color: color-mix(in oklch, var(--brand) 75%, #000);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1.35;
+	white-space: nowrap;
+	transition: opacity 0.2s ease, visibility 0.2s;
+}
+
+/* 자는 중: 회색 글씨 */
+.chatbot.is-sleeping .chat-label {
+	color: #6f6253;
+}
+
+/* 제자리를 떠났을 때는 숨김 */
+.chat-launcher.is-away .chat-label {
+	opacity: 0;
+	visibility: hidden;
 }
