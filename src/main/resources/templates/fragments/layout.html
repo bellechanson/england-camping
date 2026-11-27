@@ -129,6 +129,48 @@
 		th:if="${n.ended}">종료</span>
 </th:block>
 
+
+<!-- 공지 한 줄 (메인 최근 공지 + 공지사항 목록에서 같이 씀) — noticeRow(${공지}, 미리보기 여부)
+     한 줄 = 날짜(세리프) / 제목(고정·NEW 배지) (+ 본문 미리보기) / 마우스 올리면 →
+     고정 공지는 왼쪽 주황 세로선. preview = true 면 본문 앞부분 한 줄도 보여 줌 (공지사항 목록만) -->
+<a th:fragment="noticeRow(n, preview)" class="notice-row"
+	th:classappend="${n.pinnedNow} ? 'is-pinned' : (${n.ended} ? 'is-ended' : '')"
+	th:href="@{/notice/{id}(id=${n.id})}">
+	<span class="nrw-date" th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.24</span>
+	<span class="nrw-body">
+		<span class="nrw-title">
+			<th:block th:replace="~{fragments/layout :: noticeBadges(${n})}"></th:block><span
+				th:text="${n.title}">제목</span>
+		</span>
+		<!-- 본문 앞부분만 (줄바꿈은 띄어쓰기로 보이고, 칸을 넘으면 … 으로 자름) -->
+		<span class="nrw-preview" th:if="${preview and !#strings.isEmpty(n.content)}"
+			th:text="${#strings.abbreviate(n.content, 120)}">본문 미리보기</span>
+	</span>
+	<span class="nrw-arrow" aria-hidden="true">→</span>
+</a>
+
+<!-- 소개 사진 3칸 (메인 소개 칸 + 소개 페이지에서 같이 씀)
+     왼쪽 큰 세로 사진(3:4) + 오른쪽 작은 사진 2장 세로로 쌓기
+     사진은 관리자 > 사진 관리 > 자리에 넣기 (ABOUT_MAIN / ABOUT_SUB1 / ABOUT_SUB2) -->
+<div th:fragment="aboutPhotos" class="row g-4">
+	<div class="col-7">
+		<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
+			<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+			<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
+		</div>
+	</div>
+	<div class="col-5">
+		<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
+			<img th:if="${p != null}" th:src="@{${p.thumbUrl}}" th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+			<span class="ph-label" th:if="${p == null}">사진</span>
+		</div>
+		<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
+			<img th:if="${p != null}" th:src="@{${p.thumbUrl}}" th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
+			<span class="ph-label" th:if="${p == null}">사진</span>
+		</div>
+	</div>
+</div>
+
 <!-- ===== 3. 꼬리말 ===== -->
 <footer th:fragment="footer" class="site-footer section pb-6">
 	<!-- 관리자로 로그인한 상태에서만 보이는 바로가기 (왼쪽 아래 떠 있음, 손님에게는 안 보임) -->

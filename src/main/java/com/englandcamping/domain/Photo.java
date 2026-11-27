@@ -29,7 +29,7 @@ public class Photo {
 	@Column(nullable = false, length = 60)
 	private String thumbName;
 
-	/** 갤러리 분류 (DB에는 "SITE" 같은 글자로 저장) */
+	/** 갤러리 분류 (DB에는 "NATURE" 같은 글자로 저장) */
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 20)
 	private PhotoCategory category;

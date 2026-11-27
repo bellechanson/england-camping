@@ -31,27 +31,7 @@
 					<!-- 사진 3칸: 메인 소개 칸과 같은 배치
 					     왼쪽 큰 세로 사진(3:4) + 오른쪽 작은 사진 2장 세로로 쌓기 → 글과 높이가 비슷해짐 -->
 					<div class="lg:col-6">
-						<div class="row g-4">
-							<div class="col-7">
-								<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
-									<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
-										loading="lazy">
-									<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
-								</div>
-							</div>
-							<div class="col-5">
-								<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
-									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
-										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
-									<span class="ph-label" th:if="${p == null}">사진</span>
-								</div>
-								<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
-									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
-										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
-									<span class="ph-label" th:if="${p == null}">사진</span>
-								</div>
-							</div>
-						</div>
+						<div th:replace="~{fragments/layout :: aboutPhotos}"></div>
 					</div>
 				</div>
 			</div>

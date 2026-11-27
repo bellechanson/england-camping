@@ -286,12 +286,6 @@ public class PhotoService {
 				() -> slotRepository.save(new PhotoSlotAssignment(slot, photo)));
 	}
 
-	/** 자리의 폰 화면 가로 위치 0~100 (자리가 없으면 가운데) */
-	public int findFocusX(PhotoSlot slot) {
-		return slotRepository.findById(slot).map(PhotoSlotAssignment::getFocusX)
-				.orElse(PhotoSlotAssignment.DEFAULT_FOCUS_X);
-	}
-
 	/** 폰 화면 가로 위치 저장 (사진이 들어 있는 자리만, 0~100만) */
 	@Transactional
 	public void changeFocusX(PhotoSlot slot, int focusX) {

@@ -231,43 +231,6 @@ body {
 	}
 }
 
-/* ---------------------------------------------------------------
-   Rooms — 사진 칸 (room-media)
-   --------------------------------------------------------------- */
-
-.room-media {
-	position: relative;
-	border-radius: var(--bs-radius-4);
-	overflow: hidden;
-	margin-bottom: 1rem;
-}
-
-.room-media .ph {
-	aspect-ratio: 4 / 3;
-}
-
-.room-media img {
-	transition: transform 0.5s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.room-media img {
-		transition: none;
-	}
-}
-
-.room-price {
-	position: absolute;
-	right: 0.75rem;
-	bottom: 0.75rem;
-	padding: 0.3rem 0.7rem;
-	border-radius: var(--bs-radius-pill, 999px);
-	background: color-mix(in oklab, var(--bs-bg-body), transparent 8%);
-	backdrop-filter: blur(6px);
-	font-size: 0.82rem;
-	font-weight: 600;
-}
-
 .room-name {
 	font-size: 1.3rem;
 }

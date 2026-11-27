@@ -27,7 +27,7 @@ public class GalleryController {
 		return "pages/gallery";
 	}
 
-	/** "SITE" → PhotoCategory.SITE, 없거나 이상한 값 → null (전체) */
+	/** "NATURE" → PhotoCategory.NATURE, 없거나 이상한 값 → null (전체) */
 	private PhotoCategory parseCategory(String value) {
 		if (value == null || value.isBlank()) {
 			return null;

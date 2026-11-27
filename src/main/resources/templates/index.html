@@ -106,19 +106,7 @@
 				     한 줄 = 날짜(세리프) / 제목(고정·NEW 배지) / 마우스 올리면 → , 고정 공지는 왼쪽 주황 세로선 -->
 				<ul class="notice-rows">
 					<li th:each="n : ${recentNotices}">
-						<a class="notice-row"
-							th:classappend="${n.pinnedNow} ? 'is-pinned' : (${n.ended} ? 'is-ended' : '')"
-							th:href="@{/notice/{id}(id=${n.id})}">
-							<span class="nrw-date"
-								th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.24</span>
-							<span class="nrw-body">
-								<span class="nrw-title">
-									<th:block th:replace="~{fragments/layout :: noticeBadges(${n})}"></th:block><span
-										th:text="${n.title}">제목</span>
-								</span>
-							</span>
-							<span class="nrw-arrow" aria-hidden="true">→</span>
-						</a>
+						<a th:replace="~{fragments/layout :: noticeRow(${n}, false)}"></a>
 					</li>
 				</ul>
 			</div>
@@ -164,27 +152,7 @@
 					</div>
 					<!-- 사진 자리 3칸 (관리자 > 사진 관리 > 자리에 넣기) -->
 					<div class="lg:col-6">
-						<div class="row g-4">
-							<div class="col-7">
-								<div class="ph ph-3x4 rounded-4" th:with="p=${slotPhotos['ABOUT_MAIN']}">
-									<img th:if="${p != null}" th:src="@{${p.url}}" th:alt="${p.caption ?: '캠핑장 사진'}"
-										loading="lazy">
-									<span class="ph-label" th:if="${p == null}">캠핑장 사진</span>
-								</div>
-							</div>
-							<div class="col-5">
-								<div class="ph ph-1x1 rounded-4 mb-4" th:with="p=${slotPhotos['ABOUT_SUB1']}">
-									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
-										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
-									<span class="ph-label" th:if="${p == null}">사진</span>
-								</div>
-								<div class="ph ph-1x1 rounded-4" th:with="p=${slotPhotos['ABOUT_SUB2']}">
-									<img th:if="${p != null}" th:src="@{${p.thumbUrl}}"
-										th:alt="${p.caption ?: '캠핑장 사진'}" loading="lazy">
-									<span class="ph-label" th:if="${p == null}">사진</span>
-								</div>
-							</div>
-						</div>
+						<div th:replace="~{fragments/layout :: aboutPhotos}"></div>
 					</div>
 				</div>
 			</div>
